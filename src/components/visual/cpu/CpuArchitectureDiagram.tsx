@@ -120,6 +120,8 @@ export const CpuArchitectureDiagram: React.FC = () => {
 
       {/* CLOCK GENERATOR */}
       <g
+        role="button" tabIndex={0} aria-label={componentDetails['clock'].title}
+        onKeyDown={e => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); setSelectedNode('clock'); } }}
         onClick={() => setSelectedNode('clock')}
         className="cursor-pointer transition-transform hover:opacity-90"
       >
@@ -144,6 +146,8 @@ export const CpuArchitectureDiagram: React.FC = () => {
 
       {/* PROGRAM COUNTER (PC) */}
       <g
+        role="button" tabIndex={0} aria-label={componentDetails['pc'].title}
+        onKeyDown={e => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); setSelectedNode('pc'); } }}
         onClick={() => setSelectedNode('pc')}
         className="cursor-pointer transition-transform hover:opacity-90"
       >
@@ -167,6 +171,8 @@ export const CpuArchitectureDiagram: React.FC = () => {
 
       {/* CONTROL UNIT (CU) */}
       <g
+        role="button" tabIndex={0} aria-label={componentDetails['cu'].title}
+        onKeyDown={e => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); setSelectedNode('cu'); } }}
         onClick={() => setSelectedNode('cu')}
         className="cursor-pointer transition-transform hover:opacity-90"
       >
@@ -199,6 +205,8 @@ export const CpuArchitectureDiagram: React.FC = () => {
 
       {/* REGISTER FILE */}
       <g
+        role="button" tabIndex={0} aria-label={componentDetails['registers'].title}
+        onKeyDown={e => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); setSelectedNode('registers'); } }}
         onClick={() => setSelectedNode('registers')}
         className="cursor-pointer transition-transform hover:opacity-90"
       >
@@ -233,6 +241,8 @@ export const CpuArchitectureDiagram: React.FC = () => {
 
       {/* ARITHMETIC LOGIC UNIT (ALU) */}
       <g
+        role="button" tabIndex={0} aria-label={componentDetails['alu'].title}
+        onKeyDown={e => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); setSelectedNode('alu'); } }}
         onClick={() => setSelectedNode('alu')}
         className="cursor-pointer transition-transform hover:opacity-90"
       >
@@ -264,7 +274,9 @@ export const CpuArchitectureDiagram: React.FC = () => {
 
       {/* SYSTEM BUSES */}
       {/* Control Bus */}
-      <g onClick={() => setSelectedNode('cu')} className="cursor-pointer">
+      <g role="button" tabIndex={0} aria-label={componentDetails['cu'].title}
+        onKeyDown={e => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); setSelectedNode('cu'); } }}
+        onClick={() => setSelectedNode('cu')} className="cursor-pointer">
         <path d="M 210 290 L 210 320 L 760 320 L 760 290" fill="none" stroke="#f59e0b" strokeWidth="3" strokeDasharray="5,5" />
         <text x="220" y="315" fill="#f59e0b" fontSize="10" fontFamily="monospace" fontWeight="bold">
           CONTROL BUS (OP_CODES & STROBES)
@@ -272,7 +284,9 @@ export const CpuArchitectureDiagram: React.FC = () => {
       </g>
 
       {/* Data Bus */}
-      <g onClick={() => setSelectedNode('bus_data')} className="cursor-pointer">
+      <g role="button" tabIndex={0} aria-label={componentDetails['bus_data'].title}
+        onKeyDown={e => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); setSelectedNode('bus_data'); } }}
+        onClick={() => setSelectedNode('bus_data')} className="cursor-pointer">
         <path d="M 525 290 L 525 350 L 80 350 L 80 380" fill="none" stroke="#38bdf8" strokeWidth="4" />
         <path d="M 525 350 L 780 350 L 780 290" fill="none" stroke="#38bdf8" strokeWidth="4" />
         <text x="320" y="345" fill="#38bdf8" fontSize="11" fontFamily="monospace" fontWeight="bold">
@@ -281,7 +295,9 @@ export const CpuArchitectureDiagram: React.FC = () => {
       </g>
 
       {/* Address Bus */}
-      <g onClick={() => setSelectedNode('bus_addr')} className="cursor-pointer">
+      <g role="button" tabIndex={0} aria-label={componentDetails['bus_addr'].title}
+        onKeyDown={e => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); setSelectedNode('bus_addr'); } }}
+        onClick={() => setSelectedNode('bus_addr')} className="cursor-pointer">
         <path d="M 290 125 L 290 370 L 840 370 L 840 400" fill="none" stroke="#eab308" strokeWidth="3" />
         <text x="560" y="365" fill="#eab308" fontSize="10" fontFamily="monospace" fontWeight="bold">
           ADDRESS BUS [48/64-BIT]
@@ -290,6 +306,8 @@ export const CpuArchitectureDiagram: React.FC = () => {
 
       {/* CACHE & MEMORY SUBSYSTEM */}
       <g
+        role="button" tabIndex={0} aria-label={componentDetails['cache'].title}
+        onKeyDown={e => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); setSelectedNode('cache'); } }}
         onClick={() => setSelectedNode('cache')}
         className="cursor-pointer transition-transform hover:opacity-90"
       >

@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { lazy, Suspense } from 'react';
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import { ProgressProvider } from './context/ProgressContext';
 import { ThemeProvider } from './context/ThemeContext';
@@ -6,10 +6,10 @@ import { AppLayout } from './components/layout/AppLayout';
 import { Dashboard } from './pages/Dashboard';
 import { CurriculumBrowser } from './pages/CurriculumBrowser';
 import { StageOverview } from './pages/StageOverview';
-import { LessonViewer } from './pages/LessonViewer';
+const LessonViewer = lazy(() => import('./pages/LessonViewer').then(module => ({ default: module.LessonViewer })));
 import { SubjectHub } from './pages/SubjectHub';
-import { VisualLab } from './pages/VisualLab';
-import { SimulationLab } from './pages/SimulationLab';
+const VisualLab = lazy(() => import('./pages/VisualLab').then(module => ({ default: module.VisualLab })));
+const SimulationLab = lazy(() => import('./pages/SimulationLab').then(module => ({ default: module.SimulationLab })));
 import { Playground } from './pages/Playground';
 import { Exercises } from './pages/Exercises';
 import { Projects } from './pages/Projects';
@@ -30,11 +30,11 @@ export const App: React.FC = () => {
               <Route index element={<Dashboard />} />
               <Route path="curriculum" element={<CurriculumBrowser />} />
               <Route path="stage/:stageId" element={<StageOverview />} />
-              <Route path="stage/:stageId/lesson/:lessonId" element={<LessonViewer />} />
+              <Route path="stage/:stageId/lesson/:lessonId" element={<Suspense fallback={<p role="status" className="p-6 text-slate-300">Loading lesson…</p>}><LessonViewer /></Suspense>} />
               <Route path="subject" element={<SubjectHub />} />
-              <Route path="visual-lab" element={<VisualLab />} />
-              <Route path="simulators" element={<SimulationLab />} />
-              <Route path="simulators/:simulatorId" element={<SimulationLab />} />
+              <Route path="visual-lab" element={<Suspense fallback={<p role="status" className="p-6 text-slate-300">Loading laboratory…</p>}><VisualLab /></Suspense>} />
+              <Route path="simulators" element={<Suspense fallback={<p role="status" className="p-6 text-slate-300">Loading laboratory…</p>}><SimulationLab /></Suspense>} />
+              <Route path="simulators/:simulatorId" element={<Suspense fallback={<p role="status" className="p-6 text-slate-300">Loading laboratory…</p>}><SimulationLab /></Suspense>} />
               <Route path="playground" element={<Playground />} />
               <Route path="exercises" element={<Exercises />} />
               <Route path="projects" element={<Projects />} />

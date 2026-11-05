@@ -185,7 +185,7 @@ export const RegisterBankVisualizer: React.FC = () => {
               const isSelected = idx === selectedRegIndex;
               let displayVal = '0x' + reg.value.toString(16).toUpperCase().padStart(8, '0');
               if (format === 'dec') displayVal = reg.value.toString(10);
-              if (format === 'bin') displayVal = reg.value.toString(2).padStart(16, '0').slice(-16);
+              if (format === 'bin') displayVal = reg.value.toString(2).padStart(64, '0');
 
               return (
                 <button
@@ -204,8 +204,8 @@ export const RegisterBankVisualizer: React.FC = () => {
                     </div>
                     <div className="text-[10px] text-slate-400 truncate max-w-[120px]">{reg.role}</div>
                   </div>
-                  <div className="text-right">
-                    <span className="font-mono text-xs font-bold text-cyber-sky">{displayVal}</span>
+                  <div className="text-right min-w-0 max-w-[60%]">
+                    <span className="font-mono text-xs font-bold text-cyber-sky break-all">{displayVal}</span>
                   </div>
                 </button>
               );
@@ -213,7 +213,7 @@ export const RegisterBankVisualizer: React.FC = () => {
           </div>
 
           {/* Quick modify buttons */}
-          <div className="pt-2 flex items-center space-x-2">
+          <div className="pt-2 flex flex-wrap items-center gap-2">
             <span className="text-xs text-slate-400 font-mono">Load Preset Value into {selectedReg.name64}:</span>
             <button
               onClick={() => handleSetRegValue(BigInt(0))}

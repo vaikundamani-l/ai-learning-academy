@@ -1,5 +1,6 @@
 import React, { useMemo } from 'react';
 import katex from 'katex';
+import 'katex/dist/katex.min.css';
 
 interface MathBlockProps {
   math: string;
@@ -20,11 +21,11 @@ export const MathBlock: React.FC<MathBlockProps> = ({
         displayMode: !inline,
         throwOnError: false,
         strict: false,
-        output: 'htmlAndMathml',
+        output: 'html',
       });
     } catch (err) {
       console.error('KaTeX rendering error for equation:', math, err);
-      return `<code class="text-cyber-rose">${math}</code>`;
+      return `<code class="text-cyber-rose">${math.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')}</code>`;
     }
   }, [math, inline]);
 
@@ -43,7 +44,7 @@ export const MathBlock: React.FC<MathBlockProps> = ({
     <div
       role="region"
       aria-label={ariaLabel || 'Mathematical equation'}
-      className={`my-4 p-4 rounded-xl bg-surface-card border border-surface-border overflow-x-auto text-center shadow-inner ${className}`}
+      className={`my-4 p-4 rounded-xl bg-surface-card border border-surface-border overflow-x-auto text-center shadow-inner max-w-full min-w-0 ${className}`}
     >
       <div
         className="inline-block text-slate-100"

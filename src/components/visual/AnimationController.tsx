@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React from 'react';
 import { Play, Pause, RotateCcw, StepForward, StepBack, FastForward, Clock } from 'lucide-react';
 
 export interface AnimationControllerProps {
@@ -34,35 +34,19 @@ export const AnimationController: React.FC<AnimationControllerProps> = ({
   canStepForward = true,
   canStepBackward = true,
 }) => {
-  // Keyboard shortcut listener (Space = play/pause, Left = rewind, Right = step)
-  useEffect(() => {
-    const handleKeyDown = (e: KeyboardEvent) => {
-      // Don't intercept if user is typing in an input or textarea
-      const target = e.target as HTMLElement;
-      if (target.tagName === 'INPUT' || target.tagName === 'TEXTAREA' || target.isContentEditable) {
-        return;
-      }
-
-      if (e.code === 'Space') {
-        e.preventDefault();
-        onPlayToggle();
-      } else if (e.code === 'ArrowRight' && canStepForward) {
-        e.preventDefault();
-        onStepForward();
-      } else if (e.code === 'ArrowLeft' && canStepBackward) {
-        e.preventDefault();
-        onStepBackward();
-      }
-    };
-
-    window.addEventListener('keydown', handleKeyDown);
-    return () => window.removeEventListener('keydown', handleKeyDown);
-  }, [onPlayToggle, onStepForward, onStepBackward, canStepForward, canStepBackward]);
+  // Shortcuts belong to this focused controller, never to every demo on the page.
+  const handleKeyDown = (e: React.KeyboardEvent<HTMLDivElement>) => {
+    const target = e.target as HTMLElement;
+    if (target !== e.currentTarget || e.altKey || e.ctrlKey || e.metaKey) return;
+    if (e.code === 'Space') { e.preventDefault(); onPlayToggle(); }
+    else if (e.code === 'ArrowRight' && canStepForward && currentCycle < totalCycles) { e.preventDefault(); onStepForward(); }
+    else if (e.code === 'ArrowLeft' && canStepBackward && currentCycle > 0) { e.preventDefault(); onStepBackward(); }
+  };
 
   const speedOptions = [0.5, 1.0, 2.0];
 
   return (
-    <div className="rounded-xl border border-surface-border bg-surface-card p-4 space-y-3">
+    <div tabIndex={0} role="group" aria-label="Animation controls. Space to play or pause; arrow keys to step." onKeyDown={handleKeyDown} className="rounded-xl border border-surface-border bg-surface-card p-4 space-y-3">
       {/* Top status bar: Phase, cycle count, and description */}
       <div className="flex flex-wrap items-center justify-between gap-3 text-xs font-mono">
         <div className="flex items-center space-x-2.5">
@@ -169,6 +153,7 @@ export const AnimationController: React.FC<AnimationControllerProps> = ({
           {speedOptions.map((opt) => (
             <button
               key={opt}
+              aria-pressed={speed === opt}
               onClick={() => onSpeedChange(opt)}
               className={`px-2 py-0.5 rounded text-[11px] font-mono transition ${
                 speed === opt

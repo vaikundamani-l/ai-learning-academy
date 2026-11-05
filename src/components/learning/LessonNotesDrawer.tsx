@@ -41,8 +41,9 @@ export const LessonNotesDrawer: React.FC<LessonNotesDrawerProps> = ({
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-end bg-void/80 backdrop-blur-sm animate-fade-in">
+    <div onClick={onClose} className="fixed inset-0 z-50 flex items-center justify-end bg-void/80 backdrop-blur-sm animate-fade-in">
       <aside
+        onClick={e => e.stopPropagation()}
         id="lesson-notes-drawer"
         role="dialog"
         aria-modal="true"
@@ -101,7 +102,7 @@ export const LessonNotesDrawer: React.FC<LessonNotesDrawerProps> = ({
             <textarea
               id="lesson-note-textarea"
               value={content}
-              onChange={(e) => setContent(e.target.value)}
+              onChange={(e) => { setContent(e.target.value); setSaved(false); }}
               placeholder="Record your takeaways, hardware register observations, equations, or bug diagnostics..."
               className="w-full h-64 p-3 rounded-xl bg-void border border-surface-border text-xs font-mono text-slate-200 resize-none focus:outline-none focus:border-cyber-sky leading-relaxed"
             />
@@ -112,7 +113,7 @@ export const LessonNotesDrawer: React.FC<LessonNotesDrawerProps> = ({
         <div className="pt-4 border-t border-surface-border flex items-center justify-between">
           <button
             onClick={handleSave}
-            disabled={!content.trim()}
+            disabled={content === (progress.notes[lessonPath] || '')}
             className="px-4 py-2 rounded-lg bg-cyber-sky text-void font-bold text-xs font-mono hover:bg-sky-400 transition flex items-center space-x-1.5 disabled:opacity-50"
           >
             {saved ? (

@@ -141,7 +141,7 @@ export const InteractiveRoadmapView: React.FC<RoadmapViewProps> = () => {
         </div>
 
         {/* Track Filter Pills */}
-        <div className="flex items-center space-x-1.5 overflow-x-auto pb-1 sm:pb-0">
+        <div className="w-full sm:w-auto max-w-full min-w-0 flex items-center space-x-1.5 overflow-x-auto pb-1 sm:pb-0">
           <span className="text-[11px] font-mono text-slate-500 mr-1 flex items-center space-x-1">
             <Filter className="w-3 h-3" />
             <span>Track:</span>

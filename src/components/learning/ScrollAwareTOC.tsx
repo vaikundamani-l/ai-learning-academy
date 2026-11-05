@@ -19,50 +19,22 @@ export const ScrollAwareTOC: React.FC<ScrollAwareTOCProps> = ({
   const [activeId, setActiveId] = useState<string>(sections[0]?.id || '');
   const [readingProgress, setReadingProgress] = useState<number>(0);
 
-  // Scroll listener for reading progress calculation
   useEffect(() => {
-    const handleScroll = () => {
-      const totalHeight = document.documentElement.scrollHeight - window.innerHeight;
-      if (totalHeight <= 0) {
-        setReadingProgress(100);
-        return;
-      }
-      const currentScroll = window.scrollY;
-      const progress = Math.min(100, Math.max(0, Math.round((currentScroll / totalHeight) * 100)));
-      setReadingProgress(progress);
+    const update = () => {
+      const nodes = sections.map(section => document.getElementById(section.id)).filter((node): node is HTMLElement => !!node);
+      if (!nodes.length) return;
+      const marker = window.scrollY + 100;
+      const current = [...nodes].reverse().find(node => node.getBoundingClientRect().top + window.scrollY <= marker);
+      setActiveId((current || nodes[0]).id);
+      const start = nodes[0].getBoundingClientRect().top + window.scrollY;
+      const last = nodes[nodes.length - 1];
+      const end = last.getBoundingClientRect().bottom + window.scrollY;
+      setReadingProgress(Math.round(Math.max(0, Math.min(1, (marker - start) / Math.max(1, end - start - window.innerHeight + 100))) * 100));
     };
-
-    window.addEventListener('scroll', handleScroll, { passive: true });
-    handleScroll();
-    return () => window.removeEventListener('scroll', handleScroll);
-  }, []);
-
-  // IntersectionObserver to detect active section in viewport
-  useEffect(() => {
-    if (sections.length === 0) return;
-
-    const observer = new IntersectionObserver(
-      (entries) => {
-        // Find visible sections
-        const visibleEntries = entries.filter((entry) => entry.isIntersecting);
-        if (visibleEntries.length > 0) {
-          // Sort by top position to pick the one closest to top of viewport
-          visibleEntries.sort((a, b) => a.boundingClientRect.top - b.boundingClientRect.top);
-          setActiveId(visibleEntries[0].target.id);
-        }
-      },
-      {
-        rootMargin: '-80px 0px -60% 0px',
-        threshold: [0, 0.25, 0.5, 1],
-      }
-    );
-
-    sections.forEach((sec) => {
-      const el = document.getElementById(sec.id);
-      if (el) observer.observe(el);
-    });
-
-    return () => observer.disconnect();
+    window.addEventListener('scroll', update, { passive: true });
+    window.addEventListener('resize', update);
+    update();
+    return () => { window.removeEventListener('scroll', update); window.removeEventListener('resize', update); };
   }, [sections]);
 
   const scrollToSection = (e: React.MouseEvent<HTMLAnchorElement>, id: string) => {
@@ -72,11 +44,11 @@ export const ScrollAwareTOC: React.FC<ScrollAwareTOCProps> = ({
       const offsetTop = el.getBoundingClientRect().top + window.scrollY - 80;
       window.scrollTo({
         top: offsetTop,
-        behavior: 'smooth',
+        behavior: window.matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth',
       });
       setActiveId(id);
       // Set hash without jump
-      window.history.pushState(null, '', `#${id}`);
+      window.history.replaceState(window.history.state, '', `#${id}`);
     }
   };
 
@@ -90,7 +62,7 @@ export const ScrollAwareTOC: React.FC<ScrollAwareTOCProps> = ({
           <BookOpen className="w-3.5 h-3.5 text-cyber-sky" />
           <span>Table of Contents</span>
         </div>
-        <span className="text-[11px] font-mono font-semibold text-cyber-sky" aria-live="polite">
+        <span className="text-[11px] font-mono font-semibold text-cyber-sky" aria-label="Reading progress">
           {readingProgress}% read
         </span>
       </div>
@@ -110,6 +82,7 @@ export const ScrollAwareTOC: React.FC<ScrollAwareTOCProps> = ({
           return (
             <a
               key={sec.id}
+              aria-current={isActive ? 'location' : undefined}
               href={`#${sec.id}`}
               onClick={(e) => scrollToSection(e, sec.id)}
               className={`block px-2.5 py-1.5 rounded-lg transition truncate ${

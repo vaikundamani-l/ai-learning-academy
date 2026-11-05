@@ -269,6 +269,7 @@ add_and_scale_x86:
     addl    %esi, %eax         # EAX = a + b (ALU Add)
     shll    $1, %eax           # EAX = EAX << 1 (Fast Multiply by 2 via bitshift)
     ret                        # Pop return address from stack and jump
+    .section .note.GNU-stack,"",@progbits
 
 # ----------------------------------------------------------------------------
 # 2. ARM64 (AArch64) GNU Assembly
@@ -278,6 +279,7 @@ add_and_scale_arm:
     add     w0, w0, w1         # W0 = a + b (32-bit register add)
     lsl     w0, w0, #1         # W0 = W0 << 1 (Logical Shift Left by 1)
     ret                        # Return to address in link register (X30)
+    .section .note.GNU-stack,"",@progbits
 `
   },
 

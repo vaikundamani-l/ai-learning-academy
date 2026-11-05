@@ -88,26 +88,12 @@ export const InstructionCycleVisualizer: React.FC = () => {
     },
   ];
 
-  // Playback timer loop
   useEffect(() => {
-    if (isPlaying) {
-      const intervalMs = 1800 / speed;
-      timerRef.current = setInterval(() => {
-        setCurrentStep((prev) => {
-          if (prev >= stages.length - 1) {
-            setIsPlaying(false);
-            return prev;
-          }
-          return prev + 1;
-        });
-      }, intervalMs);
-    } else {
-      if (timerRef.current) clearInterval(timerRef.current);
-    }
-    return () => {
-      if (timerRef.current) clearInterval(timerRef.current);
-    };
-  }, [isPlaying, speed, stages.length]);
+    if (!isPlaying || currentStep >= stages.length - 1) return;
+    const timer = setInterval(() => setCurrentStep(value => Math.min(stages.length - 1, value + 1)), 1800 / speed);
+    return () => clearInterval(timer);
+  }, [isPlaying, speed, currentStep >= stages.length - 1]);
+  useEffect(() => { if (currentStep >= stages.length - 1) setIsPlaying(false); }, [currentStep]);
 
   const handlePlayToggle = () => {
     if (currentStep >= stages.length - 1) {
@@ -119,10 +105,12 @@ export const InstructionCycleVisualizer: React.FC = () => {
   };
 
   const handleStepForward = () => {
+    setIsPlaying(false);
     if (currentStep < stages.length - 1) setCurrentStep((prev) => prev + 1);
   };
 
   const handleStepBackward = () => {
+    setIsPlaying(false);
     if (currentStep > 0) setCurrentStep((prev) => prev - 1);
   };
 

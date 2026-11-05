@@ -51,7 +51,7 @@ export const CodeBlock: React.FC<CodeBlockProps> = ({
   };
 
   return (
-    <div className={`my-4 rounded-xl border border-surface-border bg-void overflow-hidden shadow-md ${className}`}>
+    <div className={`my-4 rounded-xl border border-surface-border bg-void overflow-hidden shadow-md max-w-full min-w-0 ${className}`}>
       {/* Code Header Bar */}
       <div className="flex items-center justify-between px-4 py-2 bg-surface-card border-b border-surface-border text-xs font-mono">
         <div className="flex items-center space-x-2">
@@ -91,9 +91,9 @@ export const CodeBlock: React.FC<CodeBlockProps> = ({
       </div>
 
       {/* Code Content */}
-      <div className="p-4 overflow-x-auto text-xs font-mono leading-relaxed select-text">
+      <div className="p-4 overflow-x-auto text-xs font-mono leading-relaxed select-text max-w-full">
         {showLineNumbers ? (
-          <table className="w-full border-collapse">
+          <table className="min-w-full border-collapse">
             <tbody>
               {lines.map((line, idx) => {
                 const lineNum = idx + 1;

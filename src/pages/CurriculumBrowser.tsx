@@ -188,11 +188,11 @@ export const CurriculumBrowser: React.FC = () => {
                       {stage.shortDescription}
                     </p>
 
-                    {/* Pilot Lesson Highlight for Stage 0 */}
+                    {/* Lesson Highlight for Stage 0 */}
                     {stage.id === 0 && (
                       <div className="px-2.5 py-1.5 rounded bg-cyber-sky/10 border border-cyber-sky/30 text-[11px] font-mono text-cyber-sky flex items-center space-x-1.5">
                         <Sparkles className="w-3 h-3 flex-shrink-0" />
-                        <span>CPU pilot lesson planned</span>
+                        <span>4 Lessons Available: CPU, Memory, Operating Systems & Git</span>
                       </div>
                     )}
 

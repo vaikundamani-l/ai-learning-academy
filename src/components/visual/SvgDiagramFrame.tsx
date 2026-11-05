@@ -1,4 +1,5 @@
-import React, { useState, useRef } from 'react';
+import React, { useState, useRef, useId, useCallback } from 'react';
+import { useFocusScope } from '../../hooks/useFocusScope';
 import { ZoomIn, ZoomOut, RotateCcw, Maximize2, Minimize2, Info } from 'lucide-react';
 
 export interface SvgDiagramFrameProps {
@@ -26,6 +27,10 @@ export const SvgDiagramFrame: React.FC<SvgDiagramFrameProps> = ({
   const [isFullscreen, setIsFullscreen] = useState(false);
   const containerRef = useRef<HTMLDivElement>(null);
 
+  const panelId = useId().replace(/:/g, '');
+  const closeFullscreen = useCallback(() => setIsFullscreen(false), []);
+  useFocusScope(isFullscreen, `[data-diagram="${panelId}"]`, closeFullscreen);
+
   const handleZoomIn = () => setScale((prev) => Math.min(prev + 0.25, 2.5));
   const handleZoomOut = () => setScale((prev) => Math.max(prev - 0.25, 0.75));
   const handleResetZoom = () => setScale(1);
@@ -39,6 +44,10 @@ export const SvgDiagramFrame: React.FC<SvgDiagramFrameProps> = ({
   return (
     <div
       ref={containerRef}
+      data-diagram={panelId}
+      role={isFullscreen ? 'dialog' : 'group'}
+      aria-modal={isFullscreen || undefined}
+      aria-label={title}
       className={`rounded-2xl border border-surface-border bg-surface-card overflow-hidden shadow-xl transition-all ${
         isFullscreen ? 'fixed inset-4 z-50 flex flex-col bg-surface shadow-2xl' : ''
       } ${className}`}
@@ -101,15 +110,15 @@ export const SvgDiagramFrame: React.FC<SvgDiagramFrameProps> = ({
       </div>
 
       {/* Main Diagram Area with scrollable canvas */}
-      <div className={`relative overflow-auto bg-void p-6 flex items-center justify-center ${isFullscreen ? 'flex-1' : 'min-h-[380px]'}`}>
+      <div className={`relative overflow-auto bg-void p-6 ${isFullscreen ? 'flex-1' : 'min-h-[380px]'}`}>
         <div
-          style={{ transform: `scale(${scale})`, transformOrigin: 'center center', transition: 'transform 0.15s ease-out' }}
-          className="w-full flex items-center justify-center max-w-5xl"
+          style={{ width: `${scale * 100}%`, minWidth: `${640 * scale}px` }}
+          className="flex items-center justify-center"
         >
           <svg
             viewBox={viewBox}
             className="w-full h-auto select-none"
-            role="img"
+            role="group"
             aria-label={title}
           >
             {children}

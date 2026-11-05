@@ -12,26 +12,12 @@ export const EducationalCpuSimulator: React.FC = () => {
   const maxCycles = 20;
   const cpuState = cpuAtCycle(cycle);
 
-  // Auto-play timer
   useEffect(() => {
-    if (isPlaying) {
-      const intervalMs = 1200 / speed;
-      timerRef.current = setInterval(() => {
-        setCycle((prev) => {
-          if (prev >= maxCycles) {
-            setIsPlaying(false);
-            return prev;
-          }
-          return prev + 1;
-        });
-      }, intervalMs);
-    } else {
-      if (timerRef.current) clearInterval(timerRef.current);
-    }
-    return () => {
-      if (timerRef.current) clearInterval(timerRef.current);
-    };
-  }, [isPlaying, speed, maxCycles]);
+    if (!isPlaying || cycle >= maxCycles) return;
+    const timer = setInterval(() => setCycle(value => Math.min(maxCycles, value + 1)), 1200 / speed);
+    return () => clearInterval(timer);
+  }, [isPlaying, speed, cycle >= maxCycles]);
+  useEffect(() => { if (cycle >= maxCycles) setIsPlaying(false); }, [cycle]);
 
   const handlePlayToggle = () => {
     if (cycle >= maxCycles) {
@@ -43,10 +29,12 @@ export const EducationalCpuSimulator: React.FC = () => {
   };
 
   const handleStepForward = () => {
+    setIsPlaying(false);
     if (cycle < maxCycles) setCycle((c) => c + 1);
   };
 
   const handleStepBackward = () => {
+    setIsPlaying(false);
     if (cycle > 0) setCycle((c) => c - 1);
   };
 

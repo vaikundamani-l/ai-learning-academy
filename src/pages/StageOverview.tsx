@@ -123,13 +123,36 @@ export const StageOverview: React.FC = () => {
         {/* Action Bar */}
         <div className="pt-2 flex flex-wrap gap-3">
           {stage.id === 0 ? (
-            <Link
-              to="/stage/0/lesson/cpu-architecture"
-              className="px-4 py-2.5 rounded-lg bg-cyber-sky text-void font-bold text-xs font-mono hover:bg-sky-400 transition flex items-center space-x-2 shadow-lg shadow-cyber-sky/20"
-            >
-              <Play className="w-3.5 h-3.5 fill-current" />
-              <span>Preview CPU Architecture Lesson</span>
-            </Link>
+            <>
+              <Link
+                to="/stage/0/lesson/cpu-architecture"
+                className="px-4 py-2.5 rounded-lg bg-cyber-sky text-void font-bold text-xs font-mono hover:bg-sky-400 transition flex items-center space-x-2 shadow-lg shadow-cyber-sky/20"
+              >
+                <Play className="w-3.5 h-3.5 fill-current" />
+                <span>Lesson 1: CPU Architecture</span>
+              </Link>
+              <Link
+                to="/stage/0/lesson/binary-data-representation"
+                className="px-4 py-2.5 rounded-lg bg-surface border border-cyber-emerald/40 text-cyber-emerald hover:bg-cyber-emerald/10 font-bold text-xs font-mono transition flex items-center space-x-2"
+              >
+                <Play className="w-3.5 h-3.5 fill-current" />
+                <span>Lesson 2: Memory & Binary Data</span>
+              </Link>
+              <Link
+                to="/stage/0/lesson/operating-systems"
+                className="px-4 py-2.5 rounded-lg bg-surface border border-cyber-indigo/40 text-cyber-indigo hover:bg-cyber-indigo/10 font-bold text-xs font-mono transition flex items-center space-x-2"
+              >
+                <Play className="w-3.5 h-3.5 fill-current" />
+                <span>Lesson 3: Operating Systems</span>
+              </Link>
+              <Link
+                to="/stage/0/lesson/developer-tooling"
+                className="px-4 py-2.5 rounded-lg bg-surface border border-cyber-amber/40 text-cyber-amber hover:bg-cyber-amber/10 font-bold text-xs font-mono transition flex items-center space-x-2"
+              >
+                <Play className="w-3.5 h-3.5 fill-current" />
+                <span>Lesson 4: Shell & Git</span>
+              </Link>
+            </>
           ) : (
             <button
               onClick={handleStartOrContinue}
@@ -157,17 +180,35 @@ export const StageOverview: React.FC = () => {
         <div className="p-5 rounded-xl bg-gradient-to-r from-cyber-sky/15 via-surface-card to-surface-card border border-cyber-sky/40 space-y-3">
           <div className="flex items-center space-x-2 text-cyber-sky font-mono font-semibold text-xs uppercase tracking-wider">
             <Sparkles className="w-4 h-4 text-cyber-sky" />
-            <span>Phase 4 Quality Benchmark Pilot: CPU Architecture</span>
+            <span>Stage 0 Comprehensive Computing Lessons</span>
           </div>
           <p className="text-xs text-slate-300 leading-relaxed max-w-3xl">
-            The planned pilot will cover 28 first-principles topics from clock cycles and RISC/CISC philosophies to the 5-stage instruction pipeline, branch prediction, and superscalar execution. Eight interactive visuals are planned; the complete pilot is not available yet.
+            Stage 0 delivers rigorous first-principles lessons across all core computing fundamentals: from CPU clock cycles, pipelines, and register banks to Two's Complement, IEEE-754 floating point, virtual memory page tables, Unix shell pipelines, and Git content-addressable DAGs.
           </p>
-          <div className="flex flex-wrap gap-2 pt-1">
+          <div className="flex flex-wrap gap-4 pt-1">
             <Link
               to="/stage/0/lesson/cpu-architecture"
               className="text-xs font-mono font-semibold text-cyber-sky hover:underline flex items-center space-x-1"
             >
-              <span>Explore the 28-topic pilot lesson &rarr;</span>
+              <span>Lesson 1: CPU Architecture & ISA &rarr;</span>
+            </Link>
+            <Link
+              to="/stage/0/lesson/binary-data-representation"
+              className="text-xs font-mono font-semibold text-cyber-emerald hover:underline flex items-center space-x-1"
+            >
+              <span>Lesson 2: Memory Hierarchy & Binary Data &rarr;</span>
+            </Link>
+            <Link
+              to="/stage/0/lesson/operating-systems"
+              className="text-xs font-mono font-semibold text-cyber-indigo hover:underline flex items-center space-x-1"
+            >
+              <span>Lesson 3: Operating System Primitives &rarr;</span>
+            </Link>
+            <Link
+              to="/stage/0/lesson/developer-tooling"
+              className="text-xs font-mono font-semibold text-cyber-amber hover:underline flex items-center space-x-1"
+            >
+              <span>Lesson 4: Shell & Git Internals &rarr;</span>
             </Link>
           </div>
         </div>

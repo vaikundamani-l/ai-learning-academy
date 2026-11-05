@@ -1,107 +1,23 @@
-import React, { useState } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import { Database, Zap, RefreshCw, Play, ArrowRight } from 'lucide-react';
 
-interface CacheLine {
-  valid: boolean;
-  tag: string;
-  data: string;
-  dirty: boolean;
-  age: number; // for LRU
-}
+import { accessCache, emptyCache, parseCacheAddress } from '../../../utils/cache';
 
 export const CacheHitMissSimulator: React.FC = () => {
-  const NUM_SETS = 4;
-  const WAYS = 2; // 2-way set-associative cache
-  const LINE_SIZE = 16; // 16 bytes per block
-
-  // 4 sets, 2 ways each
-  const [cache, setCache] = useState<CacheLine[][]>(() =>
-    Array.from({ length: 4 }, () => [
-      { valid: false, tag: '-', data: 'Empty', dirty: false, age: 0 },
-      { valid: false, tag: '-', data: 'Empty', dirty: false, age: 0 },
-    ])
-  );
-
-  const [hits, setHits] = useState(0);
-  const [misses, setMisses] = useState(0);
-  const [lastAccess, setLastAccess] = useState<{
-    addr: number;
-    tag: number;
-    setIdx: number;
-    offset: number;
-    hit: boolean;
-    replacedWay?: number;
-  } | null>(null);
-
-  const [inputAddr, setInputAddr] = useState<string>('0x0020');
-
-  // Address parsing helper: 16-bit address
-  // [15:6 Tag (10 bits)] [5:4 Set Index (2 bits)] [3:0 Offset (4 bits)]
-  const parseAddress = (addr: number) => {
-    const offset = addr & 0x0f;
-    const setIdx = (addr >> 4) & 0x03;
-    const tag = (addr >> 6) & 0x3ff;
-    return { tag, setIdx, offset };
-  };
-
-  const handleAccess = (addr: number) => {
-    const { tag, setIdx, offset } = parseAddress(addr);
-    const tagHex = '0x' + tag.toString(16).toUpperCase().padStart(3, '0');
-
-    setCache((prev) => {
-      const newCache = prev.map((set) => set.map((line) => ({ ...line })));
-      const targetSet = newCache[setIdx];
-
-      // Check for hit
-      const hitIndex = targetSet.findIndex((line) => line.valid && line.tag === tagHex);
-
-      if (hitIndex !== -1) {
-        // Cache Hit!
-        setHits((h) => h + 1);
-        targetSet[hitIndex].age = Date.now();
-        setLastAccess({ addr, tag, setIdx, offset, hit: true });
-      } else {
-        // Cache Miss!
-        setMisses((m) => m + 1);
-        // Replace least recently used (or invalid) line
-        let victimIdx = targetSet.findIndex((l) => !l.valid);
-        if (victimIdx === -1) {
-          victimIdx = targetSet[0].age < targetSet[1].age ? 0 : 1;
-        }
-
-        targetSet[victimIdx] = {
-          valid: true,
-          tag: tagHex,
-          data: `Mem[0x${(addr & ~0x0f).toString(16).toUpperCase()}]`,
-          dirty: false,
-          age: Date.now(),
-        };
-
-        setLastAccess({ addr, tag, setIdx, offset, hit: false, replacedWay: victimIdx });
-      }
-
-      return newCache;
-    });
-  };
-
+  const [state, setState] = useState(emptyCache);
+  const { cache, hits, misses, lastAccess } = state;
+  const [inputAddr, setInputAddr] = useState('0x0020');
+  const [error, setError] = useState('');
+  const timers = useRef<ReturnType<typeof setTimeout>[]>([]);
+  const cancelPattern = () => { timers.current.forEach(clearTimeout); timers.current = []; };
+  useEffect(() => () => cancelPattern(), []);
+  const handleAccess = (addr: number) => setState(prev => accessCache(prev, addr));
   const handleCustomAccess = () => {
-    const parsed = parseInt(inputAddr, 16);
-    if (!isNaN(parsed) && parsed >= 0) {
-      handleAccess(parsed);
-    }
+    const addr = parseCacheAddress(inputAddr);
+    if (addr === null) { setError('Enter a hexadecimal address from 0x0000 to 0xFFFF.'); return; }
+    cancelPattern(); setError(''); handleAccess(addr);
   };
-
-  const handleReset = () => {
-    setCache(
-      Array.from({ length: 4 }, () => [
-        { valid: false, tag: '-', data: 'Empty', dirty: false, age: 0 },
-        { valid: false, tag: '-', data: 'Empty', dirty: false, age: 0 },
-      ])
-    );
-    setHits(0);
-    setMisses(0);
-    setLastAccess(null);
-  };
+  const handleReset = () => { cancelPattern(); setState(emptyCache()); setError(''); };
 
   // Preset access patterns
   const runPreset = (pattern: 'sequential' | 'strided' | 'temporal') => {
@@ -119,7 +35,7 @@ export const CacheHitMissSimulator: React.FC = () => {
     }
 
     addrs.forEach((a, i) => {
-      setTimeout(() => handleAccess(a), i * 350);
+      timers.current.push(setTimeout(() => handleAccess(a), i * 350));
     });
   };
 
@@ -151,6 +67,7 @@ export const CacheHitMissSimulator: React.FC = () => {
         </button>
       </div>
 
+      {error && <p role="alert" className="text-sm text-cyber-rose">{error}</p>}
       {/* Control Strip & Metrics */}
       <div className="grid grid-cols-1 md:grid-cols-12 gap-4 font-mono">
         {/* Controls */}

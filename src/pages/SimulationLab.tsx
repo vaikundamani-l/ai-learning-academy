@@ -17,9 +17,18 @@ import { AluSimulator } from '../components/visual/cpu/AluSimulator';
 import { CacheHitMissSimulator } from '../components/visual/cpu/CacheHitMissSimulator';
 import { PipelineHazardVisualizer } from '../components/visual/cpu/PipelineHazardVisualizer';
 import { RegisterBankVisualizer } from '../components/visual/cpu/RegisterBankVisualizer';
+import { BitwiseVisualizer } from '../components/visual/memory/BitwiseVisualizer';
+import { Ieee754Visualizer } from '../components/visual/memory/Ieee754Visualizer';
+import { MemoryPyramidVisualizer } from '../components/visual/memory/MemoryPyramidVisualizer';
+import { ProcessLifecycleSimulator } from '../components/visual/os/ProcessLifecycleSimulator';
+import { VirtualMemoryVisualizer } from '../components/visual/os/VirtualMemoryVisualizer';
+import { PosixPermissionsVisualizer } from '../components/visual/os/PosixPermissionsVisualizer';
+import { GitDagVisualizer } from '../components/visual/tools/GitDagVisualizer';
+import { ShellPipelineVisualizer } from '../components/visual/tools/ShellPipelineVisualizer';
+import { EnvPathVisualizer } from '../components/visual/tools/EnvPathVisualizer';
 
 export const SimulationLab: React.FC = () => {
-  const [activeSim, setActiveSim] = useState<'cpu' | 'alu' | 'cache' | 'pipeline' | 'registers'>('cpu');
+  const [activeSim, setActiveSim] = useState<'cpu' | 'alu' | 'cache' | 'pipeline' | 'registers' | 'bitwise' | 'ieee754' | 'memory-pyramid' | 'process' | 'mmu' | 'permissions' | 'git' | 'pipeline-sim' | 'path'>('cpu');
 
   return (
     <div className="space-y-8">
@@ -97,6 +106,114 @@ export const SimulationLab: React.FC = () => {
           <Database className="w-3.5 h-3.5" />
           <span>x86-64 Register Bank</span>
         </button>
+
+        <button
+          onClick={() => setActiveSim('bitwise')}
+          className={`px-3.5 py-2 rounded-xl border transition flex items-center space-x-2 flex-shrink-0 ${
+            activeSim === 'bitwise'
+              ? 'bg-cyber-sky text-void font-bold border-cyber-sky shadow-lg shadow-cyber-sky/20'
+              : 'bg-surface-card border-surface-border text-slate-300 hover:text-slate-100 hover:bg-surface-elevated'
+          }`}
+        >
+          <Terminal className="w-3.5 h-3.5" />
+          <span>Two's Complement & Bitwise</span>
+        </button>
+
+        <button
+          onClick={() => setActiveSim('ieee754')}
+          className={`px-3.5 py-2 rounded-xl border transition flex items-center space-x-2 flex-shrink-0 ${
+            activeSim === 'ieee754'
+              ? 'bg-cyber-sky text-void font-bold border-cyber-sky shadow-lg shadow-cyber-sky/20'
+              : 'bg-surface-card border-surface-border text-slate-300 hover:text-slate-100 hover:bg-surface-elevated'
+          }`}
+        >
+          <Zap className="w-3.5 h-3.5" />
+          <span>IEEE-754 FP Converter</span>
+        </button>
+
+        <button
+          onClick={() => setActiveSim('memory-pyramid')}
+          className={`px-3.5 py-2 rounded-xl border transition flex items-center space-x-2 flex-shrink-0 ${
+            activeSim === 'memory-pyramid'
+              ? 'bg-cyber-sky text-void font-bold border-cyber-sky shadow-lg shadow-cyber-sky/20'
+              : 'bg-surface-card border-surface-border text-slate-300 hover:text-slate-100 hover:bg-surface-elevated'
+          }`}
+        >
+          <Layers className="w-3.5 h-3.5" />
+          <span>Memory Hierarchy Pyramid</span>
+        </button>
+
+        <button
+          onClick={() => setActiveSim('process')}
+          className={`px-3.5 py-2 rounded-xl border transition flex items-center space-x-2 flex-shrink-0 ${
+            activeSim === 'process'
+              ? 'bg-cyber-sky text-void font-bold border-cyber-sky shadow-lg shadow-cyber-sky/20'
+              : 'bg-surface-card border-surface-border text-slate-300 hover:text-slate-100 hover:bg-surface-elevated'
+          }`}
+        >
+          <Terminal className="w-3.5 h-3.5" />
+          <span>Process Lifecycle & PCB</span>
+        </button>
+
+        <button
+          onClick={() => setActiveSim('mmu')}
+          className={`px-3.5 py-2 rounded-xl border transition flex items-center space-x-2 flex-shrink-0 ${
+            activeSim === 'mmu'
+              ? 'bg-cyber-sky text-void font-bold border-cyber-sky shadow-lg shadow-cyber-sky/20'
+              : 'bg-surface-card border-surface-border text-slate-300 hover:text-slate-100 hover:bg-surface-elevated'
+          }`}
+        >
+          <Layers className="w-3.5 h-3.5" />
+          <span>Virtual Memory & MMU</span>
+        </button>
+
+        <button
+          onClick={() => setActiveSim('permissions')}
+          className={`px-3.5 py-2 rounded-xl border transition flex items-center space-x-2 flex-shrink-0 ${
+            activeSim === 'permissions'
+              ? 'bg-cyber-sky text-void font-bold border-cyber-sky shadow-lg shadow-cyber-sky/20'
+              : 'bg-surface-card border-surface-border text-slate-300 hover:text-slate-100 hover:bg-surface-elevated'
+          }`}
+        >
+          <Database className="w-3.5 h-3.5" />
+          <span>POSIX Permissions & Inodes</span>
+        </button>
+
+        <button
+          onClick={() => setActiveSim('git')}
+          className={`px-3.5 py-2 rounded-xl border transition flex items-center space-x-2 flex-shrink-0 ${
+            activeSim === 'git'
+              ? 'bg-cyber-sky text-void font-bold border-cyber-sky shadow-lg shadow-cyber-sky/20'
+              : 'bg-surface-card border-surface-border text-slate-300 hover:text-slate-100 hover:bg-surface-elevated'
+          }`}
+        >
+          <Terminal className="w-3.5 h-3.5" />
+          <span>Git DAG & Object Explorer</span>
+        </button>
+
+        <button
+          onClick={() => setActiveSim('pipeline-sim')}
+          className={`px-3.5 py-2 rounded-xl border transition flex items-center space-x-2 flex-shrink-0 ${
+            activeSim === 'pipeline-sim'
+              ? 'bg-cyber-sky text-void font-bold border-cyber-sky shadow-lg shadow-cyber-sky/20'
+              : 'bg-surface-card border-surface-border text-slate-300 hover:text-slate-100 hover:bg-surface-elevated'
+          }`}
+        >
+          <Layers className="w-3.5 h-3.5" />
+          <span>Shell Pipeline & dup2()</span>
+        </button>
+
+        <button
+          onClick={() => setActiveSim('path')}
+          className={`px-3.5 py-2 rounded-xl border transition flex items-center space-x-2 flex-shrink-0 ${
+            activeSim === 'path'
+              ? 'bg-cyber-sky text-void font-bold border-cyber-sky shadow-lg shadow-cyber-sky/20'
+              : 'bg-surface-card border-surface-border text-slate-300 hover:text-slate-100 hover:bg-surface-elevated'
+          }`}
+        >
+          <Zap className="w-3.5 h-3.5" />
+          <span>$PATH & FHS Resolution</span>
+        </button>
       </div>
 
       {/* Active Featured Simulator Viewport */}
@@ -106,6 +223,15 @@ export const SimulationLab: React.FC = () => {
         {activeSim === 'cache' && <CacheHitMissSimulator />}
         {activeSim === 'pipeline' && <PipelineHazardVisualizer />}
         {activeSim === 'registers' && <RegisterBankVisualizer />}
+        {activeSim === 'bitwise' && <BitwiseVisualizer />}
+        {activeSim === 'ieee754' && <Ieee754Visualizer />}
+        {activeSim === 'memory-pyramid' && <MemoryPyramidVisualizer />}
+        {activeSim === 'process' && <ProcessLifecycleSimulator />}
+        {activeSim === 'mmu' && <VirtualMemoryVisualizer />}
+        {activeSim === 'permissions' && <PosixPermissionsVisualizer />}
+        {activeSim === 'git' && <GitDagVisualizer />}
+        {activeSim === 'pipeline-sim' && <ShellPipelineVisualizer />}
+        {activeSim === 'path' && <EnvPathVisualizer />}
       </div>
 
       {/* Simulator Directory Catalog */}

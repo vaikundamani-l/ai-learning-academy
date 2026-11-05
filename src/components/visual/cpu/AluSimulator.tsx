@@ -7,8 +7,8 @@ export const AluSimulator: React.FC = () => {
   const [op, setOp] = useState<'ADD' | 'SUB' | 'AND' | 'OR' | 'XOR' | 'SHL' | 'SHR'>('ADD');
 
   // Constrain to 8-bit values (0-255)
-  const a8 = Math.max(0, Math.min(255, operandA));
-  const b8 = Math.max(0, Math.min(255, operandB));
+  const a8 = Math.max(0, Math.min(255, Math.trunc(Number.isFinite(operandA) ? operandA : 0)));
+  const b8 = Math.max(0, Math.min(255, Math.trunc(Number.isFinite(operandB) ? operandB : 0)));
 
   let rawResult = 0;
   let carry = false;
@@ -94,7 +94,7 @@ export const AluSimulator: React.FC = () => {
               min={0}
               max={255}
               value={operandA}
-              onChange={(e) => setOperandA(Number(e.target.value))}
+              onChange={(e) => setOperandA(Math.max(0, Math.min(255, Math.trunc(Number(e.target.value)))))}
               aria-label="Operand A decimal value"
               className="w-20 px-2 py-1 rounded bg-surface-elevated border border-surface-border text-xs font-bold text-slate-100 focus:outline-none focus:border-cyber-sky"
             />
@@ -103,7 +103,7 @@ export const AluSimulator: React.FC = () => {
               min={0}
               max={255}
               value={operandA}
-              onChange={(e) => setOperandA(Number(e.target.value))}
+              onChange={(e) => setOperandA(Math.max(0, Math.min(255, Math.trunc(Number(e.target.value)))))}
               aria-label="Operand A slider"
               className="flex-1 accent-cyber-sky"
             />
@@ -121,6 +121,7 @@ export const AluSimulator: React.FC = () => {
             {(['ADD', 'SUB', 'AND', 'OR', 'XOR', 'SHL', 'SHR'] as const).map((operation) => (
               <button
                 key={operation}
+                aria-pressed={op === operation}
                 onClick={() => setOp(operation)}
                 className={`py-1.5 px-2 rounded font-bold transition text-center ${
                   op === operation
@@ -146,7 +147,7 @@ export const AluSimulator: React.FC = () => {
               min={0}
               max={255}
               value={operandB}
-              onChange={(e) => setOperandB(Number(e.target.value))}
+              onChange={(e) => setOperandB(Math.max(0, Math.min(255, Math.trunc(Number(e.target.value)))))}
               aria-label="Operand B decimal value"
               className="w-20 px-2 py-1 rounded bg-surface-elevated border border-surface-border text-xs font-bold text-slate-100 focus:outline-none focus:border-cyber-sky"
             />
@@ -155,7 +156,7 @@ export const AluSimulator: React.FC = () => {
               min={0}
               max={255}
               value={operandB}
-              onChange={(e) => setOperandB(Number(e.target.value))}
+              onChange={(e) => setOperandB(Math.max(0, Math.min(255, Math.trunc(Number(e.target.value)))))}
               aria-label="Operand B slider"
               className="flex-1 accent-cyber-sky"
             />
@@ -175,7 +176,7 @@ export const AluSimulator: React.FC = () => {
         </div>
 
         {/* Bit-by-bit Visual Columns */}
-        <div className="grid grid-cols-8 gap-2 font-mono text-center">
+        <div className="grid grid-cols-4 sm:grid-cols-8 gap-2 font-mono text-center">
           {[7, 6, 5, 4, 3, 2, 1, 0].map((bitIdx) => {
             const bitA = aBin[7 - bitIdx];
             const bitB = bBin[7 - bitIdx];

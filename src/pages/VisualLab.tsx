@@ -22,6 +22,15 @@ import { CacheHitMissSimulator } from '../components/visual/cpu/CacheHitMissSimu
 import { PipelineHazardVisualizer } from '../components/visual/cpu/PipelineHazardVisualizer';
 import { EducationalCpuSimulator } from '../components/visual/cpu/EducationalCpuSimulator';
 import { ProcCpuInfoExplorer } from '../components/visual/cpu/ProcCpuInfoExplorer';
+import { BitwiseVisualizer } from '../components/visual/memory/BitwiseVisualizer';
+import { Ieee754Visualizer } from '../components/visual/memory/Ieee754Visualizer';
+import { MemoryPyramidVisualizer } from '../components/visual/memory/MemoryPyramidVisualizer';
+import { ProcessLifecycleSimulator } from '../components/visual/os/ProcessLifecycleSimulator';
+import { VirtualMemoryVisualizer } from '../components/visual/os/VirtualMemoryVisualizer';
+import { PosixPermissionsVisualizer } from '../components/visual/os/PosixPermissionsVisualizer';
+import { GitDagVisualizer } from '../components/visual/tools/GitDagVisualizer';
+import { ShellPipelineVisualizer } from '../components/visual/tools/ShellPipelineVisualizer';
+import { EnvPathVisualizer } from '../components/visual/tools/EnvPathVisualizer';
 
 export const VisualLab: React.FC = () => {
   const [filter, setFilter] = useState<string>('all');
@@ -91,6 +100,78 @@ export const VisualLab: React.FC = () => {
       stageId: 0,
       description: 'Interactive exploration of Linux virtual filesystem processor metrics and security feature flags.',
       component: <ProcCpuInfoExplorer />
+    },
+    {
+      id: 'bitwise-lab',
+      title: 'Interactive Two\'s Complement & Bitmasking Lab',
+      category: 'hardware',
+      stageId: 0,
+      description: 'Explore step-by-step signed negation, carry ripples, bitwise operators, and real-world Linux permission masking.',
+      component: <BitwiseVisualizer />
+    },
+    {
+      id: 'ieee754-converter',
+      title: 'IEEE-754 Single-Precision Floating-Point Converter',
+      category: 'hardware',
+      stageId: 0,
+      description: 'Live 32-bit floating-point converter with clickable bit toggling, sign, biased exponent, and normalized mantissa breakdown.',
+      component: <Ieee754Visualizer />
+    },
+    {
+      id: 'memory-pyramid',
+      title: 'Memory Hierarchy Latency & Storage Visualizer',
+      category: 'hardware',
+      stageId: 0,
+      description: 'Interactive latency comparison from CPU registers to L1/L2/L3 caches, DRAM, NVMe SSDs, and network hops.',
+      component: <MemoryPyramidVisualizer />
+    },
+    {
+      id: 'process-lifecycle',
+      title: 'Process Lifecycle & PCB State Engine',
+      category: 'network',
+      stageId: 0,
+      description: 'Interactive 5-state process lifecycle diagram with PCB inspection and scheduler event streaming.',
+      component: <ProcessLifecycleSimulator />
+    },
+    {
+      id: 'virtual-memory',
+      title: 'Virtual Memory MMU & Page Table Visualizer',
+      category: 'hardware',
+      stageId: 0,
+      description: 'Simulate virtual-to-physical address translation, Page Faults, and memory protection bits in real-time.',
+      component: <VirtualMemoryVisualizer />
+    },
+    {
+      id: 'posix-permissions',
+      title: 'POSIX Permissions & Inode File System Lab',
+      category: 'security',
+      stageId: 0,
+      description: 'Explore live chmod octal bitmasks, symbolic mode strings, SUID/SGID bits, and Ext4 Inode structures.',
+      component: <PosixPermissionsVisualizer />
+    },
+    {
+      id: 'git-dag',
+      title: 'Git Directed Acyclic Graph (DAG) & Object Explorer',
+      category: 'systems',
+      stageId: 0,
+      description: 'Visualize how Git stores immutable commits, trees, blobs, branches, and HEAD references.',
+      component: <GitDagVisualizer />
+    },
+    {
+      id: 'shell-pipeline',
+      title: 'Unix I/O Redirection & Kernel Pipe Simulator',
+      category: 'systems',
+      stageId: 0,
+      description: 'Trace stream packet flow through anonymous kernel pipe buffers and dup2() file descriptor rewiring.',
+      component: <ShellPipelineVisualizer />
+    },
+    {
+      id: 'env-path',
+      title: '$PATH Resolution & Environment Variable Lab',
+      category: 'systems',
+      stageId: 0,
+      description: 'Trace sequential directory search traversal and environment variable inheritance across processes.',
+      component: <EnvPathVisualizer />
     }
   ];
 

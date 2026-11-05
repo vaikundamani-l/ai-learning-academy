@@ -36,29 +36,29 @@ export const PipelineHazardVisualizer: React.FC = () => {
   };
 
   // Matrix: [Instruction][Cycle (1 to 7)]
-  // Pre-calculated exact microarchitecture schedule for each scenario
+  // Simplified teaching schedule for each scenario
   const schedules: Record<string, string[][]> = {
     ideal: [
-      ['IF', 'ID', 'EX', 'MEM', 'WB', '-', '-'],
-      ['-', 'IF', 'ID', 'EX', 'MEM', 'WB', '-'],
-      ['-', '-', 'IF', 'ID', 'EX', 'MEM', 'WB'],
-      ['-', '-', '-', 'IF', 'ID', 'EX', 'MEM'],
+      ['IF', 'ID', 'EX', 'MEM', 'WB', '-', '-', '-'],
+      ['-', 'IF', 'ID', 'EX', 'MEM', 'WB', '-', '-'],
+      ['-', '-', 'IF', 'ID', 'EX', 'MEM', 'WB', '-'],
+      ['-', '-', '-', 'IF', 'ID', 'EX', 'MEM', 'WB'],
     ],
     raw_stall: [
-      ['IF', 'ID', 'EX', 'MEM', 'WB', '-', '-'],
-      ['-', 'IF', 'STALL', 'STALL', 'ID', 'EX', 'MEM'],
-      ['-', '-', 'STALL', 'STALL', 'IF', 'ID', 'EX'],
+      ['IF', 'ID', 'EX', 'MEM', 'WB', '-', '-', '-', '-'],
+      ['-', 'IF', 'STALL', 'STALL', 'ID', 'EX', 'MEM', 'WB', '-'],
+      ['-', '-', 'IF', 'STALL', 'STALL', 'ID', 'EX', 'MEM', 'WB'],
     ],
     forwarding: [
-      ['IF', 'ID', 'EX', 'MEM', 'WB', '-', '-'],
-      ['-', 'IF', 'ID', 'EX', 'MEM', 'WB', '-'],
-      ['-', '-', 'IF', 'ID', 'EX', 'MEM', 'WB'],
+      ['IF', 'ID', 'EX', 'MEM', 'WB', '-', '-', '-'],
+      ['-', 'IF', 'ID', 'EX', 'MEM', 'WB', '-', '-'],
+      ['-', '-', 'IF', 'ID', 'EX', 'MEM', 'WB', '-'],
     ],
     branch_flush: [
-      ['IF', 'ID', 'EX', 'MEM', 'WB', '-', '-'],
-      ['-', 'IF', 'FLUSH', '-', '-', '-', '-'],
-      ['-', '-', 'FLUSH', '-', '-', '-', '-'],
-      ['-', '-', '-', 'IF', 'ID', 'EX', 'MEM'],
+      ['IF', 'ID', 'EX', 'MEM', 'WB', '-', '-', '-'],
+      ['-', 'IF', 'FLUSH', '-', '-', '-', '-', '-'],
+      ['-', '-', 'FLUSH', '-', '-', '-', '-', '-'],
+      ['-', '-', '-', 'IF', 'ID', 'EX', 'MEM', 'WB'],
     ],
   };
 
@@ -124,7 +124,7 @@ export const PipelineHazardVisualizer: React.FC = () => {
             <Zap className="w-4 h-4 flex-shrink-0 mt-0.5 text-cyber-emerald" />
             <div>
               <strong>Hardware Forwarding / Bypassing: </strong>
-              The ALU output of instruction 1 is routed directly via an internal multiplexer wire to the ALU input of instruction 2 at the start of cycle 3. No stalls are required!
+              The ALU output of instruction 1 is routed directly via an internal multiplexer wire to the ALU input of instruction 2 at the start of cycle 4. No stalls are required!
             </div>
           </div>
         )}
@@ -133,7 +133,7 @@ export const PipelineHazardVisualizer: React.FC = () => {
             <AlertTriangle className="w-4 h-4 flex-shrink-0 mt-0.5 text-rose-400" />
             <div>
               <strong>Read-After-Write (RAW) Hazard without Forwarding: </strong>
-              Instruction 2 needs register R1 in cycle 2, but instruction 1 does not commit R1 until cycle 5 Writeback. The hardware hazard detection unit inserts two bubble STALL cycles.
+              Instruction 2 reaches decode in cycle 3 and needs register R1, but instruction 1 does not commit R1 until cycle 5 Writeback. The hardware hazard detection unit inserts two bubble STALL cycles.
             </div>
           </div>
         )}
@@ -151,7 +151,7 @@ export const PipelineHazardVisualizer: React.FC = () => {
             <CheckCircle className="w-4 h-4 flex-shrink-0 mt-0.5 text-cyber-sky" />
             <div>
               <strong>Ideal Pipeline Flow: </strong>
-              Zero hazards or dependencies. One instruction is fetched, decoded, executed, accessed, and retired every clock cycle, achieving CPI = 1.0.
+              With no hazards, each instruction advances one stage per cycle. After filling the pipeline, one instruction can finish per cycle. The four-instruction example needs eight cycles including fill and drain.
             </div>
           </div>
         )}
@@ -170,6 +170,8 @@ export const PipelineHazardVisualizer: React.FC = () => {
               <th className="text-center px-2">Cycle 5</th>
               <th className="text-center px-2">Cycle 6</th>
               <th className="text-center px-2">Cycle 7</th>
+              <th className="text-center px-2">Cycle 8</th>
+              {scenario === 'raw_stall' && <th className="text-center px-2">Cycle 9</th>}
             </tr>
           </thead>
           <tbody className="divide-y divide-surface-border/50">

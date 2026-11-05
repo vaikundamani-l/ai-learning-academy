@@ -21,7 +21,7 @@
     --color-slate-600: 148 163 184;     /* #94a3b8 */
 
     /* Cyber accents with WCAG AA >= 4.5:1 contrast against light cards */
-    --color-cyber-sky: 2 132 199;       /* #0284c7 */
+    --color-cyber-sky: 3 105 161;       /* #0284c7 */
     --color-cyber-amber: 180 83 9;      /* #b45309 */
     --color-cyber-emerald: 4 120 87;    /* #047857 */
     --color-cyber-indigo: 67 56 202;    /* #4338ca */
@@ -144,3 +144,11 @@
 .skip-link:focus {
   top: 0.5rem;
 }
+
+/* Syntax colors follow theme tokens so examples remain readable in both themes. */
+.token.comment, .token.prolog, .token.doctype { color: rgb(var(--color-slate-400)); }
+.token.keyword, .token.boolean { color: rgb(var(--color-cyber-purple)); }
+.token.string, .token.char { color: rgb(var(--color-cyber-emerald)); }
+.token.number, .token.constant { color: rgb(var(--color-cyber-amber)); }
+.token.function, .token.class-name, .token.builtin { color: rgb(var(--color-cyber-sky)); }
+.token.operator, .token.punctuation { color: rgb(var(--color-slate-300)); }
