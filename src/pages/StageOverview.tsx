@@ -299,19 +299,47 @@ export const StageOverview: React.FC = () => {
           </div>
 
           {/* Practical Stage Project */}
-          <div className="p-5 rounded-xl bg-surface-card border border-surface-border space-y-3">
+          <div className={`p-5 rounded-xl bg-surface-card border space-y-3 ${stage.id === 0 ? 'border-cyber-emerald/50' : 'border-surface-border'}`}>
             <div className="flex items-center justify-between border-b border-surface-border pb-2">
               <h3 className="text-sm font-bold text-slate-100 flex items-center space-x-2">
-                <FolderGit2 className="w-4 h-4 text-cyber-amber" />
+                <FolderGit2 className={`w-4 h-4 ${stage.id === 0 ? 'text-cyber-emerald' : 'text-cyber-amber'}`} />
                 <span>Stage Milestone Project</span>
               </h3>
+              {stage.id === 0 && (
+                <span className="text-[10px] font-mono px-2 py-0.5 rounded bg-cyber-emerald/20 text-cyber-emerald border border-cyber-emerald/40 font-bold">
+                  ✓ Verified in examples/
+                </span>
+              )}
             </div>
-            <h4 className="text-xs font-bold font-mono text-cyber-amber uppercase">
+            <h4 className={`text-xs font-bold font-mono uppercase ${stage.id === 0 ? 'text-cyber-emerald' : 'text-cyber-amber'}`}>
               {stage.projectTitle}
             </h4>
             <p className="text-xs text-slate-300 leading-relaxed">
               {stage.projectDescription}
             </p>
+            {stage.id === 0 && (
+              <div className="pt-2 border-t border-surface-border/60 space-y-2">
+                <div className="text-[11px] font-mono text-slate-400">
+                  <span className="text-cyber-emerald font-semibold">Location: </span>
+                  <code className="text-slate-200">examples/stage-0-workspace-project/</code>
+                </div>
+                <div className="flex flex-wrap gap-1.5 text-[10px] font-mono">
+                  <span className="px-2 py-0.5 rounded bg-surface border border-surface-border text-slate-300">file_organizer.py</span>
+                  <span className="px-2 py-0.5 rounded bg-surface border border-surface-border text-slate-300">metadata_inspector.py</span>
+                  <span className="px-2 py-0.5 rounded bg-surface border border-surface-border text-slate-300">directory_reporter.sh</span>
+                  <span className="px-2 py-0.5 rounded bg-surface border border-surface-border text-slate-300">Makefile</span>
+                  <span className="px-2 py-0.5 rounded bg-surface border border-surface-border text-slate-300">Dockerfile</span>
+                </div>
+                <div className="pt-1">
+                  <Link
+                    to="/projects"
+                    className="text-xs font-mono text-cyber-sky hover:underline flex items-center space-x-1"
+                  >
+                    <span>View Engineering Portfolio Spec &rarr;</span>
+                  </Link>
+                </div>
+              </div>
+            )}
           </div>
 
           {/* Mastery Check */}

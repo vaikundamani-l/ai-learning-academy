@@ -30,7 +30,8 @@ const routes = [
   '/simulators',
   '/playground',
   '/settings',
-  '/search'
+  '/search',
+  '/projects'
 ];
 
 const viewports = [

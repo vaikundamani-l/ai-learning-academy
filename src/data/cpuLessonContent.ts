@@ -352,11 +352,6 @@ add_and_scale_arm:
       question: "What is the primary architectural difference between CISC (e.g. x86-64) and RISC (e.g. ARM64, RISC-V)?",
       options: [
         {
-          text: "CISC architectures have variable-length instructions and memory-to-register arithmetic, whereas RISC uses fixed-width instructions and a strict Load/Store model.",
-          isCorrect: true,
-          explanation: "Correct! In RISC, only dedicated LOAD/STORE instructions access memory, while all arithmetic executes strictly between registers."
-        },
-        {
           text: "RISC processors cannot execute floating-point operations.",
           isCorrect: false,
           explanation: "RISC processors have powerful floating-point and vector execution units (e.g. ARM NEON)."
@@ -365,6 +360,11 @@ add_and_scale_arm:
           text: "CISC processors lack general purpose registers.",
           isCorrect: false,
           explanation: "x86-64 CISC processors have 16 general-purpose 64-bit registers (RAX-R15)."
+        },
+        {
+          text: "CISC architectures have variable-length instructions and memory-to-register arithmetic, whereas RISC uses fixed-width instructions and a strict Load/Store model.",
+          isCorrect: true,
+          explanation: "Correct! In RISC, only dedicated LOAD/STORE instructions access memory, while all arithmetic executes strictly between registers."
         }
       ]
     },
@@ -420,14 +420,14 @@ add_and_scale_arm:
           explanation: "Even with optimization flags, column-major access inherently conflicts with contiguous memory layout."
         },
         {
-          text: "Each column step jumps across rows by full stride width, missing the cached 64-byte line and incurring continuous cache miss penalties.",
-          isCorrect: true,
-          explanation: "Correct! C stores arrays in row-major order. Contiguous memory access leverages the full 64-byte cache line (spatial locality), while strided access thrashes cache lines."
-        },
-        {
           text: "Column indices exceed 32-bit register limits.",
           isCorrect: false,
           explanation: "Indices fit within standard 32-bit or 64-bit integer registers."
+        },
+        {
+          text: "Each column step jumps across rows by full stride width, missing the cached 64-byte line and incurring continuous cache miss penalties.",
+          isCorrect: true,
+          explanation: "Correct! C stores arrays in row-major order. Contiguous memory access leverages the full 64-byte cache line (spatial locality), while strided access thrashes cache lines."
         }
       ]
     },
@@ -483,14 +483,14 @@ add_and_scale_arm:
           explanation: "`top` reads sampling statistics from `/proc/stat`, not low-level hardware performance counters."
         },
         {
-          text: "`perf stat`",
-          isCorrect: true,
-          explanation: "Correct! `perf stat` interfaces with the kernel PMU (Performance Monitoring Unit) subsystem to measure exact hardware events."
-        },
-        {
           text: "`grep`",
           isCorrect: false,
           explanation: "`grep` is a text searching utility."
+        },
+        {
+          text: "`perf stat`",
+          isCorrect: true,
+          explanation: "Correct! `perf stat` interfaces with the kernel PMU (Performance Monitoring Unit) subsystem to measure exact hardware events."
         }
       ]
     }

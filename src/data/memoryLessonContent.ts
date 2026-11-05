@@ -262,11 +262,6 @@ assert abs(val - 12.375) < 1e-6, "Decoding verification failed!"
       question: "In IEEE-754 Single Precision (32-bit FP32), how many bits are allocated to the Sign, Exponent, and Mantissa fields respectively?",
       options: [
         {
-          text: "Sign: 1 bit, Exponent: 8 bits, Mantissa: 23 bits",
-          isCorrect: true,
-          explanation: "Correct! 1 + 8 + 23 = 32 bits total. The exponent uses bias 127."
-        },
-        {
           text: "Sign: 1 bit, Exponent: 11 bits, Mantissa: 52 bits",
           isCorrect: false,
           explanation: "1 + 11 + 52 = 64 bits describes Double Precision (FP64), not Single Precision."
@@ -275,6 +270,11 @@ assert abs(val - 12.375) < 1e-6, "Decoding verification failed!"
           text: "Sign: 2 bits, Exponent: 14 bits, Mantissa: 16 bits",
           isCorrect: false,
           explanation: "There is only ever 1 sign bit in IEEE-754 formats."
+        },
+        {
+          text: "Sign: 1 bit, Exponent: 8 bits, Mantissa: 23 bits",
+          isCorrect: true,
+          explanation: "Correct! 1 + 8 + 23 = 32 bits total. The exponent uses bias 127."
         }
       ]
     },
@@ -325,11 +325,6 @@ assert abs(val - 12.375) < 1e-6, "Decoding verification failed!"
       question: "Which bitwise operation is used to toggle (invert) specific bits in a register while leaving all other bits unchanged?",
       options: [
         {
-          text: "Bitwise XOR (^) with a mask of 1s in the target bit positions.",
-          isCorrect: true,
-          explanation: "Correct! X ^ 1 = ~X (toggled) and X ^ 0 = X (preserved)."
-        },
-        {
           text: "Bitwise AND (&) with all 1s.",
           isCorrect: false,
           explanation: "AND with 1 preserves the bit, it does not toggle it."
@@ -338,6 +333,11 @@ assert abs(val - 12.375) < 1e-6, "Decoding verification failed!"
           text: "Bitwise OR (|) with all 0s.",
           isCorrect: false,
           explanation: "OR with 0 preserves the bit, it does not toggle it."
+        },
+        {
+          text: "Bitwise XOR (^) with a mask of 1s in the target bit positions.",
+          isCorrect: true,
+          explanation: "Correct! X ^ 1 = ~X (toggled) and X ^ 0 = X (preserved)."
         }
       ]
     },
@@ -367,14 +367,14 @@ assert abs(val - 12.375) < 1e-6, "Decoding verification failed!"
       question: "What is the primary physical difference between L1 Static RAM (SRAM) and Main Memory Dynamic RAM (DRAM)?",
       options: [
         {
-          text: "SRAM uses 6 transistors per bit and never requires electrical refreshing, while DRAM uses 1 transistor and 1 tiny capacitor that leaks charge and requires constant refreshing.",
-          isCorrect: true,
-          explanation: "Correct! 6T SRAM is extremely fast (~1 ns) and large. 1T-1C DRAM is dense and cheap but slower (~70 ns) because capacitors must be recharged every 64 ms."
-        },
-        {
           text: "SRAM is non-volatile magnetic storage while DRAM is optical.",
           isCorrect: false,
           explanation: "Both SRAM and DRAM are volatile silicon semiconductor memories."
+        },
+        {
+          text: "SRAM uses 6 transistors per bit and never requires electrical refreshing, while DRAM uses 1 transistor and 1 tiny capacitor that leaks charge and requires constant refreshing.",
+          isCorrect: true,
+          explanation: "Correct! 6T SRAM is extremely fast (~1 ns) and large. 1T-1C DRAM is dense and cheap but slower (~70 ns) because capacitors must be recharged every 64 ms."
         },
         {
           text: "SRAM operates at 120 Volts while DRAM operates at 5 Volts.",
@@ -388,11 +388,6 @@ assert abs(val - 12.375) < 1e-6, "Decoding verification failed!"
       question: "If a CPU instruction execution cycle takes 1 nanosecond (equivalent to 1 second on human scale), approximately how long is an off-chip DRAM access (70 ns) on that same human scale?",
       options: [
         {
-          text: "About 1.2 minutes (grabbing a cup of water down the hall).",
-          isCorrect: true,
-          explanation: "Correct! 70 nanoseconds scaled up by 10^9 is 70 seconds = 1 minute 10 seconds."
-        },
-        {
           text: "About 10 milliseconds.",
           isCorrect: false,
           explanation: "10 milliseconds would be faster than a single second."
@@ -401,6 +396,11 @@ assert abs(val - 12.375) < 1e-6, "Decoding verification failed!"
           text: "About 4.2 years.",
           isCorrect: false,
           explanation: "4.2 years corresponds to a network latency hop (50-100 ms)."
+        },
+        {
+          text: "About 1.2 minutes (grabbing a cup of water down the hall).",
+          isCorrect: true,
+          explanation: "Correct! 70 nanoseconds scaled up by 10^9 is 70 seconds = 1 minute 10 seconds."
         }
       ]
     },

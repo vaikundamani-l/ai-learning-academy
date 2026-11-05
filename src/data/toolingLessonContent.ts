@@ -223,14 +223,14 @@ print("Verdict: Hash matches git hash-object exactly!")
       question: "What does the shell command syntax '2>&1' accomplish in command redirection?",
       options: [
         {
-          text: "It duplicates File Descriptor 2 (stderr) to point to the exact same destination as File Descriptor 1 (stdout), combining both streams.",
-          isCorrect: true,
-          explanation: "Correct! The '2>&1' operator uses the dup2() system call to redirect standard error into the standard output stream."
-        },
-        {
           text: "It multiplies the file size by 2.",
           isCorrect: false,
           explanation: "Redirection operators manipulate I/O channels, not file contents."
+        },
+        {
+          text: "It duplicates File Descriptor 2 (stderr) to point to the exact same destination as File Descriptor 1 (stdout), combining both streams.",
+          isCorrect: true,
+          explanation: "Correct! The '2>&1' operator uses the dup2() system call to redirect standard error into the standard output stream."
         },
         {
           text: "It runs the command twice in the background.",
@@ -244,11 +244,6 @@ print("Verdict: Hash matches git hash-object exactly!")
       question: "How does the shell locate an executable program when you type a command like 'python3' without specifying a directory path?",
       options: [
         {
-          text: "It searches each directory listed in the colon-separated $PATH environment variable sequentially from left to right until the first executable match is found.",
-          isCorrect: true,
-          explanation: "Correct! The shell splits $PATH by colons (:) and checks directory by directory. The first matching executable is executed."
-        },
-        {
           text: "It performs a global search across all connected physical hard drives.",
           isCorrect: false,
           explanation: "A full disk scan would be far too slow; searches are strictly restricted to $PATH directories."
@@ -257,6 +252,11 @@ print("Verdict: Hash matches git hash-object exactly!")
           text: "It queries the DNS server on the local network.",
           isCorrect: false,
           explanation: "DNS resolves internet domain names, not local executable file paths."
+        },
+        {
+          text: "It searches each directory listed in the colon-separated $PATH environment variable sequentially from left to right until the first executable match is found.",
+          isCorrect: true,
+          explanation: "Correct! The shell splits $PATH by colons (:) and checks directory by directory. The first matching executable is executed."
         }
       ]
     },
@@ -286,14 +286,14 @@ print("Verdict: Hash matches git hash-object exactly!")
       question: "How does Git store the contents of a file in its internal object database?",
       options: [
         {
-          text: "As a 'blob' object containing the raw file bytes preceded by a header 'blob <byte_length>\\0', indexed by its SHA-1 or SHA-256 hash (without the filename).",
-          isCorrect: true,
-          explanation: "Correct! Git is a content-addressable storage system. Blobs hold pure file data; filenames and permissions are stored separately in Tree objects."
-        },
-        {
           text: "As a delta diff patch against the original installation CD.",
           isCorrect: false,
           explanation: "Git stores complete content snapshots as compressed objects, not simple delta chains."
+        },
+        {
+          text: "As a 'blob' object containing the raw file bytes preceded by a header 'blob <byte_length>\\0', indexed by its SHA-1 or SHA-256 hash (without the filename).",
+          isCorrect: true,
+          explanation: "Correct! Git is a content-addressable storage system. Blobs hold pure file data; filenames and permissions are stored separately in Tree objects."
         },
         {
           text: "Inside a centralized SQLite database file.",
@@ -307,11 +307,6 @@ print("Verdict: Hash matches git hash-object exactly!")
       question: "What does a Git 'Tree' object represent?",
       options: [
         {
-          text: "A directory snapshot, mapping file names and file modes (permissions) to their corresponding SHA-1 blob or sub-tree hashes.",
-          isCorrect: true,
-          explanation: "Correct! A Tree object is analogous to a Unix directory, pairing file names with their content-addressed blob hashes."
-        },
-        {
           text: "The list of remote servers configured in git remote.",
           isCorrect: false,
           explanation: "Remote servers are stored in the text configuration file .git/config."
@@ -320,6 +315,11 @@ print("Verdict: Hash matches git hash-object exactly!")
           text: "The binary compiler abstract syntax tree.",
           isCorrect: false,
           explanation: "Git is a version control system and does not compile code."
+        },
+        {
+          text: "A directory snapshot, mapping file names and file modes (permissions) to their corresponding SHA-1 blob or sub-tree hashes.",
+          isCorrect: true,
+          explanation: "Correct! A Tree object is analogous to a Unix directory, pairing file names with their content-addressed blob hashes."
         }
       ]
     },
@@ -349,14 +349,14 @@ print("Verdict: Hash matches git hash-object exactly!")
       question: "Why is Git's commit history described as an 'Immutable Directed Acyclic Graph (DAG)'?",
       options: [
         {
-          text: "Because each commit's cryptographic hash incorporates its parent hash; altering any historical commit changes its hash, breaking all subsequent descendant nodes.",
-          isCorrect: true,
-          explanation: "Correct! The cryptographic hash chain guarantees historical immutability; nodes have directed edges pointing backward to parents without circular loops."
-        },
-        {
           text: "Because Git deletes all files after 30 days.",
           isCorrect: false,
           explanation: "Git preserves repository history indefinitely."
+        },
+        {
+          text: "Because each commit's cryptographic hash incorporates its parent hash; altering any historical commit changes its hash, breaking all subsequent descendant nodes.",
+          isCorrect: true,
+          explanation: "Correct! The cryptographic hash chain guarantees historical immutability; nodes have directed edges pointing backward to parents without circular loops."
         },
         {
           text: "Because commits can only be created by certified database administrators.",
@@ -370,11 +370,6 @@ print("Verdict: Hash matches git hash-object exactly!")
       question: "Under what specific condition can Git perform a 'Fast-Forward' merge between two branches?",
       options: [
         {
-          text: "When the tip of the target branch is a direct linear ancestor of the branch being merged (no divergent commits exist on the target).",
-          isCorrect: true,
-          explanation: "Correct! If no new commits were created on the base branch, Git simply advances the branch pointer forward without creating a merge commit."
-        },
-        {
           text: "When both developers use the same laptop computer.",
           isCorrect: false,
           explanation: "Git branching is independent of physical hardware."
@@ -383,6 +378,11 @@ print("Verdict: Hash matches git hash-object exactly!")
           text: "When all files in the project are written in Python.",
           isCorrect: false,
           explanation: "Git is language-agnostic."
+        },
+        {
+          text: "When the tip of the target branch is a direct linear ancestor of the branch being merged (no divergent commits exist on the target).",
+          isCorrect: true,
+          explanation: "Correct! If no new commits were created on the base branch, Git simply advances the branch pointer forward without creating a merge commit."
         }
       ]
     },
@@ -391,14 +391,14 @@ print("Verdict: Hash matches git hash-object exactly!")
       question: "What happens inside .git/refs/heads/main when you make a new commit on the 'main' branch?",
       options: [
         {
-          text: "The text file .git/refs/heads/main is updated with the new 40-character SHA-1 commit hash.",
-          isCorrect: true,
-          explanation: "Correct! In Git, a branch is merely a lightweight 41-byte text file storing the SHA-1 hash of its latest commit."
-        },
-        {
           text: "The entire repository is re-uploaded to GitHub automatically.",
           isCorrect: false,
           explanation: "Local commits are never uploaded to remote servers until an explicit 'git push' is run."
+        },
+        {
+          text: "The text file .git/refs/heads/main is updated with the new 40-character SHA-1 commit hash.",
+          isCorrect: true,
+          explanation: "Correct! In Git, a branch is merely a lightweight 41-byte text file storing the SHA-1 hash of its latest commit."
         },
         {
           text: "The operating system kernel reboots.",

@@ -253,11 +253,6 @@ if __name__ == "__main__":
       question: "What hardware component is responsible for translating Virtual Addresses issued by user code into Physical RAM Addresses?",
       options: [
         {
-          text: "The Memory Management Unit (MMU) on the CPU, using the CR3 register and Page Tables.",
-          isCorrect: true,
-          explanation: "Correct! The MMU handles address translation on every memory cycle, caching lookups in the TLB and referencing page tables pointed to by CR3."
-        },
-        {
           text: "The PCIe Southbridge controller.",
           isCorrect: false,
           explanation: "The Southbridge/PCH handles peripheral I/O, not CPU memory address translation."
@@ -266,6 +261,11 @@ if __name__ == "__main__":
           text: "The SATA Hard Drive controller.",
           isCorrect: false,
           explanation: "The SATA controller manages storage devices, not runtime RAM translation."
+        },
+        {
+          text: "The Memory Management Unit (MMU) on the CPU, using the CR3 register and Page Tables.",
+          isCorrect: true,
+          explanation: "Correct! The MMU handles address translation on every memory cycle, caching lookups in the TLB and referencing page tables pointed to by CR3."
         }
       ]
     },
@@ -295,14 +295,14 @@ if __name__ == "__main__":
       question: "In POSIX file systems, what information is stored inside an Inode (index node)?",
       options: [
         {
-          text: "File metadata: size, owner UID/GID, permissions mode, link count, timestamps, and data block disk pointers (everything except the filename).",
-          isCorrect: true,
-          explanation: "Correct! The filename is stored in the directory data block, which maps names to Inode numbers. The Inode holds all metadata and content locations."
-        },
-        {
           text: "The filename and the desktop icon image only.",
           isCorrect: false,
           explanation: "Inodes do not store filenames or icons."
+        },
+        {
+          text: "File metadata: size, owner UID/GID, permissions mode, link count, timestamps, and data block disk pointers (everything except the filename).",
+          isCorrect: true,
+          explanation: "Correct! The filename is stored in the directory data block, which maps names to Inode numbers. The Inode holds all metadata and content locations."
         },
         {
           text: "The user's plaintext login password.",
@@ -316,11 +316,6 @@ if __name__ == "__main__":
       question: "What happens when you create a Hard Link to an existing file in Linux?",
       options: [
         {
-          text: "A new directory entry is created with a new name, pointing to the exact same Inode number, and the Inode's link count is incremented by 1.",
-          isCorrect: true,
-          explanation: "Correct! Both names point to the same physical data. Deleting one file merely decrements the Inode link counter; content remains until link count is 0."
-        },
-        {
           text: "A complete duplicate copy of the file's data blocks is allocated on disk.",
           isCorrect: false,
           explanation: "A hard link shares the existing data blocks; no duplicate content is copied."
@@ -329,6 +324,11 @@ if __name__ == "__main__":
           text: "The file is converted into an executable binary.",
           isCorrect: false,
           explanation: "Hard links do not alter file types or permissions."
+        },
+        {
+          text: "A new directory entry is created with a new name, pointing to the exact same Inode number, and the Inode's link count is incremented by 1.",
+          isCorrect: true,
+          explanation: "Correct! Both names point to the same physical data. Deleting one file merely decrements the Inode link counter; content remains until link count is 0."
         }
       ]
     },
@@ -358,14 +358,14 @@ if __name__ == "__main__":
       question: "What is a 'Zombie Process' in Unix/Linux operating systems?",
       options: [
         {
-          text: "A process that has finished execution (called exit()), but still occupies an entry in the Process Table because its parent has not yet called wait() or waitpid() to read its exit status.",
-          isCorrect: true,
-          explanation: "Correct! A zombie holds no memory or CPU, only a PCB PID slot. When the parent calls wait(), the zombie is reaped and removed from the process table."
-        },
-        {
           text: "A malicious malware process that cannot be killed.",
           isCorrect: false,
           explanation: "Zombie processes are standard Unix lifecycle artifacts, not malware."
+        },
+        {
+          text: "A process that has finished execution (called exit()), but still occupies an entry in the Process Table because its parent has not yet called wait() or waitpid() to read its exit status.",
+          isCorrect: true,
+          explanation: "Correct! A zombie holds no memory or CPU, only a PCB PID slot. When the parent calls wait(), the zombie is reaped and removed from the process table."
         },
         {
           text: "A thread that runs in an infinite loop consuming 100% CPU.",
@@ -379,11 +379,6 @@ if __name__ == "__main__":
       question: "What are the three standard POSIX file descriptors automatically opened by the kernel for every new process?",
       options: [
         {
-          text: "0: Standard Input (stdin), 1: Standard Output (stdout), 2: Standard Error (stderr).",
-          isCorrect: true,
-          explanation: "Correct! 0 is stdin (keyboard/pipe input), 1 is stdout (screen/pipe output), and 2 is stderr (diagnostic logging)."
-        },
-        {
           text: "1: root, 2: home, 3: temp.",
           isCorrect: false,
           explanation: "These are filesystem directories, not process file descriptors."
@@ -392,6 +387,11 @@ if __name__ == "__main__":
           text: "0: CPU, 1: RAM, 2: Disk.",
           isCorrect: false,
           explanation: "File descriptors represent I/O streams, not hardware components."
+        },
+        {
+          text: "0: Standard Input (stdin), 1: Standard Output (stdout), 2: Standard Error (stderr).",
+          isCorrect: true,
+          explanation: "Correct! 0 is stdin (keyboard/pipe input), 1 is stdout (screen/pipe output), and 2 is stderr (diagnostic logging)."
         }
       ]
     },
@@ -400,14 +400,14 @@ if __name__ == "__main__":
       question: "Why can concurrent access to a shared global variable by multiple threads without a mutex produce incorrect calculation results?",
       options: [
         {
-          text: "Incrementing a variable requires multiple non-atomic machine instructions (load from RAM, add in register, store back to RAM); an interleaving context switch can overwrite another thread's intermediate result (a Race Condition).",
-          isCorrect: true,
-          explanation: "Correct! Without a mutex lock, Thread A and Thread B can read the same value concurrently, both increment it to X+1, and write back X+1 instead of X+2."
-        },
-        {
           text: "The CPU registers overheat when two threads execute.",
           isCorrect: false,
           explanation: "Registers do not overheat from concurrent execution."
+        },
+        {
+          text: "Incrementing a variable requires multiple non-atomic machine instructions (load from RAM, add in register, store back to RAM); an interleaving context switch can overwrite another thread's intermediate result (a Race Condition).",
+          isCorrect: true,
+          explanation: "Correct! Without a mutex lock, Thread A and Thread B can read the same value concurrently, both increment it to X+1, and write back X+1 instead of X+2."
         },
         {
           text: "Operating systems forbid threads from using global variables.",

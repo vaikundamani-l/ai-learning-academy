@@ -1,7 +1,7 @@
 # Academy Development & Curriculum Progress Tracker
 
-> **Last Updated:** 5 November 2026 — Stage 0 Lesson 4 completion & genuine CDP responsive audit
-> **Overall Status:** All four Stage 0 lessons (CPU Architecture, Memory Hierarchy, Operating Systems, Developer Tooling & Git Internals) are implemented and verified. A genuine Chrome CDP automated responsive audit suite replaces the legacy script, asserting zero horizontal overflow across 11 routes in both mobile and desktop viewports under light and dark themes. 41 automated tests pass.
+> **Last Updated:** 5 November 2026 — Stage 0 Milestone Project & Audit Resolutions
+> **Overall Status:** Stage 0 (Computer & Development Fundamentals) is 100% complete and certified across all 4 lessons and the practical Milestone Project. The Reproducible Developer Workspace lives isolated in `examples/stage-0-workspace-project/` with full test suites, Makefile, Dockerfile, devcontainer, and mastery check scripts. 42 automated platform tests pass, 9 workspace tests pass, and genuine Chrome CDP responsive verification passes 48/48 checks across 12 routes.
 > **Curriculum Scope:** 8 Parts | 31 Stages (0 to 30) | 4 Capstones | 25+ Scratch Implementations
 
 ---
@@ -28,7 +28,7 @@
 
 | Stage | Part & Title | Scratch Build | Project | Simulators Planned | Status |
 |---|---|---|---|---|---|
-| **0** | **Part I:** Computer & Dev Fundamentals | File organizer, metadata inspector, directory script | Reproducible dev workspace & Git repo | CPU instruction cycle, bitwise visualizer, memory pyramid | **Lessons 1, 2, 3, 4 Verified Complete; Stage 0 Practical Project In Progress** |
+| **0** | **Part I:** Computer & Dev Fundamentals | File organizer, metadata inspector, directory script | Reproducible dev workspace & Git repo | CPU instruction cycle, bitwise visualizer, memory pyramid | **COMPLETED & VERIFIED — All 4 Lessons + Isolated Milestone Workspace Project Verified** |
 | **1** | **Part I:** Python & Computational Thinking | CSV parser, task manager, log parser, HTTP client | Tested data-processing CLI app | Memory reference model, async event loop | *Planned* |
 | **2** | **Part I:** Data Structures, Algorithms & C | Hash table, binary heap, graph traversal, inverted index, LRU cache | Searchable collection with measured algorithms | Big-O visualizer, hash collisions, Dijkstra pathfinder, LRU queue | *Planned* |
 | **3** | **Part I:** OS, Networking & Databases | Client/server, HTTP server, KV-store, queue with retries, DB API | Web service with persistence, auth, logs, backup | Process scheduler, TCP handshake, B-Tree index, container isolation | *Planned* |
@@ -220,4 +220,32 @@ Next task: create a genuine browser regression audit for all three lessons (load
   - `npm test`: 41/41 automated tests passing across CPU, Memory, Operating Systems, and Developer Tooling modules.
   - `npm run build`: Production build passes in 819ms with zero errors; bundle split into lightweight lazy-loaded route chunks.
 - **Next Task:** **Stage 0 Hands-on Practical Project: Reproducible Developer Workspace & Git Repository (Automated file organizer, metadata inspector, shell scripts, Makefile, devcontainer, and commit DAG).**
+
+---
+
+## 10. Audit Resolutions & Stage 0 Milestone Project Verification — 5 November 2026
+
+- **Audit Checks Resolved:**
+  1. **Quiz Option Distribution Integrity:** Rebalanced correct option indices across all 4 lessons (`CPU_LESSON_CONTENT`, `MEMORY_LESSON_CONTENT`, `OS_LESSON_CONTENT`, and `TOOLING_LESSON_CONTENT`). Enforced through automated unit test in `tests/core.test.mjs` verifying that each question has exactly one correct answer and each option index appears between 2 and 4 times per 10-question quiz (no position dominates).
+  2. **Shared Learning Component Consolidation:**
+     - Created [`src/components/learning/AssessmentGate.tsx`](file:///home/shadow-khan/ai-master-course/src/components/learning/AssessmentGate.tsx): Centralized diagnostic exam engine with score calculation, rationales, retry resets, and score-gated completion unlocking.
+     - Created [`src/components/learning/LessonHeader.tsx`](file:///home/shadow-khan/ai-master-course/src/components/learning/LessonHeader.tsx): Unified top navigation, breadcrumb metadata, read times, notes drawer trigger, and bookmark status.
+     - Refactored `DeveloperToolingLesson.tsx`, `MemoryHierarchyLesson.tsx`, and `OperatingSystemsLesson.tsx` to consume these shared components.
+
+- **Stage 0 Milestone Project (Isolated in `examples/stage-0-workspace-project/`):**
+  - **Tool 1 — CLI File Organizer (`src/file_organizer.py`):** Standalone CLI organizing files by category, extension, or date; features streaming 64 KiB chunked SHA-256 deduplication, monotonic collision resolution, dry-run simulation, and transactional JSON undo journaling.
+  - **Tool 2 — POSIX Metadata Inspector (`src/metadata_inspector.py`):** Deep inode analysis querying `lstat()` for inode numbers (`st_ino`), device IDs (`st_dev`), hard link counts (`st_nlink`), disk block allocations (`st_blocks`), 4-digit octal permissions (`0755`), SUID/SGID/sticky bits, and structured JSON telemetry.
+  - **Tool 3 — Directory Telemetry Reporter (`src/directory_reporter.sh`):** POSIX-compliant shell pipeline script demonstrating standard streams (stdout vs. stderr `>&2`), kernel pipes, signal `trap` scratchpad cleanup, and automated permission audits.
+  - **Script 1 — Git DAG Initializer (`scripts/init_git_repo.sh`):** Builds a multi-branch Git repository illustrating content-addressable object storage, commit trees, branches, non-fast-forward merge commits, and annotated release tags (`v1.0.0`), verified via `git fsck --full`.
+  - **Script 2 — Failure Diagnosis & Restoration Simulator (`scripts/diagnose_failure.sh`):** Executes the official Stage 0 mastery check: verifies baseline tests, simulates a critical code regression, detects and diagnoses failure, restores clean code, and re-verifies post-restoration health.
+  - **Orchestration & Reproducibility:** Standardized `Makefile` (`all`, `test`, `inspect`, `organize`, `report`, `git-demo`, `diagnose`, `clean`), isolated `Dockerfile` (Python 3.11 Debian slim with coreutils), `.devcontainer/devcontainer.json`, and comprehensive `README.md`.
+  - **Automated Tests:** 9 unit and integration tests in `tests/test_workspace.py` passing in 0.038s.
+
+- **System Health & Multi-Viewport Audit:**
+  - `npm test`: 42/42 automated tests passing.
+  - `npm run build`: Production build succeeds in 715ms with zero errors.
+  - Genuine Chrome CDP responsive & theme audit: 48/48 checks passing across 12 routes in Mobile (390×844) and Desktop (1440×900) viewports under Dark and Light themes with zero horizontal scroll overflow.
+  - Working academy integration: Featured showcase added to [`src/pages/Projects.tsx`](file:///home/shadow-khan/ai-master-course/src/pages/Projects.tsx) and verification status linked from [`src/pages/StageOverview.tsx`](file:///home/shadow-khan/ai-master-course/src/pages/StageOverview.tsx).
+
+- **Next Task:** **Stage 1 (Part I): Python & Computational Thinking from First Principles.**
 

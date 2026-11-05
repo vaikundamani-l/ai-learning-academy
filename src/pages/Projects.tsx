@@ -9,7 +9,9 @@ import {
   Cpu, 
   Layers, 
   ShieldCheck, 
-  ExternalLink 
+  ExternalLink,
+  FileCode,
+  Sparkles
 } from 'lucide-react';
 import { CURRICULUM_STAGES } from '../data/curriculumData';
 
@@ -113,6 +115,88 @@ export const Projects: React.FC = () => {
               </div>
             </div>
           ))}
+        </div>
+      </div>
+
+      {/* Featured Verified Milestone: Stage 0 Workspace */}
+      <div className="p-6 rounded-2xl bg-gradient-to-br from-surface-card via-surface-card to-surface-elevated border border-cyber-emerald/50 space-y-5">
+        <div className="flex flex-wrap items-center justify-between gap-3">
+          <div className="flex items-center space-x-2 text-xs font-mono text-cyber-emerald font-bold uppercase tracking-wider">
+            <Sparkles className="w-4 h-4 text-cyber-emerald" />
+            <span>Stage 0 Milestone Showcase — Verified & Tested</span>
+          </div>
+          <span className="px-2.5 py-1 rounded-full bg-cyber-emerald/15 text-cyber-emerald border border-cyber-emerald/30 font-mono text-[11px] font-bold flex items-center space-x-1.5">
+            <CheckCircle2 className="w-3.5 h-3.5" />
+            <span>100% Passing Tests (9 Unit + Full Inode & DAG Audit)</span>
+          </span>
+        </div>
+
+        <div className="space-y-2">
+          <h2 className="text-xl font-bold text-slate-100">
+            Reproducible Developer Workspace & Git Repository
+          </h2>
+          <p className="text-xs sm:text-sm text-slate-300 leading-relaxed font-sans max-w-4xl">
+            A standalone, production-grade engineering workspace implementing all Stage 0 fundamentals: CPU cache-conscious streaming file I/O, deep POSIX inode and permission metadata inspection, Unix shell pipelines with standard streams (0, 1, 2) and signal trap cleanup, and Git DAG internals with branching, non-fast-forward merge commits, and annotated releases.
+          </p>
+        </div>
+
+        {/* Workspace Components Grid */}
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 pt-1">
+          <div className="p-4 rounded-xl bg-surface border border-surface-border space-y-2">
+            <div className="flex items-center space-x-2 text-cyber-sky font-mono font-bold text-xs">
+              <FileCode className="w-4 h-4" />
+              <span>src/file_organizer.py</span>
+            </div>
+            <p className="text-[11px] text-slate-400 leading-relaxed">
+              CLI file organizer featuring categorized MIME mapping, streaming SHA-256 deduplication, collision resolution, dry-run simulation, and transactional JSON undo journaling.
+            </p>
+          </div>
+
+          <div className="p-4 rounded-xl bg-surface border border-surface-border space-y-2">
+            <div className="flex items-center space-x-2 text-cyber-indigo font-mono font-bold text-xs">
+              <FileCode className="w-4 h-4" />
+              <span>src/metadata_inspector.py</span>
+            </div>
+            <p className="text-[11px] text-slate-400 leading-relaxed">
+              Deep POSIX inspection querying <code className="text-cyber-sky">lstat()</code> for inode numbers, hard links, disk block allocations, 4-digit octal permission masks, SUID/SGID/sticky bits, and structured JSON output.
+            </p>
+          </div>
+
+          <div className="p-4 rounded-xl bg-surface border border-surface-border space-y-2">
+            <div className="flex items-center space-x-2 text-cyber-amber font-mono font-bold text-xs">
+              <Terminal className="w-4 h-4" />
+              <span>src/directory_reporter.sh</span>
+            </div>
+            <p className="text-[11px] text-slate-400 leading-relaxed">
+              POSIX-compliant shell pipeline script demonstrating streams (stdout vs stderr <code className="text-cyber-amber">&gt;&amp;2</code>), <code className="text-cyber-amber">trap</code> scratchpad cleanup, and automated permission audits.
+            </p>
+          </div>
+        </div>
+
+        {/* Quick Orchestration & Execution Instructions */}
+        <div className="p-4 rounded-xl bg-surface/70 border border-surface-border space-y-2.5 font-mono text-xs">
+          <div className="text-slate-400 font-semibold flex items-center justify-between">
+            <span>Isolated Workspace Repository Path:</span>
+            <span className="text-cyber-emerald font-bold">examples/stage-0-workspace-project/</span>
+          </div>
+          <div className="bg-void/80 p-3 rounded-lg border border-surface-border/60 text-slate-300 space-y-1">
+            <div className="text-slate-500"># Run the full automated verification suite:</div>
+            <div className="text-cyber-sky">make -C examples/stage-0-workspace-project all</div>
+            <div className="text-slate-500 pt-1"># Execute the Stage 0 failure diagnosis and recovery check:</div>
+            <div className="text-cyber-emerald">make -C examples/stage-0-workspace-project diagnose</div>
+          </div>
+        </div>
+
+        <div className="pt-1 flex flex-wrap items-center justify-between gap-3 text-xs font-mono">
+          <Link
+            to="/stage/0"
+            className="text-cyber-emerald hover:underline flex items-center space-x-1 font-bold"
+          >
+            <span>&larr; View Stage 0 Curriculum Dashboard</span>
+          </Link>
+          <span className="text-slate-500">
+            Includes Dockerfile, devcontainer.json, Makefile, & unittest suite
+          </span>
         </div>
       </div>
 

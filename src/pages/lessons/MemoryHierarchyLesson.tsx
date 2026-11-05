@@ -26,6 +26,8 @@ import { CodeBlock } from '../../components/learning/CodeBlock';
 import { Callout } from '../../components/learning/Callout';
 import { ScrollAwareTOC } from '../../components/learning/ScrollAwareTOC';
 import { LessonNotesDrawer } from '../../components/learning/LessonNotesDrawer';
+import { LessonHeader } from '../../components/learning/LessonHeader';
+import { AssessmentGate } from '../../components/learning/AssessmentGate';
 
 // 3 Interactive Visualizers and Simulators
 import { BitwiseVisualizer } from '../../components/visual/memory/BitwiseVisualizer';
@@ -41,19 +43,14 @@ interface MemoryHierarchyLessonProps {
 }
 
 export const MemoryHierarchyLesson: React.FC<MemoryHierarchyLessonProps> = ({ stage, currentPath }) => {
-  const { progress, toggleBookmark, isBookmarked, markLessonCompleted, saveAssessmentScore } = useProgress();
+  const { progress, markLessonCompleted } = useProgress();
   const [isNotesOpen, setIsNotesOpen] = useState(false);
   const closeNotes = useCallback(() => setIsNotesOpen(false), []);
   const [revealedHints, setRevealedHints] = useState<Record<number, boolean>>({});
 
-  // Assessment Gate State
-  const [userAnswers, setUserAnswers] = useState<Record<number, number>>({});
-  const [assessmentSubmitted, setAssessmentSubmitted] = useState(false);
-  const [assessmentScore, setAssessmentScore] = useState<number | null>(null);
-
-  const bookmarked = isBookmarked(currentPath);
   const completed = progress.completedLessons.includes(currentPath);
   const recordedScore = progress.assessmentScores[currentPath];
+  const isMastered = (recordedScore !== undefined && recordedScore >= 80) || completed;
 
   // 18-Point Framework Table of Contents
   const tocSections = [
@@ -82,97 +79,24 @@ export const MemoryHierarchyLesson: React.FC<MemoryHierarchyLessonProps> = ({ st
     setRevealedHints((prev) => ({ ...prev, [exerciseId]: !prev[exerciseId] }));
   };
 
-  const handleSelectAnswer = (questionId: number, optionIdx: number) => {
-    setUserAnswers((prev) => ({ ...prev, [questionId]: optionIdx }));
-  };
-
-  const handleGradeAssessment = () => {
-    let correctCount = 0;
-    MEMORY_LESSON_CONTENT.quizQuestions.forEach((q) => {
-      const selected = userAnswers[q.id];
-      if (selected !== undefined && q.options[selected]?.isCorrect) {
-        correctCount++;
-      }
-    });
-
-    const scorePct = Math.round((correctCount / MEMORY_LESSON_CONTENT.quizQuestions.length) * 100);
-    setAssessmentScore(scorePct);
-    setAssessmentSubmitted(true);
-    saveAssessmentScore(currentPath, scorePct);
-  };
-
-  const handleResetAssessment = () => {
-    setUserAnswers({});
-    setAssessmentSubmitted(false);
-    setAssessmentScore(null);
-  };
-
-  const isMastered = (assessmentScore !== null && assessmentScore >= 80) || (recordedScore !== undefined && recordedScore >= 80);
-
   return (
-    <div className="space-y-8 pb-16">
+    <div className="space-y-8 pb-16 max-w-full min-w-0">
       {/* Top Header Bar */}
-      <div className="flex flex-wrap items-center justify-between gap-4 border-b border-surface-border pb-4">
-        <div className="flex items-center space-x-3">
-          <Link
-            to="/stage/0"
-            className="p-2 rounded-lg bg-surface border border-surface-border text-slate-400 hover:text-slate-100 hover:bg-surface-elevated transition"
-            title="Return to Stage 0 Dashboard"
-          >
-            <ArrowLeft className="w-4 h-4" />
-          </Link>
-          <div>
-            <div className="flex items-center space-x-2 text-xs font-mono text-cyber-sky">
-              <span>Stage {MEMORY_LESSON_CONTENT.stageNumber}</span>
-              <span>•</span>
-              <span>Lesson 2 of 2</span>
-              <span>•</span>
-              <span className="text-slate-400">{MEMORY_LESSON_CONTENT.estimatedReadTime}</span>
-            </div>
-            <h1 className="text-xl sm:text-2xl font-extrabold text-slate-100 tracking-tight">
-              {MEMORY_LESSON_CONTENT.title}
-            </h1>
-          </div>
-        </div>
+      <LessonHeader
+        stageNumber={MEMORY_LESSON_CONTENT.stageNumber}
+        lessonIndex={2}
+        totalLessons={4}
+        estimatedReadTime={MEMORY_LESSON_CONTENT.estimatedReadTime}
+        title={MEMORY_LESSON_CONTENT.title}
+        currentPath={currentPath}
+        onOpenNotes={() => setIsNotesOpen(true)}
+      />
 
-        {/* Action Controls */}
-        <div className="flex items-center space-x-2">
-          <button
-            onClick={() => setIsNotesOpen(true)}
-            className="px-3 py-1.5 rounded-lg bg-surface border border-surface-border text-xs font-mono text-slate-300 hover:text-slate-100 hover:bg-surface-elevated transition flex items-center space-x-1.5"
-            title="Open Notes Drawer"
-          >
-            <FileText className="w-3.5 h-3.5 text-cyber-sky" />
-            <span>Notes</span>
-          </button>
-
-          <button
-            onClick={() => toggleBookmark(currentPath)}
-            className={`px-3 py-1.5 rounded-lg border text-xs font-mono transition flex items-center space-x-1.5 ${
-              bookmarked
-                ? 'bg-cyber-sky/10 border-cyber-sky/40 text-cyber-sky'
-                : 'bg-surface border-surface-border text-slate-400 hover:text-slate-200 hover:bg-surface-elevated'
-            }`}
-            title={bookmarked ? 'Remove Bookmark' : 'Bookmark this Lesson'}
-          >
-            <Bookmark className={`w-3.5 h-3.5 ${bookmarked ? 'fill-current' : ''}`} />
-            <span>{bookmarked ? 'Saved' : 'Save'}</span>
-          </button>
-
-          <div
-            className={`px-3 py-1.5 rounded-lg border text-xs font-mono flex items-center space-x-1.5 ${
-              completed
-                ? 'bg-cyber-emerald/10 border-cyber-emerald/40 text-cyber-emerald font-bold'
-                : isMastered
-                ? 'bg-cyber-emerald/5 border-cyber-emerald/20 text-cyber-emerald'
-                : 'bg-surface border-surface-border text-slate-400'
-            }`}
-          >
-            <CheckCircle2 className="w-3.5 h-3.5" />
-            <span>{completed ? 'Certified & Completed' : isMastered ? 'Mastery Unlocked' : 'In Progress'}</span>
-          </div>
-        </div>
-      </div>
+      {/* Mobile Table of Contents */}
+      <details className="lg:hidden rounded-xl border border-surface-border bg-surface-card p-4">
+        <summary className="cursor-pointer text-sm font-semibold text-slate-200">Jump to a Memory lesson section</summary>
+        <ScrollAwareTOC sections={tocSections} className="mt-3" />
+      </details>
 
       {/* Main 2-Column Responsive Layout */}
       <div className="grid grid-cols-1 lg:grid-cols-4 gap-8">
@@ -792,150 +716,13 @@ export const MemoryHierarchyLesson: React.FC<MemoryHierarchyLessonProps> = ({ st
           </section>
 
           {/* Section 18: Diagnostic Mastery Exam */}
-          <section id="assessment" className="space-y-6 pt-6 border-t border-surface-border">
-            <div className="flex items-center space-x-2 text-cyber-emerald font-mono font-semibold text-xs tracking-wider uppercase">
-              <Award className="w-4 h-4 text-cyber-emerald" />
-              <span>Section 18 — Verified Diagnostic Mastery Gate</span>
-            </div>
-            <div className="space-y-2">
-              <h2 className="text-xl sm:text-2xl font-bold text-slate-100">
-                Diagnostic Mastery Exam
-              </h2>
-              <p className="text-sm text-slate-300 leading-relaxed font-sans">
-                To certify completion of Stage 0 Lesson 2, you must demonstrate technical mastery by answering the following 10 architectural questions. A passing score of <strong>≥ 80% (8 of 10 correct)</strong> unlocks certified completion.
-              </p>
-            </div>
-
-            {/* Exam Results Score Card */}
-            {assessmentSubmitted && (
-              <div
-                className={`p-5 rounded-xl border space-y-3 transition ${
-                  isMastered
-                    ? 'bg-cyber-emerald/10 border-cyber-emerald/40 text-cyber-emerald'
-                    : 'bg-cyber-rose/10 border-cyber-rose/40 text-cyber-rose'
-                }`}
-              >
-                <div className="flex items-center justify-between">
-                  <div className="flex items-center space-x-2 font-mono font-bold text-sm">
-                    {isMastered ? <CheckCircle2 className="w-5 h-5" /> : <AlertCircle className="w-5 h-5" />}
-                    <span>{isMastered ? 'Mastery Verified!' : 'Score Threshold Not Reached'}</span>
-                  </div>
-                  <span className="text-lg font-mono font-extrabold">{assessmentScore}%</span>
-                </div>
-                <p className="text-xs text-slate-300 leading-relaxed font-sans">
-                  {isMastered
-                    ? `Congratulations! You scored ${assessmentScore}%, meeting the 80% architectural mastery requirement. Your verified achievement has been recorded into progress storage.`
-                    : `You scored ${assessmentScore}%. An 80% score (at least 8 correct questions) is required to certify mastery. Review the technical explanations below and retry.`}
-                </p>
-              </div>
-            )}
-
-            {/* 10 Assessment Questions */}
-            <div className="space-y-6">
-              {MEMORY_LESSON_CONTENT.quizQuestions.map((q, qIdx) => {
-                const selectedOptionIdx = userAnswers[q.id];
-                const isAnswered = selectedOptionIdx !== undefined;
-
-                return (
-                  <div
-                    key={q.id}
-                    className="p-5 rounded-xl bg-surface-card border border-surface-border space-y-4"
-                  >
-                    <div className="flex items-start justify-between gap-3">
-                      <div className="text-xs font-mono font-bold text-cyber-sky">
-                        Question {qIdx + 1} of {MEMORY_LESSON_CONTENT.quizQuestions.length}
-                      </div>
-                      {assessmentSubmitted && isAnswered && (
-                        <span
-                          className={`text-[10px] font-mono px-2 py-0.5 rounded font-bold ${
-                            q.options[selectedOptionIdx]?.isCorrect
-                              ? 'bg-cyber-emerald/20 text-cyber-emerald border border-cyber-emerald/40'
-                              : 'bg-cyber-rose/20 text-cyber-rose border border-cyber-rose/40'
-                          }`}
-                        >
-                          {q.options[selectedOptionIdx]?.isCorrect ? 'Correct' : 'Incorrect'}
-                        </span>
-                      )}
-                    </div>
-
-                    <h3 className="text-sm font-semibold text-slate-100 leading-relaxed font-sans">
-                      {q.question}
-                    </h3>
-
-                    {/* Options list */}
-                    <div className="space-y-2 pt-1">
-                      {q.options.map((opt, optIdx) => {
-                        const isSelected = selectedOptionIdx === optIdx;
-                        let optionStyle = 'bg-surface border-surface-border text-slate-300 hover:bg-surface-elevated hover:text-slate-100';
-
-                        if (assessmentSubmitted) {
-                          if (opt.isCorrect) {
-                            optionStyle = 'bg-cyber-emerald/15 border-cyber-emerald/50 text-cyber-emerald font-semibold';
-                          } else if (isSelected && !opt.isCorrect) {
-                            optionStyle = 'bg-cyber-rose/15 border-cyber-rose/50 text-cyber-rose font-semibold';
-                          } else {
-                            optionStyle = 'bg-surface/50 border-surface-border/50 text-slate-500 opacity-60';
-                          }
-                        } else if (isSelected) {
-                          optionStyle = 'bg-cyber-sky/15 border-cyber-sky text-cyber-sky font-semibold';
-                        }
-
-                        return (
-                          <button
-                            key={optIdx}
-                            disabled={assessmentSubmitted}
-                            onClick={() => handleSelectAnswer(q.id, optIdx)}
-                            className={`w-full text-left p-3 rounded-lg border text-xs transition flex items-start space-x-2.5 ${optionStyle}`}
-                          >
-                            <span className="w-4 h-4 rounded-full border border-current flex items-center justify-center flex-shrink-0 mt-0.5 text-[10px] font-mono">
-                              {String.fromCharCode(65 + optIdx)}
-                            </span>
-                            <span className="leading-relaxed">{opt.text}</span>
-                          </button>
-                        );
-                      })}
-                    </div>
-
-                    {/* Feedback Explanation */}
-                    {assessmentSubmitted && isAnswered && (
-                      <div className="p-3 rounded-lg bg-surface border border-surface-border text-xs text-slate-300 leading-relaxed font-sans space-y-1">
-                        <strong className="text-cyber-sky font-mono text-[11px] block">Architectural Explanation:</strong>
-                        <span>{q.options[selectedOptionIdx]?.explanation}</span>
-                      </div>
-                    )}
-                  </div>
-                );
-              })}
-            </div>
-
-            {/* Assessment Action Buttons */}
-            <div className="flex flex-wrap items-center gap-3 pt-2">
-              {!assessmentSubmitted ? (
-                <button
-                  onClick={handleGradeAssessment}
-                  disabled={Object.keys(userAnswers).length < MEMORY_LESSON_CONTENT.quizQuestions.length}
-                  className={`px-5 py-2.5 rounded-lg font-bold text-xs font-mono transition flex items-center space-x-2 shadow-lg ${
-                    Object.keys(userAnswers).length === MEMORY_LESSON_CONTENT.quizQuestions.length
-                      ? 'bg-cyber-sky text-void hover:bg-sky-400 shadow-cyber-sky/20'
-                      : 'bg-surface border border-surface-border text-slate-500 cursor-not-allowed'
-                  }`}
-                >
-                  <Award className="w-4 h-4" />
-                  <span>
-                    Grade Diagnostic Exam ({Object.keys(userAnswers).length}/{MEMORY_LESSON_CONTENT.quizQuestions.length} Answered)
-                  </span>
-                </button>
-              ) : (
-                <button
-                  onClick={handleResetAssessment}
-                  className="px-4 py-2 rounded-lg bg-surface border border-surface-border text-slate-300 hover:text-slate-100 hover:bg-surface-elevated text-xs font-mono transition flex items-center space-x-2"
-                >
-                  <RotateCcw className="w-3.5 h-3.5" />
-                  <span>Reset & Retake Exam</span>
-                </button>
-              )}
-            </div>
-          </section>
+          {/* Section 18: Diagnostic Mastery Exam */}
+          <AssessmentGate
+            currentPath={currentPath}
+            lessonTitle={MEMORY_LESSON_CONTENT.title}
+            sectionNumber={18}
+            questions={MEMORY_LESSON_CONTENT.quizQuestions}
+          />
 
           {/* Section 19: Practical Exercises */}
           <section id="exercises" className="space-y-6 pt-6 border-t border-surface-border">

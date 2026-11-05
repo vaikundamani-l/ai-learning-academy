@@ -677,3 +677,36 @@ test('Tooling lesson metadata and quiz have the expected structure', () => {
   }
 });
 
+test('Stage 0 diagnostic quiz option positions are balanced without position bias', () => {
+  const lessons = [
+    { name: 'CPU Architecture', content: CPU_LESSON_CONTENT },
+    { name: 'Memory Hierarchy', content: MEMORY_LESSON_CONTENT },
+    { name: 'Operating Systems', content: OS_LESSON_CONTENT },
+    { name: 'Developer Tooling', content: TOOLING_LESSON_CONTENT },
+  ];
+
+  for (const { name, content } of lessons) {
+    assert.equal(content.quizQuestions.length, 10, `${name} must have 10 quiz questions`);
+    const counts = { 0: 0, 1: 0, 2: 0 };
+
+    for (const q of content.quizQuestions) {
+      const correctIndices = q.options
+        .map((opt, idx) => (opt.isCorrect ? idx : -1))
+        .filter(idx => idx !== -1);
+      
+      assert.equal(correctIndices.length, 1, `${name} Q${q.id} must have exactly 1 correct answer`);
+      const correctIdx = correctIndices[0];
+      assert.ok(correctIdx in counts, `${name} Q${q.id} correct answer must be in indices 0, 1, or 2`);
+      counts[correctIdx]++;
+    }
+
+    // Ensure no position dominates: no position has > 4 questions, and all positions have at least 2
+    for (const pos of [0, 1, 2]) {
+      assert.ok(
+        counts[pos] >= 2 && counts[pos] <= 4,
+        `${name} option index ${pos} count (${counts[pos]}) must be balanced between 2 and 4`
+      );
+    }
+  }
+});
+

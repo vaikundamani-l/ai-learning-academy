@@ -1,0 +1,20 @@
+# Python bytecode and caches
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.pytest_cache/
+
+# Project temporary logs & undo state
+.organizer_undo.json
+_duplicates/
+demo_repo/
+demo_workspace_repo/
+*.bak
+*.tmp
+
+# System and editor files
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
