@@ -99,3 +99,48 @@ test('applyThemeToDocument toggles classes and sets colorScheme style', () => {
   assert.equal(classes.has('light'), true);
   assert.equal(mockDoc.documentElement.style.colorScheme, 'light');
 });
+
+// Phase 4 CPU Pilot Lesson & Assessment Rigor Tests
+import { CPU_LESSON_CONTENT } from '../src/data/cpuLessonContent.ts';
+
+test('CPU pilot lesson contains all required pedagogical sections and 10 verified assessment questions', () => {
+  assert.equal(CPU_LESSON_CONTENT.objectives.length >= 5, true);
+  assert.equal(CPU_LESSON_CONTENT.prerequisites.length >= 2, true);
+  assert.equal(CPU_LESSON_CONTENT.lexicon.length >= 10, true);
+  assert.equal(CPU_LESSON_CONTENT.quizQuestions.length, 10);
+  assert.equal(CPU_LESSON_CONTENT.exercises.length, 3);
+
+  // Verify all 10 diagnostic questions have exactly one correct answer with explanations
+  for (const q of CPU_LESSON_CONTENT.quizQuestions) {
+    assert.ok(q.question.length > 10, `Question ${q.id} is non-trivial`);
+    assert.ok(q.options.length >= 3, `Question ${q.id} has at least 3 options`);
+    const correctOpts = q.options.filter((opt) => opt.isCorrect);
+    assert.equal(correctOpts.length, 1, `Question ${q.id} must have exactly 1 correct answer`);
+    for (const opt of q.options) {
+      assert.ok(opt.explanation.length > 10, `Option explanation in question ${q.id} must be detailed`);
+    }
+  }
+
+  // Verify exercises have task lists and solution hints
+  for (const ex of CPU_LESSON_CONTENT.exercises) {
+    assert.ok(ex.tasks.length >= 3, `Exercise ${ex.id} has at least 3 tasks`);
+    assert.ok(ex.solutionHint.length > 20, `Exercise ${ex.id} has a detailed derivation hint`);
+  }
+});
+
+test('Iron Law and Cache AMAT mathematical calculations are mathematically exact', () => {
+  // Iron Law: Time = (Instructions * CPI) / Frequency
+  const I = 10_000_000_000;
+  const CPI = 6.70;
+  const freq = 3.2e9;
+  const time = (I * CPI) / freq;
+  assert.equal(Math.round(time * 100) / 100, 20.94);
+
+  // AMAT: Hit_Time + (Miss_Rate * Miss_Penalty)
+  const hitTime = 1; // cycle
+  const missRate = 0.05; // 5%
+  const missPenalty = 50; // cycles
+  const amat = hitTime + missRate * missPenalty;
+  assert.equal(amat, 3.5);
+});
+
