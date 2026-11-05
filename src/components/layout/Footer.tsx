@@ -35,7 +35,7 @@ export const Footer: React.FC = () => {
         {/* Col 3: Reference Starting Points */}
         <div>
           <h4 className="font-mono text-slate-200 text-xs font-semibold uppercase tracking-wider mb-2">
-            Verified Standards
+            Reference Frameworks
           </h4>
           <ul className="space-y-1.5 text-xs text-slate-400 font-mono text-[11px]">
             <li className="flex items-center space-x-1.5">

@@ -8,7 +8,7 @@
     "dev": "vite",
     "build": "tsc && vite build",
     "preview": "vite preview",
-    "test": "echo \"Testing framework initialized\""
+    "test": "node --experimental-strip-types --test tests/*.test.mjs"
   },
   "keywords": [],
   "author": "",

@@ -6,12 +6,31 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>AI, Systems & Cybersecurity Interactive Learning Academy</title>
     <meta name="description" content="A comprehensive technical university platform teaching AI, Computer Science, Systems, Machine Learning, Deep Learning, and Cybersecurity from first principles." />
+    <!-- Anti-flash script for persistent theme hydration -->
+    <script>
+      (function() {
+        try {
+          var stored = localStorage.getItem('ai_master_course_theme');
+          var systemDark = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
+          var isDark = stored === 'dark' || ((stored === 'system' || !stored) && systemDark);
+          if (isDark) {
+            document.documentElement.classList.add('dark');
+            document.documentElement.classList.remove('light');
+            document.documentElement.style.colorScheme = 'dark';
+          } else {
+            document.documentElement.classList.remove('dark');
+            document.documentElement.classList.add('light');
+            document.documentElement.style.colorScheme = 'light';
+          }
+        } catch (e) {}
+      })();
+    </script>
     <!-- Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;500;600&family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
   </head>
-  <body class="bg-void text-slate-100 font-sans antialiased selection:bg-cyber-sky/30 selection:text-cyber-sky min-h-screen">
+  <body class="bg-void text-slate-200 font-sans antialiased selection:bg-cyber-sky/30 selection:text-cyber-sky min-h-screen">
     <div id="root"></div>
     <script type="module" src="/src/main.tsx"></script>
   </body>

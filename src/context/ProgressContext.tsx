@@ -1,13 +1,14 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
+import { isUserProgress } from '../utils/progress';
 import { UserProgress } from '../types/curriculum';
 
 const INITIAL_PROGRESS: UserProgress = {
-  startedStages: [0],
+  startedStages: [],
   completedStages: [],
   completedLessons: [],
   completedExercises: [],
   completedProjects: [],
-  bookmarks: ['/stage/0/lesson/cpu-architecture'],
+  bookmarks: [],
   notes: {},
   assessmentScores: {},
   lastActiveStageId: 0
@@ -37,7 +38,8 @@ export const ProgressProvider: React.FC<{ children: React.ReactNode }> = ({ chil
     try {
       const stored = localStorage.getItem(STORAGE_KEY);
       if (stored) {
-        return JSON.parse(stored);
+        const parsed: unknown = JSON.parse(stored);
+        if (isUserProgress(parsed)) return parsed;
       }
     } catch (e) {
       console.error('Failed to load progress from localStorage', e);
@@ -129,7 +131,7 @@ export const ProgressProvider: React.FC<{ children: React.ReactNode }> = ({ chil
   const importProgressJSON = (jsonString: string): boolean => {
     try {
       const parsed = JSON.parse(jsonString);
-      if (parsed && typeof parsed === 'object' && Array.isArray(parsed.startedStages)) {
+      if (isUserProgress(parsed)) {
         setProgress(parsed);
         return true;
       }

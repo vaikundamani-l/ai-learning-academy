@@ -19,7 +19,7 @@ export const SearchPage: React.FC = () => {
   const results = React.useMemo(() => {
     if (!query.trim()) return [];
 
-    const q = query.toLowerCase();
+    const q = query.trim().toLowerCase();
     const items: {
       type: 'topic' | 'build' | 'simulator' | 'stage';
       stageId: number;
@@ -102,7 +102,7 @@ export const SearchPage: React.FC = () => {
           Search Academy Knowledge Base
         </h1>
         <p className="text-slate-400 text-sm mt-1 max-w-3xl leading-relaxed">
-          Instantly query concepts, mathematical equations, scratch implementation specs, hardware registers, and simulation labs.
+          Search stage descriptions, original topics, supporting topics, planned builds, and simulator titles.
         </p>
       </div>
 
@@ -111,7 +111,8 @@ export const SearchPage: React.FC = () => {
         <div className="relative">
           <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-cyber-sky" />
           <input
-            type="text"
+            type="search"
+            aria-label="Search curriculum"
             autoFocus
             value={query}
             onChange={(e) => setQuery(e.target.value)}
@@ -126,6 +127,7 @@ export const SearchPage: React.FC = () => {
           {(['all', 'topics', 'builds', 'simulators'] as const).map((t) => (
             <button
               key={t}
+              aria-pressed={filterType === t}
               onClick={() => setFilterType(t)}
               className={`px-2.5 py-1 rounded-md capitalize transition ${
                 filterType === t
@@ -139,10 +141,17 @@ export const SearchPage: React.FC = () => {
         </div>
       </div>
 
+      {!query.trim() && <div className="rounded-xl border border-surface-border bg-surface-card p-5 space-y-3">
+        <h2 className="text-sm font-semibold text-slate-200">Explore a concept</h2>
+        <p className="text-sm text-slate-400">Start with a topic below, or search the curriculum above.</p>
+        <div className="flex flex-wrap gap-2">{['CPU', 'Python', 'Attention', 'Cryptography'].map(term =>
+          <button key={term} onClick={() => setQuery(term)} className="rounded-lg border border-surface-border px-3 py-2 text-sm text-cyber-sky hover:bg-surface">{term}</button>
+        )}</div>
+      </div>}
       {/* Results List */}
       <div className="space-y-3">
         {query && (
-          <div className="text-xs font-mono text-slate-500">
+          <div role="status" className="text-xs font-mono text-slate-400">
             Found {results.length} results matching "{query}"
           </div>
         )}

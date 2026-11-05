@@ -66,6 +66,7 @@ export const CurriculumBrowser: React.FC = () => {
         {/* View Mode Toggle Bar (Visual Roadmap vs Grid) */}
         <div className="flex items-center space-x-2 bg-surface-card p-1.5 rounded-xl border border-surface-border self-start lg:self-auto">
           <button
+            aria-pressed={viewMode === 'roadmap'}
             onClick={() => setViewMode('roadmap')}
             className={`flex items-center space-x-2 px-3.5 py-2 rounded-lg text-xs font-mono transition ${
               viewMode === 'roadmap'
@@ -74,10 +75,11 @@ export const CurriculumBrowser: React.FC = () => {
             }`}
           >
             <Compass className="w-4 h-4" />
-            <span>Visual Roadmap (roadmap.sh style)</span>
+            <span>Visual roadmap</span>
           </button>
 
           <button
+            aria-pressed={viewMode === 'grid'}
             onClick={() => setViewMode('grid')}
             className={`flex items-center space-x-2 px-3.5 py-2 rounded-lg text-xs font-mono transition ${
               viewMode === 'grid'
@@ -86,7 +88,7 @@ export const CurriculumBrowser: React.FC = () => {
             }`}
           >
             <LayoutGrid className="w-4 h-4" />
-            <span>Directory Grid</span>
+            <span>Stage directory</span>
           </button>
         </div>
       </div>
@@ -98,14 +100,15 @@ export const CurriculumBrowser: React.FC = () => {
         <div className="space-y-6">
           {/* Search and Category Filters for Grid View */}
           <div className="flex flex-col sm:flex-row gap-3 items-stretch sm:items-center justify-between">
-            <div className="relative flex-1 max-w-md">
+            <div className="relative flex-1 min-w-0 sm:max-w-sm">
               <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-500" />
               <input
-                type="text"
+                type="search"
+                aria-label="Filter stages"
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
                 placeholder="Search topics, algorithms, scratch builds..."
-                className="w-full pl-9 pr-4 py-2 rounded-lg bg-surface-card border border-surface-border text-xs text-slate-200 placeholder-slate-500 focus:outline-none focus:border-cyber-sky transition"
+                className="w-full pl-9 pr-16 py-2 rounded-lg bg-surface-card border border-surface-border text-xs text-slate-200 placeholder-slate-500 focus:outline-none focus:border-cyber-sky transition"
               />
               {searchTerm && (
                 <button
@@ -118,7 +121,7 @@ export const CurriculumBrowser: React.FC = () => {
             </div>
 
             {/* Categories Bar */}
-            <div className="flex items-center space-x-1.5 overflow-x-auto pb-1 sm:pb-0 scrollbar-none">
+            <div className="flex min-w-0 flex-1 items-center space-x-1.5 overflow-x-auto pb-1 sm:pb-0 scrollbar-none">
               <Filter className="w-3.5 h-3.5 text-slate-500 flex-shrink-0 mr-1" />
               {categories.map((cat) => (
                 <button
@@ -189,7 +192,7 @@ export const CurriculumBrowser: React.FC = () => {
                     {stage.id === 0 && (
                       <div className="px-2.5 py-1.5 rounded bg-cyber-sky/10 border border-cyber-sky/30 text-[11px] font-mono text-cyber-sky flex items-center space-x-1.5">
                         <Sparkles className="w-3 h-3 flex-shrink-0" />
-                        <span>Includes Stage 0 CPU Pilot Lesson</span>
+                        <span>CPU pilot lesson planned</span>
                       </div>
                     )}
 

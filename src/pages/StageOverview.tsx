@@ -15,6 +15,7 @@ import {
   Sparkles,
   Play
 } from 'lucide-react';
+import { NotFound } from './NotFound';
 import { CURRICULUM_STAGES } from '../data/curriculumData';
 import { useProgress } from '../context/ProgressContext';
 
@@ -23,7 +24,7 @@ export const StageOverview: React.FC = () => {
   const navigate = useNavigate();
   const { progress, markStageStarted, markStageCompleted } = useProgress();
 
-  const id = parseInt(stageId || '0', 10);
+  const id = /^\d+$/.test(stageId || '') ? Number(stageId) : -1;
   const stage = CURRICULUM_STAGES[id] || CURRICULUM_STAGES[0];
 
   const isCompleted = progress.completedStages.includes(stage.id);
@@ -42,6 +43,8 @@ export const StageOverview: React.FC = () => {
   const handleToggleCompleted = () => {
     markStageCompleted(stage.id);
   };
+
+  if (!CURRICULUM_STAGES[id]) return <NotFound />;
 
   return (
     <div className="space-y-8">
@@ -100,10 +103,10 @@ export const StageOverview: React.FC = () => {
               </span>
             ) : (
               <button
-                onClick={handleToggleCompleted}
+                disabled title="Mastery verification will unlock when assessments are implemented"
                 className="px-3 py-1 rounded bg-surface hover:bg-surface-elevated border border-surface-border text-xs font-mono text-slate-300 transition"
               >
-                Verify Mastery Check
+                Assessment unavailable
               </button>
             )}
           </div>
@@ -125,7 +128,7 @@ export const StageOverview: React.FC = () => {
               className="px-4 py-2.5 rounded-lg bg-cyber-sky text-void font-bold text-xs font-mono hover:bg-sky-400 transition flex items-center space-x-2 shadow-lg shadow-cyber-sky/20"
             >
               <Play className="w-3.5 h-3.5 fill-current" />
-              <span>Open CPU Architecture Pilot Lesson</span>
+              <span>Preview CPU Architecture Lesson</span>
             </Link>
           ) : (
             <button
@@ -133,7 +136,7 @@ export const StageOverview: React.FC = () => {
               className="px-4 py-2.5 rounded-lg bg-cyber-sky text-void font-bold text-xs font-mono hover:bg-sky-400 transition flex items-center space-x-2 shadow-lg shadow-cyber-sky/20"
             >
               <Play className="w-3.5 h-3.5 fill-current" />
-              <span>{isStarted ? 'Continue Studying Stage' : 'Begin Stage Studies'}</span>
+              <span>{isStarted ? 'Stage added to your plan' : 'Add stage to my plan'}</span>
             </button>
           )}
 
@@ -157,7 +160,7 @@ export const StageOverview: React.FC = () => {
             <span>Phase 4 Quality Benchmark Pilot: CPU Architecture</span>
           </div>
           <p className="text-xs text-slate-300 leading-relaxed max-w-3xl">
-            This flagship lesson covers 28 first-principles topics from clock cycles and RISC/CISC philosophies to the 5-stage instruction pipeline, branch prediction, and superscalar execution. It includes 8 interactive visualizers and simulators.
+            The planned pilot will cover 28 first-principles topics from clock cycles and RISC/CISC philosophies to the 5-stage instruction pipeline, branch prediction, and superscalar execution. Eight interactive visuals are planned; the complete pilot is not available yet.
           </p>
           <div className="flex flex-wrap gap-2 pt-1">
             <Link

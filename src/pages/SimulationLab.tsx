@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { 
   Cpu, 
@@ -14,6 +14,7 @@ import {
   Sparkles,
   ArrowRight
 } from 'lucide-react';
+import { cpuAtCycle, CPU_PHASES, CPU_PROGRAM } from '../utils/cpu';
 import { CURRICULUM_STAGES } from '../data/curriculumData';
 
 export const SimulationLab: React.FC = () => {
@@ -24,66 +25,18 @@ export const SimulationLab: React.FC = () => {
   const [isRunning, setIsRunning] = useState(false);
   const [cycle, setCycle] = useState(0);
   const [speed, setSpeed] = useState<number>(1);
-  const [pc, setPc] = useState(0);
-  const [registers, setRegisters] = useState<{ [key: string]: number }>({
-    R1: 5,
-    R2: 12,
-    R3: 0,
-    R4: 0,
-  });
-  const [currentInstruction, setCurrentInstruction] = useState('ADD R3, R1, R2');
-  const [currentPhase, setCurrentPhase] = useState<'FETCH' | 'DECODE' | 'EXECUTE' | 'MEMORY' | 'WRITEBACK'>('FETCH');
-  const [consoleLogs, setConsoleLogs] = useState<string[]>([
-    '[INIT] CPU Pipeline initialized. PC: 0x0000',
-    '[CODE] Program loaded: 4 instructions ready.'
-  ]);
-
-  const program = [
-    { op: 'LOAD', dest: 'R1', src: '[0x0A]', code: '0x110A' },
-    { op: 'ADD', dest: 'R3', src: 'R1, R2', code: '0x2312' },
-    { op: 'SUB', dest: 'R4', src: 'R3, R1', code: '0x3431' },
-    { op: 'STORE', dest: '[0x0C]', src: 'R4', code: '0x440C' },
-  ];
-
-  const phases: ('FETCH' | 'DECODE' | 'EXECUTE' | 'MEMORY' | 'WRITEBACK')[] = [
-    'FETCH', 'DECODE', 'EXECUTE', 'MEMORY', 'WRITEBACK'
-  ];
-
-  const handleStep = () => {
-    const nextCycle = cycle + 1;
-    const phaseIndex = nextCycle % 5;
-    const nextPhase = phases[phaseIndex];
-    setCycle(nextCycle);
-    setCurrentPhase(nextPhase);
-
-    const instrIdx = Math.floor(nextCycle / 5) % program.length;
-    const instr = program[instrIdx];
-    setCurrentInstruction(`${instr.op} ${instr.dest}, ${instr.src}`);
-    setPc(instrIdx * 4);
-
-    let logMsg = `Cycle ${nextCycle} [${nextPhase}]: PC=0x${(instrIdx * 4).toString(16).padStart(4, '0')} | ${instr.op} ${instr.dest}`;
-    if (nextPhase === 'WRITEBACK') {
-      if (instr.op === 'ADD') {
-        setRegisters(prev => ({ ...prev, R3: prev.R1 + prev.R2 }));
-        logMsg += ` -> Writeback R3 = ${registers.R1 + registers.R2}`;
-      } else if (instr.op === 'SUB') {
-        setRegisters(prev => ({ ...prev, R4: (prev.R1 + prev.R2) - prev.R1 }));
-        logMsg += ` -> Writeback R4 = ${(registers.R1 + registers.R2) - registers.R1}`;
-      }
-    }
-
-    setConsoleLogs(prev => [logMsg, ...prev.slice(0, 9)]);
-  };
-
-  const handleReset = () => {
-    setIsRunning(false);
-    setCycle(0);
-    setPc(0);
-    setCurrentPhase('FETCH');
-    setRegisters({ R1: 5, R2: 12, R3: 0, R4: 0 });
-    setCurrentInstruction('ADD R3, R1, R2');
-    setConsoleLogs(['[RESET] CPU Simulation reset to Cycle 0.']);
-  };
+  const model = cpuAtCycle(cycle);
+  const { pc, registers, phase: currentPhase, instruction: currentInstruction, logs: consoleLogs } = model;
+  const program = CPU_PROGRAM;
+  const phases = CPU_PHASES;
+  const handleStep = () => { setIsRunning(false); setCycle(c => Math.min(20, c + 1)); };
+  const handleReset = () => { setIsRunning(false); setCycle(0); };
+  useEffect(() => {
+    if (!isRunning || cycle >= 20) return;
+    const timer = window.setInterval(() => setCycle(c => Math.min(20, c + 1)), 1000 / speed);
+    return () => window.clearInterval(timer);
+  }, [isRunning, speed, cycle >= 20]);
+  useEffect(() => { if (cycle >= 20) setIsRunning(false); }, [cycle]);
 
   return (
     <div className="space-y-8">
@@ -100,6 +53,10 @@ export const SimulationLab: React.FC = () => {
         </p>
       </div>
 
+      <p className="rounded-xl border border-cyber-amber/30 bg-cyber-amber/10 p-4 text-sm text-slate-300">
+        CPU preview: one instruction runs at a time through five phases. This is not a pipelined CPU. Memory[0x0A] starts at 9; STORE writes R4 to Memory[0x0C]. {model.halted ? 'Program finished. Reset or step backward to explore.' : 'Use Play or Step to follow the four-instruction program.'}
+        <span className="block mt-2 font-mono">Memory[0x0C] = {model.memory['0x0C']}</span>
+      </p>
       {/* Featured Flagship Simulator: CPU Instruction Execution Cycle */}
       <div className="p-6 rounded-2xl bg-surface-card border border-cyber-sky/40 space-y-6 relative overflow-hidden">
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-surface-border pb-4">
@@ -109,7 +66,7 @@ export const SimulationLab: React.FC = () => {
                 STAGE 0 PILOT SIMULATOR
               </span>
               <span className="text-xs font-mono text-slate-400">
-                5-Stage Von Neumann Pipeline
+                Serial five-phase teaching model
               </span>
             </div>
             <h2 className="text-xl font-bold text-slate-100 mt-1">
@@ -120,6 +77,7 @@ export const SimulationLab: React.FC = () => {
           {/* Animation Controls (Adhering to VISUAL_STANDARDS.md) */}
           <div className="flex items-center space-x-2 bg-surface p-1.5 rounded-xl border border-surface-border">
             <button
+              disabled={model.halted}
               onClick={() => setIsRunning(!isRunning)}
               className="p-2 rounded-lg bg-cyber-sky text-void hover:bg-sky-400 transition"
               title={isRunning ? "Pause simulation" : "Play continuous clock"}
@@ -127,7 +85,13 @@ export const SimulationLab: React.FC = () => {
               {isRunning ? <Pause className="w-4 h-4 fill-current" /> : <Play className="w-4 h-4 fill-current" />}
             </button>
 
+            <button title="Step backward" disabled={cycle === 0}
+              onClick={() => { setIsRunning(false); setCycle(c => Math.max(0, c - 1)); }}
+              className="p-2 rounded-lg text-slate-300 hover:bg-surface-elevated">
+              <SkipBack className="w-4 h-4" />
+            </button>
             <button
+              disabled={model.halted}
               onClick={handleStep}
               className="p-2 rounded-lg text-slate-300 hover:text-white hover:bg-surface-elevated transition"
               title="Step forward (+1 cycle)"
@@ -158,10 +122,10 @@ export const SimulationLab: React.FC = () => {
         {/* 5-Stage Pipeline Progress Strip */}
         <div className="space-y-2">
           <div className="flex items-center justify-between text-xs font-mono text-slate-400">
-            <span>Discrete Pipeline Stage</span>
+            <span>Execution phase</span>
             <span className="text-cyber-sky font-bold">Cycle {cycle}</span>
           </div>
-          <div className="grid grid-cols-5 gap-2">
+          <div className="grid grid-cols-2 sm:grid-cols-5 gap-2">
             {phases.map((ph) => {
               const isActive = currentPhase === ph;
               return (
@@ -175,7 +139,7 @@ export const SimulationLab: React.FC = () => {
                 >
                   <div className="text-[10px] font-mono tracking-wider">{ph}</div>
                   <div className="text-xs font-bold mt-0.5">
-                    {ph === 'FETCH' && 'Fetch Byte'}
+                    {ph === 'FETCH' && 'Fetch instruction'}
                     {ph === 'DECODE' && 'Opcode & Operands'}
                     {ph === 'EXECUTE' && 'ALU Compute'}
                     {ph === 'MEMORY' && 'RAM Access'}
@@ -226,7 +190,7 @@ export const SimulationLab: React.FC = () => {
               ))}
             </div>
             <div className="text-[11px] text-slate-500 text-center pt-1">
-              Fast 64-bit Internal Latches
+              Educational integer registers; not a specific hardware ISA
             </div>
           </div>
 
@@ -272,12 +236,12 @@ export const SimulationLab: React.FC = () => {
               </div>
 
               <div className="pt-3 border-t border-surface-border flex items-center justify-between text-xs font-mono">
-                <span className="text-[10px] text-slate-500">Interactive Sandbox</span>
+                <span className="text-[10px] text-slate-400">Planned simulator</span>
                 <Link
-                  to={sim.path}
+                  to={`/stage/${sim.stageId}`}
                   className="text-cyber-sky hover:underline flex items-center space-x-1"
                 >
-                  <span>Launch</span>
+                  <span>Stage outline</span>
                   <ArrowRight className="w-3 h-3" />
                 </Link>
               </div>

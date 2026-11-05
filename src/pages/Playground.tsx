@@ -13,7 +13,7 @@ import {
 
 export const Playground: React.FC = () => {
   const [activeTab, setActiveTab] = useState<'python' | 'asm' | 'c'>('python');
-  const [output, setOutput] = useState<string>('Click "Run Code" to execute in the browser sandbox.');
+  const [output, setOutput] = useState<string>('Code scratchpad preview. Browser execution is not implemented yet.');
   const [isExecuting, setIsExecuting] = useState(false);
   const [copied, setCopied] = useState(false);
 
@@ -106,45 +106,11 @@ int main() {
   const handleTabChange = (tab: 'python' | 'asm' | 'c') => {
     setActiveTab(tab);
     setCode(starterCode[tab]);
-    setOutput(`Switched environment to ${tab.toUpperCase()}. Click "Run Code" to execute.`);
+    setOutput(`Switched environment to ${tab.toUpperCase()}. Copy the code to run it locally.`);
   };
 
   const handleRun = () => {
-    setIsExecuting(true);
-    setOutput("Executing in isolated browser sandbox...");
-
-    setTimeout(() => {
-      setIsExecuting(false);
-      if (activeTab === 'python') {
-        setOutput(`Initial State: {'R1': 10, 'R2': 25, 'R3': 0, 'FLAG_ZERO': 0}
-
---- Cycle 1: LOAD_IMM R1, 15 ---
-Updated Registers: {'R1': 15, 'R2': 25, 'R3': 0, 'FLAG_ZERO': 0}
-
---- Cycle 2: ADD R1, R2 ---
-Updated Registers: {'R1': 40, 'R2': 25, 'R3': 0, 'FLAG_ZERO': 0}
-
---- Cycle 3: SUB R2, R2 ---
-Updated Registers: {'R1': 40, 'R2': 0, 'R3': 0, 'FLAG_ZERO': 1}
-
-[SUCCESS] Final CPU State: {'R1': 40, 'R2': 0, 'R3': 0, 'FLAG_ZERO': 1}
-[EXECUTION COMPLETE] 0.004s execution time. Peak memory: 12.4 KB.`);
-      } else if (activeTab === 'asm') {
-        setOutput(`[ASSEMBLER] nasm -f elf64 cpu_test.asm
-[LINKER] ld -s -o cpu_test cpu_test.o
-[EXEC] ./cpu_test
-AI Academy: CPU Executing Instruction Cycle
-[EXIT CODE] 0 (clean exit via syscall sys_exit)`);
-      } else {
-        setOutput(`[COMPILER] gcc -Wall -Wextra -O2 memory_test.c -o memory_test
-[EXEC] ./memory_test
-Simulating Dynamic Memory Allocation on Heap...
-CacheNode Allocated at Heap Address: 0x55a9b74022a0
-Node ID: 101 | Node Value: 42
-[CLEANUP] Memory successfully freed with zero leaks.
-[VALGRIND] All heap blocks were freed -- no leaks are possible.`);
-      }
-    }, 400);
+    setOutput('Execution is not available yet. Copy this code and run it in your local development environment. Edits in this scratchpad are not executed.');
   };
 
   const handleCopy = () => {
@@ -162,10 +128,10 @@ Node ID: 101 | Node Value: 42
             <span>Interactive Code Playground</span>
           </div>
           <h1 className="text-2xl sm:text-3xl font-extrabold text-slate-100 tracking-tight mt-1">
-            Zero-Setup Engineering Sandbox
+            Programming Scratchpad
           </h1>
           <p className="text-slate-400 text-sm mt-1 max-w-3xl leading-relaxed">
-            Write, modify, and simulate CPU instruction emulators, Python data pipelines, C memory models, and assembly routines.
+            Explore and edit sample code. A browser runtime will be added in a later phase; use your local tools to execute it.
           </p>
         </div>
 
@@ -190,11 +156,11 @@ Node ID: 101 | Node Value: 42
 
           <button
             onClick={handleRun}
-            disabled={isExecuting}
+            disabled title="Browser execution is not implemented yet"
             className="px-4 py-2 rounded-lg bg-cyber-sky text-void font-bold text-xs font-mono hover:bg-sky-400 transition flex items-center space-x-2 shadow-lg shadow-cyber-sky/20 disabled:opacity-50"
           >
             <Play className="w-3.5 h-3.5 fill-current" />
-            <span>{isExecuting ? 'Running...' : 'Run Code'}</span>
+            <span>{isExecuting ? 'Running...' : 'Execution unavailable'}</span>
           </button>
         </div>
       </div>
@@ -243,6 +209,7 @@ Node ID: 101 | Node Value: 42
           {/* Textarea Editor */}
           <div className="flex-1 p-3 bg-void">
             <textarea
+              aria-label="Code scratchpad"
               value={code}
               onChange={(e) => setCode(e.target.value)}
               className="w-full h-full bg-transparent font-mono text-xs text-slate-200 resize-none focus:outline-none selection:bg-cyber-sky/30 leading-relaxed"
@@ -257,7 +224,7 @@ Node ID: 101 | Node Value: 42
           <div className="bg-surface px-4 py-2 border-b border-surface-border flex items-center justify-between">
             <div className="flex items-center space-x-2 text-xs font-mono text-slate-300">
               <Terminal className="w-3.5 h-3.5 text-cyber-emerald" />
-              <span>Execution Output & Trace</span>
+              <span>Runtime Status</span>
             </div>
             <button
               onClick={() => setOutput('')}

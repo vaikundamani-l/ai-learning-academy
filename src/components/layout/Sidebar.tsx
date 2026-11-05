@@ -70,8 +70,10 @@ export const Sidebar: React.FC<SidebarProps> = ({ isOpen, onClose }) => {
 
       {/* Sidebar Container */}
       <aside
+        id="academy-sidebar"
+        aria-label="Main navigation"
         className={`fixed top-14 bottom-0 left-0 z-40 w-64 bg-surface border-r border-surface-border flex flex-col transition-transform duration-200 ease-in-out lg:translate-x-0 ${
-          isOpen ? 'translate-x-0' : '-translate-x-full'
+          isOpen ? 'translate-x-0 visible' : '-translate-x-full invisible lg:visible'
         }`}
       >
         <div className="flex-1 overflow-y-auto py-3 px-2 space-y-4">
@@ -107,6 +109,7 @@ export const Sidebar: React.FC<SidebarProps> = ({ isOpen, onClose }) => {
           {/* Curriculum Stages Accordion */}
           <div>
             <button
+              aria-expanded={stagesOpen}
               onClick={() => setStagesOpen(!stagesOpen)}
               className="w-full flex items-center justify-between px-3 py-1 text-[10px] font-mono uppercase tracking-widest text-slate-500 font-semibold hover:text-slate-300 transition"
             >

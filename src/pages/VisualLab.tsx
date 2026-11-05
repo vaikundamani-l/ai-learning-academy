@@ -44,7 +44,7 @@ export const VisualLab: React.FC = () => {
           Interactive Architecture & Systems Visualizers
         </h1>
         <p className="text-slate-400 text-sm mt-1 max-w-3xl leading-relaxed">
-          High-definition vector schematics, hardware timing diagrams, neural network forward/backpropagation flows, and cryptographic protocols.
+          Browse planned visual lessons. The CPU cycle demo is available as a preview; other visual tools are still in development.
         </p>
       </div>
 
@@ -54,6 +54,7 @@ export const VisualLab: React.FC = () => {
         {categories.map((c) => (
           <button
             key={c.id}
+            aria-pressed={filter === c.id}
             onClick={() => setFilter(c.id)}
             className={`px-3 py-1.5 rounded-lg text-xs font-mono transition flex-shrink-0 ${
               filter === c.id
@@ -95,7 +96,7 @@ export const VisualLab: React.FC = () => {
             <div className="pt-3 border-t border-surface-border flex items-center justify-between text-xs font-mono">
               <span className="text-[10px] text-slate-500">Step Controls Enabled</span>
               <Link
-                to={item.path}
+                to={item.id === 'cpu-instruction-cycle' ? item.path : `/stage/${item.stageId}`}
                 className="flex items-center space-x-1 text-cyber-sky hover:text-sky-300 font-semibold transition"
               >
                 <span>Launch Lab</span>

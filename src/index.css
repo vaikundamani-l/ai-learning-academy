@@ -3,9 +3,98 @@
 @tailwind utilities;
 
 @layer base {
+  :root {
+    color-scheme: light;
+    /* Light Theme (Laboratory Aesthetic) */
+    --color-void: 248 250 252;          /* #f8fafc */
+    --color-surface: 255 255 255;       /* #ffffff */
+    --color-surface-card: 241 245 249;  /* #f1f5f9 */
+    --color-surface-elevated: 226 232 240; /* #e2e8f0 */
+    --color-surface-border: 203 213 225;   /* #cbd5e1 */
+
+    /* Typography hierarchy for light background */
+    --color-slate-100: 15 23 42;        /* #0f172a (high-contrast headings) */
+    --color-slate-200: 30 41 59;        /* #1e293b (body text) */
+    --color-slate-300: 51 65 85;        /* #334155 (secondary text) */
+    --color-slate-400: 71 85 105;       /* #475569 (muted text) */
+    --color-slate-500: 100 116 139;     /* #64748b (subtle labels) */
+    --color-slate-600: 148 163 184;     /* #94a3b8 */
+
+    /* Cyber accents with WCAG AA >= 4.5:1 contrast against light cards */
+    --color-cyber-sky: 2 132 199;       /* #0284c7 */
+    --color-cyber-amber: 180 83 9;      /* #b45309 */
+    --color-cyber-emerald: 4 120 87;    /* #047857 */
+    --color-cyber-indigo: 67 56 202;    /* #4338ca */
+    --color-cyber-purple: 126 34 206;   /* #7e22ce */
+    --color-cyber-rose: 190 18 60;      /* #be123c */
+  }
+
+  .dark {
+    color-scheme: dark;
+    /* Dark Theme (Engineering Aesthetic) */
+    --color-void: 9 13 22;              /* #090d16 */
+    --color-surface: 15 23 42;          /* #0f172a */
+    --color-surface-card: 30 41 59;     /* #1e293b */
+    --color-surface-elevated: 39 53 73; /* #273549 */
+    --color-surface-border: 51 65 85;   /* #334155 */
+
+    /* Typography hierarchy for dark background */
+    --color-slate-100: 241 245 249;     /* #f1f5f9 (headings) */
+    --color-slate-200: 226 232 240;     /* #e2e8f0 (body text) */
+    --color-slate-300: 203 213 225;     /* #cbd5e1 (secondary text) */
+    --color-slate-400: 148 163 184;     /* #94a3b8 (muted text) */
+    --color-slate-500: 148 163 184;     /* #94a3b8 (labels) */
+    --color-slate-600: 131 147 170;     /* #8393aa */
+
+    /* Glowing cyber accents for dark void */
+    --color-cyber-sky: 56 189 248;      /* #38bdf8 */
+    --color-cyber-amber: 245 158 11;    /* #f59e0b */
+    --color-cyber-emerald: 16 185 129;  /* #10b981 */
+    --color-cyber-indigo: 129 140 248;  /* #818cf8 */
+    --color-cyber-purple: 168 85 247;   /* #a855f7 */
+    --color-cyber-rose: 244 63 94;      /* #f43f5e */
+  }
+
   body {
     @apply bg-void text-slate-200 antialiased;
     font-feature-settings: "cv02", "cv03", "cv04", "cv11";
+  }
+
+  html {
+    scroll-padding-top: 5rem;
+  }
+
+  :focus-visible {
+    outline: 2px solid rgb(var(--color-cyber-sky));
+    outline-offset: 4px;
+  }
+
+  button:disabled {
+    cursor: not-allowed;
+    opacity: 0.5;
+    box-shadow: none;
+  }
+
+  button, a {
+    -webkit-tap-highlight-color: transparent;
+  }
+
+  input, textarea, select {
+    max-width: 100%;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after {
+      animation-duration: 0.01ms !important;
+      transition-duration: 0.01ms !important;
+      scroll-behavior: auto !important;
+    }
+  }
+
+  @media (pointer: coarse) {
+    button, nav a {
+      min-height: 44px;
+    }
   }
 
   /* Custom subtle scrollbars */
@@ -14,28 +103,44 @@
     height: 6px;
   }
   ::-webkit-scrollbar-track {
-    background: #090d16;
+    background: rgb(var(--color-void));
   }
   ::-webkit-scrollbar-thumb {
-    background: #1e293b;
+    background: rgb(var(--color-surface-border));
     border-radius: 3px;
   }
   ::-webkit-scrollbar-thumb:hover {
-    background: #334155;
+    background: rgb(var(--color-slate-400));
   }
 }
 
 @layer utilities {
   .glow-sky {
-    box-shadow: 0 0 20px -5px rgba(56, 189, 248, 0.25);
+    box-shadow: 0 0 20px -5px rgb(var(--color-cyber-sky) / 0.25);
   }
   .glow-emerald {
-    box-shadow: 0 0 20px -5px rgba(16, 185, 129, 0.25);
+    box-shadow: 0 0 20px -5px rgb(var(--color-cyber-emerald) / 0.25);
   }
   .glow-amber {
-    box-shadow: 0 0 20px -5px rgba(245, 158, 11, 0.25);
+    box-shadow: 0 0 20px -5px rgb(var(--color-cyber-amber) / 0.25);
   }
   .glow-indigo {
-    box-shadow: 0 0 20px -5px rgba(129, 140, 248, 0.25);
+    box-shadow: 0 0 20px -5px rgb(var(--color-cyber-indigo) / 0.25);
   }
+}
+
+.skip-link {
+  position: fixed;
+  top: -5rem;
+  left: 1rem;
+  z-index: 100;
+  background: rgb(var(--color-cyber-sky));
+  color: rgb(var(--color-void));
+  padding: 0.75rem 1rem;
+  border-radius: 0.5rem;
+  font-weight: 600;
+  transition: top 0.2s ease;
+}
+.skip-link:focus {
+  top: 0.5rem;
 }

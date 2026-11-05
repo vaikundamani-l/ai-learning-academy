@@ -153,8 +153,8 @@ export const Dashboard: React.FC = () => {
               <div className="p-3 rounded-lg bg-cyber-sky/10 border border-cyber-sky/30 flex items-start space-x-3">
                 <Cpu className="w-5 h-5 text-cyber-sky flex-shrink-0 mt-0.5" />
                 <div className="text-xs text-slate-300">
-                  <span className="font-semibold text-cyber-sky">Quality Pilot Lesson Ready: </span>
-                  Explore the 28-topic deep CPU Architecture, 5-stage instruction cycle animation, register simulator, and pipeline hazard explorer.
+                  <span className="font-semibold text-cyber-sky">CPU Pilot • In development: </span>
+                  Preview the CPU lesson outline and early cycle demonstration. The full lesson and visualizations are still being built.
                 </div>
               </div>
             )}
@@ -280,7 +280,7 @@ export const Dashboard: React.FC = () => {
           <span>The Master Learning Method</span>
         </div>
         <p className="leading-relaxed">
-          <strong className="text-slate-200">The 4-Level Mastery Standard:</strong> Understand the problem &rarr; Explain the mechanism &rarr; Implement a small version &rarr; Verify correctness &rarr; Experiment with parameters &rarr; Measure failure limits.
+          <strong className="text-slate-200">The Mastery Standard:</strong> Understand the problem &rarr; Explain the mechanism &rarr; Implement a small version &rarr; Verify correctness &rarr; Experiment with parameters &rarr; Measure failure limits.
         </p>
         <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 pt-2 font-mono text-[11px]">
           <div className="p-2.5 rounded bg-surface border border-surface-border">

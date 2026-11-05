@@ -8,20 +8,33 @@ export default {
   theme: {
     extend: {
       colors: {
-        void: '#090d16',
+        void: 'rgb(var(--color-void) / <alpha-value>)',
         surface: {
-          DEFAULT: '#0f172a',
-          card: '#1e293b',
-          elevated: '#273549',
-          border: '#334155',
+          DEFAULT: 'rgb(var(--color-surface) / <alpha-value>)',
+          card: 'rgb(var(--color-surface-card) / <alpha-value>)',
+          elevated: 'rgb(var(--color-surface-elevated) / <alpha-value>)',
+          border: 'rgb(var(--color-surface-border) / <alpha-value>)',
+        },
+        slate: {
+          50: '#f8fafc',
+          100: 'rgb(var(--color-slate-100) / <alpha-value>)',
+          200: 'rgb(var(--color-slate-200) / <alpha-value>)',
+          300: 'rgb(var(--color-slate-300) / <alpha-value>)',
+          400: 'rgb(var(--color-slate-400) / <alpha-value>)',
+          500: 'rgb(var(--color-slate-500) / <alpha-value>)',
+          600: 'rgb(var(--color-slate-600) / <alpha-value>)',
+          700: '#334155',
+          800: '#1e293b',
+          900: '#0f172a',
+          950: '#020617',
         },
         cyber: {
-          sky: '#38bdf8',
-          amber: '#f59e0b',
-          emerald: '#10b981',
-          indigo: '#818cf8',
-          purple: '#a855f7',
-          rose: '#f43f5e',
+          sky: 'rgb(var(--color-cyber-sky) / <alpha-value>)',
+          amber: 'rgb(var(--color-cyber-amber) / <alpha-value>)',
+          emerald: 'rgb(var(--color-cyber-emerald) / <alpha-value>)',
+          indigo: 'rgb(var(--color-cyber-indigo) / <alpha-value>)',
+          purple: 'rgb(var(--color-cyber-purple) / <alpha-value>)',
+          rose: 'rgb(var(--color-cyber-rose) / <alpha-value>)',
         }
       },
       fontFamily: {

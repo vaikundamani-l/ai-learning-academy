@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { 
   Menu, 
@@ -7,32 +7,66 @@ import {
   Settings, 
   Award,
   Terminal,
-  Cpu
+  Cpu,
+  Sun,
+  Moon,
+  Monitor
 } from 'lucide-react';
 import { useProgress } from '../../context/ProgressContext';
+import { useTheme } from '../../context/ThemeContext';
 
 interface NavbarProps {
   onToggleSidebar: () => void;
+  sidebarOpen: boolean;
 }
 
-export const Navbar: React.FC<NavbarProps> = ({ onToggleSidebar }) => {
+export const Navbar: React.FC<NavbarProps> = ({ onToggleSidebar, sidebarOpen }) => {
   const location = useLocation();
   const navigate = useNavigate();
   const { progress } = useProgress();
+  const { theme, resolvedTheme, setTheme } = useTheme();
 
   // Calculate approximate curriculum completion percentage
   const totalStages = 31;
   const completedCount = progress.completedStages.length;
   const progressPercent = Math.round((completedCount / totalStages) * 100);
 
-  // Generate breadcrumbs from path
-  const pathParts = location.pathname.split('/').filter(Boolean);
+  const stageMatch = location.pathname.match(/^\/stage\/(\d+)/);
+  const breadcrumbs = stageMatch
+    ? [{ label: `Stage ${stageMatch[1]}`, url: `/stage/${stageMatch[1]}` },
+       ...(location.pathname.includes('/lesson/') ? [{ label: 'Lesson preview', url: location.pathname }] : [])]
+    : [{ label: location.pathname === '/' ? 'Dashboard' : location.pathname.split('/')[1].replace(/-/g, ' '), url: location.pathname }];
+
+  useEffect(() => {
+    const handleShortcut = (event: KeyboardEvent) => {
+      const target = event.target as HTMLElement;
+      if (event.key !== '/' || event.ctrlKey || event.metaKey || event.altKey || target.closest('input, textarea, select, [contenteditable="true"]')) return;
+      event.preventDefault(); navigate('/search');
+    };
+    window.addEventListener('keydown', handleShortcut);
+    return () => window.removeEventListener('keydown', handleShortcut);
+  }, [navigate]);
+
+  const handleCycleTheme = () => {
+    if (theme === 'dark') setTheme('light');
+    else if (theme === 'light') setTheme('system');
+    else setTheme('dark');
+  };
+
+  const ThemeIcon = theme === 'system' ? Monitor : resolvedTheme === 'dark' ? Moon : Sun;
+  const themeLabel = theme === 'system' 
+    ? `System (${resolvedTheme})` 
+    : theme === 'dark' 
+    ? 'Dark' 
+    : 'Light';
 
   return (
     <header className="sticky top-0 z-30 h-14 bg-void/90 backdrop-blur-md border-b border-surface-border px-4 flex items-center justify-between">
       {/* Left: Mobile Toggle & Brand & Breadcrumb */}
       <div className="flex items-center space-x-3">
         <button
+          aria-expanded={sidebarOpen}
+          aria-controls="academy-sidebar"
           onClick={onToggleSidebar}
           className="p-1.5 rounded-lg text-slate-400 hover:text-slate-100 hover:bg-surface-card transition lg:hidden"
           title="Toggle Navigation Menu"
@@ -57,22 +91,14 @@ export const Navbar: React.FC<NavbarProps> = ({ onToggleSidebar }) => {
         {/* Dynamic Breadcrumbs */}
         <div className="hidden md:flex items-center space-x-2 text-xs font-mono text-slate-400 border-l border-surface-border pl-3 ml-2">
           <Link to="/" className="hover:text-cyber-sky transition">Academy</Link>
-          {pathParts.map((part, idx) => {
-            const url = `/${pathParts.slice(0, idx + 1).join('/')}`;
-            const isLast = idx === pathParts.length - 1;
-            return (
-              <React.Fragment key={url}>
-                <span className="text-slate-600">/</span>
-                {isLast ? (
-                  <span className="text-slate-200 capitalize font-medium">{part.replace(/-/g, ' ')}</span>
-                ) : (
-                  <Link to={url} className="hover:text-cyber-sky capitalize transition">
-                    {part.replace(/-/g, ' ')}
-                  </Link>
-                )}
-              </React.Fragment>
-            );
-          })}
+          {breadcrumbs.map((crumb, idx) => (
+            <React.Fragment key={crumb.url}>
+              <span className="text-slate-600">/</span>
+              {idx === breadcrumbs.length - 1
+                ? <span aria-current="page" className="text-slate-200 capitalize">{crumb.label}</span>
+                : <Link to={crumb.url} className="hover:text-cyber-sky capitalize">{crumb.label}</Link>}
+            </React.Fragment>
+          ))}
         </div>
       </div>
 
@@ -80,6 +106,7 @@ export const Navbar: React.FC<NavbarProps> = ({ onToggleSidebar }) => {
       <div className="flex items-center space-x-2 sm:space-x-3">
         {/* Omni Search Shortcut Button */}
         <button
+          aria-label="Search curriculum"
           onClick={() => navigate('/search')}
           className="flex items-center space-x-2 px-3 py-1.5 rounded-lg bg-surface-card hover:bg-surface-elevated border border-surface-border text-xs text-slate-400 hover:text-slate-200 transition"
         >
@@ -99,6 +126,17 @@ export const Navbar: React.FC<NavbarProps> = ({ onToggleSidebar }) => {
           <Award className="w-3.5 h-3.5 text-cyber-amber" />
           <span className="font-mono text-[11px] font-semibold">{progressPercent}%</span>
         </Link>
+
+        {/* Theme Quick Switcher */}
+        <button
+          onClick={handleCycleTheme}
+          aria-label={`Current theme: ${themeLabel}. Click to switch theme.`}
+          className="p-1.5 rounded-lg text-slate-400 hover:text-slate-100 hover:bg-surface-card transition flex items-center space-x-1"
+          title={`Theme: ${themeLabel} (Click to switch)`}
+        >
+          <ThemeIcon className="w-4 h-4 text-cyber-sky" />
+          <span className="hidden xl:inline text-[10px] font-mono capitalize">{themeLabel}</span>
+        </button>
 
         {/* Quick Links */}
         <Link

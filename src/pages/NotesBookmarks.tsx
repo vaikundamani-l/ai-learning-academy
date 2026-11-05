@@ -16,11 +16,13 @@ export const NotesBookmarks: React.FC = () => {
   const { progress, toggleBookmark, saveNote } = useProgress();
   const [activeTab, setActiveTab] = useState<'bookmarks' | 'notes'>('bookmarks');
   const [newNoteKey, setNewNoteKey] = useState('stage-0-notes');
+  const [savedMessage, setSavedMessage] = useState('');
   const [newNoteContent, setNewNoteContent] = useState('');
 
   const handleSaveNote = () => {
     if (!newNoteKey.trim() || !newNoteContent.trim()) return;
-    saveNote(newNoteKey, newNoteContent);
+    saveNote(newNoteKey.trim(), newNoteContent);
+    setSavedMessage('Note saved in this browser.');
     setNewNoteContent('');
   };
 
@@ -40,7 +42,7 @@ export const NotesBookmarks: React.FC = () => {
       </div>
 
       {/* Tabs */}
-      <div className="flex items-center space-x-2 border-b border-surface-border pb-3">
+      <div className="flex flex-wrap gap-2 items-center border-b border-surface-border pb-3">
         <button
           onClick={() => setActiveTab('bookmarks')}
           className={`flex items-center space-x-2 px-4 py-2 rounded-lg text-xs font-mono transition ${
@@ -88,7 +90,7 @@ export const NotesBookmarks: React.FC = () => {
                     <span className="text-[10px] font-mono text-cyber-sky uppercase font-semibold">
                       Saved Lesson
                     </span>
-                    <h4 className="text-sm font-bold text-slate-200 font-mono">
+                    <h4 className="text-sm font-bold text-slate-200 font-mono break-all">
                       {path}
                     </h4>
                   </div>
@@ -129,12 +131,14 @@ export const NotesBookmarks: React.FC = () => {
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
               <input
                 type="text"
+                aria-label="Note title"
                 value={newNoteKey}
                 onChange={(e) => setNewNoteKey(e.target.value)}
                 placeholder="Topic or Stage Key (e.g. Stage 0 CPU)"
                 className="px-3 py-2 rounded-lg bg-surface border border-surface-border text-xs text-slate-200 font-mono focus:outline-none focus:border-cyber-sky"
               />
               <textarea
+                aria-label="Note content"
                 value={newNoteContent}
                 onChange={(e) => setNewNoteContent(e.target.value)}
                 placeholder="Write your observation, derivation or bug diagnostic..."
@@ -142,8 +146,10 @@ export const NotesBookmarks: React.FC = () => {
               />
             </div>
 
+            <p role="status" className="text-sm text-cyber-emerald">{savedMessage}</p>
             <div className="flex justify-end">
               <button
+                disabled={!newNoteKey.trim() || !newNoteContent.trim()}
                 onClick={handleSaveNote}
                 className="px-4 py-1.5 rounded-lg bg-cyber-sky text-void font-bold text-xs font-mono hover:bg-sky-400 transition flex items-center space-x-1.5"
               >

@@ -16,6 +16,7 @@ import {
   ShieldCheck,
   Check
 } from 'lucide-react';
+import { NotFound } from './NotFound';
 import { CURRICULUM_STAGES } from '../data/curriculumData';
 import { useProgress } from '../context/ProgressContext';
 
@@ -23,44 +24,34 @@ export const LessonViewer: React.FC = () => {
   const { stageId, lessonId } = useParams<{ stageId: string; lessonId: string }>();
   const { progress, markLessonCompleted, toggleBookmark, isBookmarked } = useProgress();
 
-  const id = parseInt(stageId || '0', 10);
+  const id = /^\d+$/.test(stageId || '') ? Number(stageId) : -1;
   const stage = CURRICULUM_STAGES[id] || CURRICULUM_STAGES[0];
   const currentPath = `/stage/${id}/lesson/${lessonId}`;
   const bookmarked = isBookmarked(currentPath);
   const completed = progress.completedLessons.includes(currentPath);
 
-  const [activeSection, setActiveSection] = useState('intro');
+  const [activeSection, setActiveSection] = useState('objectives');
 
   // 18-Point Framework Table of Contents
   const tocItems = [
     { id: 'objectives', title: '1. Learning Objectives' },
-    { id: 'prereqs', title: '2. Prerequisites & Assumptions' },
-    { id: 'problem', title: '3. Historical Context & The Problem' },
-    { id: 'fundamentals', title: '4. First Principles & Intuition' },
-    { id: 'terminology', title: '5. Core Terminology & Notation' },
-    { id: 'architecture', title: '6. Internal Component Architecture' },
-    { id: 'mechanism', title: '7. Step-by-Step Working Mechanism' },
-    { id: 'diagrams', title: '8. Architecture Schematics' },
-    { id: 'animations', title: '9. Animated Dynamic Cycles' },
-    { id: 'math', title: '10. Mathematics & Numerical Derivations' },
-    { id: 'linux-demo', title: '11. Practical Linux & Tooling Demo' },
-    { id: 'scratch-code', title: '12. Implementation From Scratch' },
-    { id: 'real-world', title: '13. Production Systems & Case Studies' },
-    { id: 'advanced', title: '14. Advanced Optimizations' },
-    { id: 'failures', title: '15. Edge Cases & Failure Modes' },
-    { id: 'experiments', title: '16. Interactive Experiments' },
-    { id: 'exercises', title: '17. Graded Challenges' },
-    { id: 'assessment', title: '18. Mini-Project & Mastery Assessment' },
+    { id: 'prereqs', title: '2. Prerequisites' },
+    { id: 'problem', title: '3. Historical Context' },
   ];
 
   const handleMarkComplete = () => {
     markLessonCompleted(currentPath);
   };
 
+  if (!CURRICULUM_STAGES[id] || id !== 0 || lessonId !== 'cpu-architecture') return <NotFound />;
+
   return (
     <div className="space-y-6">
+      <div role="status" className="rounded-xl border border-cyber-amber/40 bg-cyber-amber/10 p-4 text-sm text-slate-200">
+        Lesson preview: only the first three sections are available. The complete CPU lesson, visuals, and assessment are still in development.
+      </div>
       {/* Top Breadcrumb & Controls */}
-      <div className="flex items-center justify-between text-xs font-mono border-b border-surface-border pb-3">
+      <div className="flex flex-wrap gap-3 items-center justify-between text-xs font-mono border-b border-surface-border pb-3">
         <Link
           to={`/stage/${stage.id}`}
           className="flex items-center space-x-1.5 text-slate-400 hover:text-cyber-sky transition"
@@ -84,7 +75,7 @@ export const LessonViewer: React.FC = () => {
           </button>
 
           <button
-            onClick={handleMarkComplete}
+            disabled title="Completion unlocks after the full lesson and assessment are available"
             className={`px-3 py-1.5 rounded-lg border text-xs font-mono font-semibold transition flex items-center space-x-1.5 ${
               completed
                 ? 'bg-cyber-emerald/15 border-cyber-emerald/40 text-cyber-emerald'
@@ -92,7 +83,7 @@ export const LessonViewer: React.FC = () => {
             }`}
           >
             <CheckCircle2 className="w-3.5 h-3.5" />
-            <span>{completed ? 'Lesson Completed' : 'Mark as Completed'}</span>
+            <span>{completed ? 'Lesson Completed' : 'Draft • Completion unavailable'}</span>
           </button>
         </div>
       </div>
@@ -118,7 +109,7 @@ export const LessonViewer: React.FC = () => {
 
             <p className="text-slate-300 text-sm leading-relaxed max-w-3xl">
               {lessonId === 'cpu-architecture'
-                ? 'A comprehensive first-principles exploration of the Central Processing Unit: ALU, Control Unit, register banks, clock cycles, ISA encoding, the 5-stage pipeline, branch prediction, and superscalar microarchitectures.'
+                ? 'Planned scope for the complete CPU lesson: ALU, Control Unit, register banks, clock cycles, ISA encoding, the 5-stage pipeline, branch prediction, and superscalar microarchitectures.'
                 : stage.shortDescription}
             </p>
           </div>
@@ -132,10 +123,10 @@ export const LessonViewer: React.FC = () => {
                 </div>
                 <div>
                   <h4 className="text-xs font-bold font-mono text-slate-100">
-                    Interactive Teaching Laboratory Ready
+                    Simulator Preview
                   </h4>
                   <p className="text-[11px] text-slate-400">
-                    This topic includes {stage.simulators.length} interactive simulator{stage.simulators.length > 1 ? 's' : ''} with step-by-step clock cycle controls.
+                    This stage has {stage.simulators.length} planned simulator{stage.simulators.length > 1 ? 's' : ''} in the curriculum. The CPU cycle demonstration is an early preview.
                   </p>
                 </div>
               </div>
@@ -155,7 +146,7 @@ export const LessonViewer: React.FC = () => {
               <span className="text-cyber-sky">1.</span>
               <span>Learning Objectives</span>
             </h2>
-            <ul className="space-y-2 text-xs text-slate-300">
+            <ul className="space-y-2 text-sm text-slate-300">
               <li className="flex items-start space-x-2">
                 <Check className="w-3.5 h-3.5 text-cyber-sky flex-shrink-0 mt-0.5" />
                 <span>Explain the fundamental necessity of the CPU and the Von Neumann architecture boundary.</span>
@@ -185,7 +176,7 @@ export const LessonViewer: React.FC = () => {
               <span className="text-cyber-sky">2.</span>
               <span>Prerequisites & Assumptions</span>
             </h2>
-            <p className="text-xs text-slate-300 leading-relaxed">
+            <p className="text-sm text-slate-300 leading-7">
               This lesson is designed for beginners with zero prior computer engineering background. A basic conceptual grasp of binary numbers (0s and 1s) and elementary logic gates (AND, OR, NOT) is helpful but fully reviewed in Section 4.
             </p>
           </section>
@@ -196,10 +187,10 @@ export const LessonViewer: React.FC = () => {
               <span className="text-cyber-sky">3.</span>
               <span>The Problem & Historical Context</span>
             </h2>
-            <p className="text-xs text-slate-300 leading-relaxed">
+            <p className="text-sm text-slate-300 leading-7">
               Before the invention of stored-program general-purpose microprocessors, computers were single-purpose calculating machines or required physical rewiring (such as the ENIAC with plugboards and switches) to alter program behavior.
             </p>
-            <div className="p-3 rounded-lg bg-surface border border-surface-border text-xs text-slate-400 space-y-1">
+            <div className="p-3 rounded-lg bg-surface border border-surface-border text-sm text-slate-400 space-y-1">
               <span className="font-semibold text-cyber-amber block">The Breakthrough: Von Neumann Architecture (1945)</span>
               <span>Unifying program instructions and data into the same shared memory space, coordinated by a central processing engine capable of fetching and executing sequential instructions automatically.</span>
             </div>
@@ -209,12 +200,12 @@ export const LessonViewer: React.FC = () => {
           <div className="p-6 rounded-2xl bg-gradient-to-br from-surface-card to-surface-elevated border border-cyber-sky/30 space-y-4">
             <div className="flex items-center space-x-2 text-cyber-sky font-mono font-bold text-xs uppercase tracking-wider">
               <Sparkles className="w-4 h-4 text-cyber-sky" />
-              <span>Full Phase 4 Pilot Ready for Deployment</span>
+              <span>CPU Pilot • In development</span>
             </div>
             <h3 className="text-lg font-bold text-slate-100">
               Interactive CPU Pilot Blueprint Connected
             </h3>
-            <p className="text-xs text-slate-300 leading-relaxed">
+            <p className="text-sm text-slate-300 leading-7">
               The full 28-topic CPU Architecture lesson framework, including the live animated 5-stage pipeline, ALU simulator, register visualizer, cache hit/miss explorer, and educational Python CPU simulator, will be fully realized in Phase 4.
             </p>
             <div className="pt-1 flex flex-wrap gap-3">
@@ -263,7 +254,7 @@ export const LessonViewer: React.FC = () => {
 
           {/* Quick Help Note */}
           <div className="p-3 rounded-lg bg-surface border border-surface-border text-[11px] font-mono text-slate-500">
-            <span>Pedagogical Standard:</span> All 18 points rigorously covered before lesson sign-off.
+            <span>Pedagogical Standard:</span> All required teaching sections must pass review before lesson sign-off.
           </div>
         </div>
       </div>

@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useCallback } from 'react';
 import { Link } from 'react-router-dom';
 import { 
   CheckCircle2, 
@@ -21,6 +21,7 @@ import {
 } from 'lucide-react';
 import { CURRICULUM_STAGES } from '../../data/curriculumData';
 import { useProgress } from '../../context/ProgressContext';
+import { useFocusScope } from '../../hooks/useFocusScope';
 import { Stage } from '../../types/curriculum';
 
 interface RoadmapViewProps {
@@ -32,6 +33,9 @@ export const InteractiveRoadmapView: React.FC<RoadmapViewProps> = () => {
   const [selectedStage, setSelectedStage] = useState<Stage | null>(null);
   const [trackFilter, setTrackFilter] = useState<'all' | 'ai' | 'cyber' | 'systems'>('all');
   const [completedTopics, setCompletedTopics] = useState<Record<string, boolean>>({});
+
+  const closeDrawer = useCallback(() => setSelectedStage(null), []);
+  useFocusScope(!!selectedStage, '#stage-drawer', closeDrawer);
 
   const toggleTopicCheck = (topicKey: string) => {
     setCompletedTopics(prev => ({ ...prev, [topicKey]: !prev[topicKey] }));
@@ -229,6 +233,8 @@ export const InteractiveRoadmapView: React.FC<RoadmapViewProps> = () => {
                     {/* Node Card */}
                     <div className="w-full md:w-[48%]">
                       <div
+                        role="button" tabIndex={0} aria-label={`Inspect Stage ${stage.id}: ${stage.title}`}
+                        onKeyDown={e => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); setSelectedStage(stage); } }}
                         onClick={() => setSelectedStage(stage)}
                         className={`p-4 sm:p-5 rounded-2xl border transition-all duration-200 cursor-pointer group hover:scale-[1.01] relative overflow-hidden ${
                           isDone
@@ -320,6 +326,8 @@ export const InteractiveRoadmapView: React.FC<RoadmapViewProps> = () => {
                     {/* Central Node Indicator on Spine */}
                     <div className="hidden md:flex items-center justify-center w-[4%]">
                       <div
+                        role="button" tabIndex={0} aria-label={`Inspect Stage ${stage.id}: ${stage.title}`}
+                        onKeyDown={e => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); setSelectedStage(stage); } }}
                         onClick={() => setSelectedStage(stage)}
                         className={`w-7 h-7 rounded-full border-2 flex items-center justify-center font-mono text-[11px] font-bold cursor-pointer transition transform hover:scale-125 z-20 ${
                           isDone
@@ -345,8 +353,9 @@ export const InteractiveRoadmapView: React.FC<RoadmapViewProps> = () => {
 
       {/* Interactive Detail Drawer Modal (Opens when clicking any node) */}
       {selectedStage && (
-        <div className="fixed inset-0 z-50 flex items-center justify-end bg-void/80 backdrop-blur-sm animate-fade-in">
+        <div onClick={closeDrawer} className="fixed inset-0 z-50 flex items-center justify-end bg-void/80 backdrop-blur-sm animate-fade-in">
           <div
+            id="stage-drawer" role="dialog" aria-modal="true" aria-label={`${selectedStage.title} overview`} tabIndex={-1}
             onClick={(e) => e.stopPropagation()}
             className="w-full max-w-xl h-full bg-surface border-l border-surface-border p-6 overflow-y-auto space-y-6 flex flex-col justify-between shadow-2xl"
           >
@@ -363,7 +372,8 @@ export const InteractiveRoadmapView: React.FC<RoadmapViewProps> = () => {
                 </div>
 
                 <button
-                  onClick={() => setSelectedStage(null)}
+                  aria-label="Close stage overview"
+                  onClick={closeDrawer}
                   className="p-1.5 rounded-lg text-slate-400 hover:text-white hover:bg-surface-elevated transition"
                 >
                   <X className="w-5 h-5" />
@@ -384,18 +394,19 @@ export const InteractiveRoadmapView: React.FC<RoadmapViewProps> = () => {
                 <div className="p-3.5 rounded-xl bg-cyber-sky/10 border border-cyber-sky/30 space-y-1.5">
                   <div className="flex items-center space-x-2 text-cyber-sky text-xs font-mono font-bold">
                     <Sparkles className="w-4 h-4" />
-                    <span>Quality Pilot Lesson Ready</span>
+                    <span>CPU Pilot • In development</span>
                   </div>
                   <p className="text-xs text-slate-300">
-                    Explore the 28-topic CPU Architecture master lesson, 5-stage animated instruction cycle, and interactive register/ALU simulator.
+                    Preview the CPU lesson outline. The complete lesson and eight visualizations are planned for a later phase.
                   </p>
                 </div>
               )}
 
               {/* Topics Checklist (roadmap.sh interactive checklist feature) */}
               <div className="space-y-2">
+                <p className="text-xs text-slate-400">Personal checklist for this visit. These checks do not verify mastery or save learning progress.</p>
                 <div className="text-xs font-mono text-slate-400 uppercase tracking-wider font-semibold">
-                  Stage Learning Topics ({selectedStage.originalTopics.length})
+                  Session review checklist ({selectedStage.originalTopics.length})
                 </div>
                 <div className="space-y-2 max-h-56 overflow-y-auto pr-1">
                   {selectedStage.originalTopics.map((topic, idx) => {
@@ -404,6 +415,8 @@ export const InteractiveRoadmapView: React.FC<RoadmapViewProps> = () => {
                     return (
                       <div
                         key={idx}
+                        role="checkbox" aria-checked={isChecked} tabIndex={0}
+                        onKeyDown={e => { if (e.key === ' ' || e.key === 'Enter') { e.preventDefault(); toggleTopicCheck(key); } }}
                         onClick={() => toggleTopicCheck(key)}
                         className={`p-2.5 rounded-lg border text-xs transition cursor-pointer flex items-start space-x-2.5 ${
                           isChecked
