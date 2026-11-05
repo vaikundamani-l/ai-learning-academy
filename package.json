@@ -14,13 +14,17 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "katex": "^0.19.1",
     "lucide-react": "^1.69.0",
+    "prismjs": "^1.30.0",
     "react": "^19.3.1",
     "react-dom": "^19.3.1",
     "react-router-dom": "^7.18.5"
   },
   "devDependencies": {
+    "@types/katex": "^0.16.8",
     "@types/node": "^26.6.6",
+    "@types/prismjs": "^1.26.6",
     "@types/react": "^19.3.0",
     "@types/react-dom": "^19.3.0",
     "@vitejs/plugin-react": "^6.2.1",

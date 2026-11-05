@@ -1,20 +1,16 @@
 import React, { useState } from 'react';
 import { 
   Terminal, 
-  Play, 
   RotateCcw, 
   Copy, 
   Check, 
-  Code, 
-  Cpu, 
-  Sparkles,
-  FileCode2
+  Info,
+  ExternalLink
 } from 'lucide-react';
 
 export const Playground: React.FC = () => {
   const [activeTab, setActiveTab] = useState<'python' | 'asm' | 'c'>('python');
   const [output, setOutput] = useState<string>('Code scratchpad preview. Browser execution is not implemented yet.');
-  const [isExecuting, setIsExecuting] = useState(false);
   const [copied, setCopied] = useState(false);
 
   const starterCode = {
@@ -101,20 +97,51 @@ int main() {
 `
   };
 
-  const [code, setCode] = useState<string>(starterCode.python);
+  const [drafts, setDrafts] = useState<Record<'python' | 'asm' | 'c', string>>(() => {
+    try {
+      const stored = localStorage.getItem('ai_master_course_playground_drafts');
+      if (stored) {
+        const parsed = JSON.parse(stored);
+        if (parsed && typeof parsed === 'object') {
+          return {
+            python: parsed.python || starterCode.python,
+            asm: parsed.asm || starterCode.asm,
+            c: parsed.c || starterCode.c,
+          };
+        }
+      }
+    } catch {}
+    return starterCode;
+  });
+
+  const currentCode = drafts[activeTab];
+
+  const handleUpdateCode = (newCode: string) => {
+    setDrafts(prev => {
+      const updated = { ...prev, [activeTab]: newCode };
+      try {
+        localStorage.setItem('ai_master_course_playground_drafts', JSON.stringify(updated));
+      } catch {}
+      return updated;
+    });
+  };
 
   const handleTabChange = (tab: 'python' | 'asm' | 'c') => {
     setActiveTab(tab);
-    setCode(starterCode[tab]);
-    setOutput(`Switched environment to ${tab.toUpperCase()}. Copy the code to run it locally.`);
+    setOutput(`Switched environment to ${tab.toUpperCase()}. Edits in this scratchpad are automatically preserved.`);
+  };
+
+  const handleResetCurrent = () => {
+    handleUpdateCode(starterCode[activeTab]);
+    setOutput(`Reset ${activeTab.toUpperCase()} template to original starter code.`);
   };
 
   const handleRun = () => {
-    setOutput('Execution is not available yet. Copy this code and run it in your local development environment. Edits in this scratchpad are not executed.');
+    setOutput('Browser execution runtime is currently in development for a future phase. Copy this code into your terminal or local IDE (VS Code, GCC, NASM, Python) to execute and test.');
   };
 
   const handleCopy = () => {
-    navigator.clipboard.writeText(code);
+    navigator.clipboard.writeText(currentCode);
     setCopied(true);
     setTimeout(() => setCopied(false), 2000);
   };
@@ -131,7 +158,7 @@ int main() {
             Programming Scratchpad
           </h1>
           <p className="text-slate-400 text-sm mt-1 max-w-3xl leading-relaxed">
-            Explore and edit sample code. A browser runtime will be added in a later phase; use your local tools to execute it.
+            Explore, draft, and modify code. Edits are automatically preserved locally across tabs. Use your local tools to execute until the sandboxed runtime is connected.
           </p>
         </div>
 
@@ -147,21 +174,28 @@ int main() {
           </button>
 
           <button
-            onClick={() => setCode(starterCode[activeTab])}
+            onClick={handleResetCurrent}
             className="p-2 rounded-lg bg-surface-card hover:bg-surface-elevated border border-surface-border text-slate-300 transition"
-            title="Reset code to starter template"
+            title="Reset active tab to default starter code"
           >
             <RotateCcw className="w-3.5 h-3.5" />
           </button>
 
           <button
             onClick={handleRun}
-            disabled title="Browser execution is not implemented yet"
-            className="px-4 py-2 rounded-lg bg-cyber-sky text-void font-bold text-xs font-mono hover:bg-sky-400 transition flex items-center space-x-2 shadow-lg shadow-cyber-sky/20 disabled:opacity-50"
+            className="px-4 py-2 rounded-lg bg-surface-card border border-surface-border text-slate-400 hover:text-slate-200 text-xs font-mono transition flex items-center space-x-2"
           >
-            <Play className="w-3.5 h-3.5 fill-current" />
-            <span>{isExecuting ? 'Running...' : 'Execution unavailable'}</span>
+            <Terminal className="w-3.5 h-3.5 text-cyber-sky" />
+            <span>Run Info</span>
           </button>
+        </div>
+      </div>
+
+      <div role="status" className="rounded-xl border border-surface-border bg-surface-card p-4 text-xs font-mono text-slate-300 flex items-start space-x-2.5">
+        <Info className="w-4 h-4 text-cyber-sky flex-shrink-0 mt-0.5" />
+        <div className="leading-relaxed">
+          <strong className="text-slate-100">Scratchpad Mode: </strong>
+          Your code edits are saved per tab in this browser. To execute your scripts, copy them to your local terminal (e.g. <code className="text-cyber-sky">python3 app.py</code>, <code className="text-cyber-sky">gcc app.c</code>, <code className="text-cyber-sky">nasm app.asm</code>).
         </div>
       </div>
 
@@ -203,15 +237,15 @@ int main() {
                 C (C11)
               </button>
             </div>
-            <span className="text-[10px] font-mono text-slate-500">Live Editor</span>
+            <span className="text-[10px] font-mono text-slate-500">Draft Persisted</span>
           </div>
 
           {/* Textarea Editor */}
           <div className="flex-1 p-3 bg-void">
             <textarea
-              aria-label="Code scratchpad"
-              value={code}
-              onChange={(e) => setCode(e.target.value)}
+              aria-label="Code editor"
+              value={currentCode}
+              onChange={(e) => handleUpdateCode(e.target.value)}
               className="w-full h-full bg-transparent font-mono text-xs text-slate-200 resize-none focus:outline-none selection:bg-cyber-sky/30 leading-relaxed"
               spellCheck={false}
             />
@@ -224,7 +258,7 @@ int main() {
           <div className="bg-surface px-4 py-2 border-b border-surface-border flex items-center justify-between">
             <div className="flex items-center space-x-2 text-xs font-mono text-slate-300">
               <Terminal className="w-3.5 h-3.5 text-cyber-emerald" />
-              <span>Runtime Status</span>
+              <span>Execution Output & Trace</span>
             </div>
             <button
               onClick={() => setOutput('')}
