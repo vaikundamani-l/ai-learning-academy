@@ -15,9 +15,9 @@ echo "==========================================================================
 echo "Initializing Reproducible Git Repository in: ${TARGET_REPO}"
 echo "================================================================================"
 
-if [[ -d "$TARGET_REPO" ]]; then
-    echo "[WARN] Target directory already exists. Recreating clean test bed..."
-    rm -rf "$TARGET_REPO"
+if [[ -e "$TARGET_REPO" || -L "$TARGET_REPO" ]]; then
+    echo "[ERROR] Target already exists; choose a new directory. Nothing was deleted: $TARGET_REPO" >&2
+    exit 1
 fi
 
 mkdir -p "$TARGET_REPO"

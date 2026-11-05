@@ -15,7 +15,19 @@ set -euo pipefail
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 PROJECT_ROOT="$(cd "$SCRIPT_DIR/.." && pwd)"
 
-cd "$PROJECT_ROOT"
+# Work only in a disposable copy; never corrupt the academy or learner's source.
+LAB_DIR=$(mktemp -d /tmp/stage0-diagnose.XXXXXX)
+trap 'rm -rf -- "$LAB_DIR"' EXIT
+trap 'exit 130' INT
+trap 'exit 143' TERM
+cp -R "$PROJECT_ROOT/src" "$PROJECT_ROOT/tests" "$LAB_DIR/"
+cd "$LAB_DIR"
+git init -q -b main
+git config user.name "Stage 0 Lab"
+git config user.email "lab@example.invalid"
+git add src tests
+git commit -qm "Known-good exercise baseline"
+echo "Disposable exercise directory: $LAB_DIR"
 
 echo "================================================================================"
 echo "Stage 0 Mastery Check: Failure Diagnosis & Restoration"
@@ -30,10 +42,10 @@ echo "  ✓ Baseline tests passing cleanly."
 # We simulate a permission corruption where a vital test file is stripped of read permissions
 # and a code file has an intentional regression injected.
 CORRUPT_TARGET="src/file_organizer.py"
-BACKUP_TARGET="src/file_organizer.py.bak"
+
 
 echo "[STEP 2] Simulating workspace failure (injecting regression into ${CORRUPT_TARGET})..."
-cp "$CORRUPT_TARGET" "$BACKUP_TARGET"
+
 
 # Inject invalid syntax
 echo "FATAL_SYNTAX_REGRESSION = [syntax error >>>" >> "$CORRUPT_TARGET"
@@ -50,7 +62,7 @@ if [[ $FAILURE_EXIT_CODE -ne 0 ]]; then
     echo "  ✓ Failure successfully intercepted! Exit code: ${FAILURE_EXIT_CODE}"
 else
     echo "  ✗ Error: Application did not fail when regression was present." >&2
-    rm -f "$BACKUP_TARGET"
+
     exit 1
 fi
 
@@ -61,7 +73,7 @@ echo "  ✓ Diagnostic telemetry captured."
 
 # Step 5: Version Restoration
 echo "[STEP 4] Restoring known working version..."
-mv "$BACKUP_TARGET" "$CORRUPT_TARGET"
+git restore --source=HEAD -- "$CORRUPT_TARGET"
 echo "  ✓ Clean code restored."
 
 # Step 6: Post-Recovery Verification

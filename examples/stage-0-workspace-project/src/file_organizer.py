@@ -7,7 +7,6 @@ Organizes files within a target directory by categorized MIME/file types,
 file extensions, or creation/modification dates. Includes collision resolution,
 cryptographic SHA-256 deduplication, dry-run simulation, and JSON undo journaling.
 
-INJECTED_FATAL_REGRESSION = undefined_symbol_crash()
 Zero external dependencies - runs on standard Python 3.8+ library.
 """
 
@@ -94,6 +93,11 @@ def organize_directory(
     if not target_dir.exists() or not target_dir.is_dir():
         raise ValueError(f"Target directory does not exist or is not a directory: {target_dir}")
 
+    target_dir = target_dir.resolve()
+    undo_file = undo_file.resolve() if undo_file else None
+    if undo_file and undo_file.exists() and not dry_run:
+        raise FileExistsError(f'Undo journal already exists: {undo_file}. Undo or archive it first.')
+
     journal: List[Dict[str, str]] = []
     seen_hashes: Dict[str, Path] = {}
     duplicates: List[Tuple[Path, Path]] = []
@@ -109,13 +113,14 @@ def organize_directory(
     candidate_files: List[Path] = []
     for item in target_dir.iterdir():
         if item.is_file() and not item.is_symlink() and item.name not in {".DS_Store", "desktop.ini"}:
-            candidate_files.append(item)
+            if undo_file is None or item.resolve() != undo_file:
+                candidate_files.append(item)
 
     if verbose:
         print(f"[INFO] Discovered {len(candidate_files)} candidate files in {target_dir}")
 
     # Process deduplication if requested
-    for f in candidate_files:
+    for f in sorted(candidate_files):
         if deduplicate:
             try:
                 f_hash = calculate_sha256(f)
@@ -143,36 +148,38 @@ def organize_directory(
             dest_path = resolve_collision(dup_dir, dup_src.name)
             moves.append((dup_src, dest_path))
 
-    # Execute moves or dry-run
+    # Validate every destination before any move. Do not follow category symlinks.
+    for _, destination in moves:
+        if destination.parent.is_symlink() or target_dir not in destination.resolve().parents:
+            raise ValueError(f'Destination escapes the target directory: {destination}')
+
+    def persist_journal():
+        if undo_file is None:
+            return
+        undo_file.parent.mkdir(parents=True, exist_ok=True)
+        temporary = undo_file.with_name(undo_file.name + '.tmp')
+        with open(temporary, 'w', encoding='utf-8') as handle:
+            json.dump({'strategy': strategy, 'target_dir': str(target_dir), 'journal': journal}, handle, indent=2)
+            handle.flush()
+            os.fsync(handle.fileno())
+        os.replace(temporary, undo_file)
+
     executed_moves = 0
     for src, dst in moves:
-        if src.parent == dst.parent and src.name == dst.name:
-            continue  # Already in place
-
         if verbose or dry_run:
-            status_tag = "[DRY-RUN]" if dry_run else "[MOVE]"
-            print(f"{status_tag} {src.name} -> {dst.parent.name}/{dst.name}")
-
-        if not dry_run:
-            dst.parent.mkdir(parents=True, exist_ok=True)
-            shutil.move(str(src), str(dst))
-            journal.append({
-                "original": str(src.resolve()),
-                "current": str(dst.resolve()),
-                "timestamp": datetime.now(timezone.utc).isoformat()
-            })
-            executed_moves += 1
-
-    # Save undo journal if specified
-    if undo_file and not dry_run and journal:
-        with open(undo_file, "w", encoding="utf-8") as jf:
-            json.dump({
-                "strategy": strategy,
-                "target_dir": str(target_dir.resolve()),
-                "journal": journal
-            }, jf, indent=2)
-        if verbose:
-            print(f"[INFO] Undo journal written to {undo_file}")
+            print(f"{'[DRY-RUN]' if dry_run else '[MOVE]'} {src.name} -> {dst.parent.name}/{dst.name}")
+        if dry_run:
+            continue
+        # Recheck after planning; refuse any newly occupied destination.
+        if dst.exists() or dst.is_symlink():
+            raise FileExistsError(f'Destination became occupied: {dst}')
+        entry = {'original': str(src), 'current': str(dst),
+                 'sha256': calculate_sha256(src), 'timestamp': datetime.now(timezone.utc).isoformat()}
+        journal.append(entry)
+        persist_journal()  # Write intent before moving, so failures retain a recovery record.
+        dst.parent.mkdir(parents=True, exist_ok=True)
+        shutil.move(str(src), str(dst))
+        executed_moves += 1
 
     return {
         "candidate_count": len(candidate_files),
@@ -195,25 +202,39 @@ def rollback_organization(undo_file: Path, verbose: bool = False) -> int:
     journal = data.get("journal", [])
     restored_count = 0
 
+    unresolved = []
     for entry in reversed(journal):
-        src = Path(entry["current"])
-        original = Path(entry["original"])
-
-        if not src.exists():
-            if verbose:
-                print(f"[WARN] File missing, cannot restore: {src}", file=sys.stderr)
+        src = Path(entry['current'])
+        original = Path(entry['original'])
+        expected = entry.get('sha256')
+        if not src.exists() and not src.is_symlink():
+            # A recorded move intent may not have executed yet.
+            if original.is_file() and expected and calculate_sha256(original) == expected:
+                continue
+            unresolved.append(entry)
+            print(f'[WARN] Missing organized file; keeping journal entry: {src}', file=sys.stderr)
             continue
-
+        if original.exists() or original.is_symlink() or src.is_symlink() or (expected and calculate_sha256(src) != expected):
+            unresolved.append(entry)
+            print(f'[WARN] Restore conflict or modified file; leaving both paths untouched: {original}', file=sys.stderr)
+            continue
         original.parent.mkdir(parents=True, exist_ok=True)
-        shutil.move(str(src), str(original))
-        if verbose:
-            print(f"[RESTORE] {src.name} -> {original}")
+        try:
+            shutil.move(str(src), str(original))
+        except OSError:
+            unresolved.append(entry)
+            continue
         restored_count += 1
+        if verbose:
+            print(f'[RESTORE] {src.name} -> {original}')
 
-    # Remove the undo file after successful rollback
-    undo_file.unlink()
-    if verbose:
-        print(f"[INFO] Undo completed. Restored {restored_count} files.")
+    if unresolved:
+        data['journal'] = list(reversed(unresolved))
+        temporary = undo_file.with_name(undo_file.name + '.tmp')
+        temporary.write_text(json.dumps(data, indent=2), encoding='utf-8')
+        os.replace(temporary, undo_file)
+    else:
+        undo_file.unlink()
     return restored_count
 
 
@@ -240,6 +261,9 @@ def main():
             print(f"Rolling back organization from undo journal: {undo_path}")
             restored = rollback_organization(undo_path, verbose=args.verbose)
             print(f"Successfully restored {restored} files.")
+            if undo_path.exists():
+                print('[WARN] Some entries were not restored. Resolve conflicts and retry; the journal was retained.', file=sys.stderr)
+                sys.exit(1)
             sys.exit(0)
 
         target = Path(args.directory).resolve()

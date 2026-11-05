@@ -156,7 +156,13 @@ try {
   await sendCdp('Page.enable');
   await sendCdp('Runtime.enable');
 
+  let themeScriptIdentifier;
   for (const theme of themes) {
+    if (themeScriptIdentifier) await sendCdp('Page.removeScriptToEvaluateOnNewDocument', { identifier: themeScriptIdentifier });
+    const initScript = await sendCdp('Page.addScriptToEvaluateOnNewDocument', {
+      source: `localStorage.setItem('ai_master_course_theme', '${theme}');`
+    });
+    themeScriptIdentifier = initScript.identifier;
     console.log(`\n================ Testing Theme: ${theme.toUpperCase()} ================`);
 
     for (const vp of viewports) {
@@ -179,6 +185,7 @@ try {
 
         // Wait for page load and React hydration
         let mounted = false;
+        let previousLayout = null;
         const startTime = Date.now();
         while (Date.now() - startTime < 5000) {
           await new Promise(r => setTimeout(r, 200));
@@ -187,20 +194,14 @@ try {
           const checkRes = await sendCdp('Runtime.evaluate', {
             expression: `
               (() => {
-                localStorage.setItem('ai_master_course_theme', '${theme}');
                 const html = document.documentElement;
-                if ('${theme}' === 'dark') {
-                  html.classList.add('dark');
-                  html.classList.remove('light');
-                } else {
-                  html.classList.remove('dark');
-                  html.classList.add('light');
-                }
-
-                const main = document.querySelector('main') || document.querySelector('#root');
-                const headings = document.querySelectorAll('h1, h2, h3');
-                const isReady = main && headings.length > 0;
+                const main = document.querySelector('main');
+                const heading = main?.querySelector('h1');
+                const isLesson = '${route}'.includes('/lesson/');
+                const lessonsLoaded = !isLesson || (main?.querySelector('#assessment') && main?.querySelector('#exercises'));
+                const isReady = location.pathname === '${route}' && heading && lessonsLoaded && !main?.textContent.includes('Loading curriculum module');
                 if (!isReady) return { isReady: false };
+                const headings = main.querySelectorAll('h1, h2, h3');
 
                 const expectedWidth = ${vp.width};
                 const docWidth = Math.max(html.scrollWidth, document.body.scrollWidth);
@@ -210,6 +211,7 @@ try {
 
                 return {
                   isReady: true,
+                  themeMatches: html.classList.contains('${theme}') && computedBg === ('${theme}' === 'dark' ? 'rgb(9, 13, 22)' : 'rgb(248, 250, 252)'),
                   title: document.title,
                   docWidth,
                   winWidth,
@@ -227,9 +229,15 @@ try {
 
           if (checkRes.result && checkRes.result.value && checkRes.result.value.isReady) {
             const data = checkRes.result.value;
+            const layoutKey = JSON.stringify([data.docWidth, data.winWidth, data.themeMatches, data.headingCount]);
+            if (previousLayout !== layoutKey) { previousLayout = layoutKey; continue; }
             mounted = true;
 
-            if (data.hasOverflow) {
+            if (!data.themeMatches) {
+              const error = `Application theme did not resolve to ${theme}; observed ${data.htmlClasses}, ${data.computedBg}`;
+              console.error(`  ✗ ${route} FAIL - ${error}`);
+              failureList.push({ route, theme, viewport: vp.name, error });
+            } else if (data.hasOverflow) {
               const err = `Horizontal overflow detected on ${route}: docWidth=${data.docWidth}px, winWidth=${data.winWidth}px exceeds expected=${data.expectedWidth}px (+${data.overflowDiff}px)`;
               console.error(`  ✗ ${route.padEnd(36)} FAIL - ${err}`);
               failureList.push({ route, theme, viewport: vp.name, error: err });

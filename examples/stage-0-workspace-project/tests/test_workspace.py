@@ -87,6 +87,57 @@ class TestFileOrganizer(unittest.TestCase):
         self.assertFalse(undo_log.exists())
 
 
+class TestOrganizerRecovery(unittest.TestCase):
+    def setUp(self):
+        self.temp = tempfile.TemporaryDirectory()
+        self.root = Path(self.temp.name)
+        self.source = self.root / 'notes.txt'
+        self.source.write_text('original lesson notes')
+        self.log = self.root / '.undo.json'
+
+    def tearDown(self):
+        self.temp.cleanup()
+
+    def organize(self):
+        organize_directory(self.root, undo_file=self.log)
+
+    def test_undo_preserves_new_file_at_original_path(self):
+        self.organize()
+        self.source.write_text('new work')
+        self.assertEqual(rollback_organization(self.log), 0)
+        self.assertEqual(self.source.read_text(), 'new work')
+        self.assertEqual((self.root / 'Documents/notes.txt').read_text(), 'original lesson notes')
+        self.assertTrue(self.log.exists())
+
+    def test_undo_keeps_missing_file_recovery_record(self):
+        self.organize()
+        (self.root / 'Documents/notes.txt').unlink()
+        self.assertEqual(rollback_organization(self.log), 0)
+        self.assertTrue(self.log.exists())
+
+    def test_second_run_cannot_replace_existing_journal(self):
+        self.organize()
+        journal = self.log.read_bytes()
+        (self.root / 'new.txt').write_text('new')
+        with self.assertRaises(FileExistsError): self.organize()
+        self.assertEqual(self.log.read_bytes(), journal)
+        self.assertTrue((self.root / 'new.txt').exists())
+
+    def test_modified_organized_file_is_not_silently_restored(self):
+        self.organize()
+        (self.root / 'Documents/notes.txt').write_text('edited after organizing')
+        self.assertEqual(rollback_organization(self.log), 0)
+        self.assertFalse(self.source.exists())
+        self.assertTrue(self.log.exists())
+
+    def test_category_symlink_cannot_move_files_outside_target(self):
+        with tempfile.TemporaryDirectory() as outside:
+            (self.root / 'Documents').symlink_to(outside, target_is_directory=True)
+            with self.assertRaises(ValueError): self.organize()
+            self.assertTrue(self.source.exists())
+            self.assertEqual(list(Path(outside).iterdir()), [])
+
+
 class TestMetadataInspector(unittest.TestCase):
     def setUp(self):
         self.test_dir = Path(tempfile.mkdtemp(prefix="meta_test_"))

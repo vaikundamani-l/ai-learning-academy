@@ -46,6 +46,4 @@ diagnose:
 clean:
 	@echo "Cleaning temporary test artifacts..."
 	rm -rf __pycache__ src/__pycache__ tests/__pycache__
-	rm -rf .organizer_undo.json _duplicates demo_repo demo_workspace_repo
-	rm -f src/*.bak
-	@echo "Clean complete."
+	@echo "Cache cleanup complete. Recovery journals, duplicate files, backups, and demo repositories were preserved."

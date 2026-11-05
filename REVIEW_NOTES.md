@@ -338,3 +338,35 @@ The legacy responsive/theme script constructed a JavaScript measurement string b
 - Genuine Chrome CDP audit: 48/48 checks passed across all 12 routes in both Mobile (390×844) and Desktop (1440×900) in Dark and Light themes with zero horizontal scroll overflow.
 - 42/42 regression tests pass in `tests/core.test.mjs`. Production build compiles cleanly in 715ms.
 
+# Milestone and teaching review — 6 November 2026
+
+## Result and scope
+Reviewed the new workspace implementation, shared assessment engine, milestone page, instructional README, recovery scripts, tests and responsive checker. Initial baseline: all 42 academy tests and 9 workspace tests passed. This did not establish correctness of untested recovery cases. Reproduced Undo overwriting a newly created original-path file in a disposable fixture.
+
+## Fixes
+- Undo now refuses occupied original paths and changed organized content, retains unresolved journal entries and returns a partial-recovery CLI failure rather than claiming complete success.
+- Organization refuses to replace an existing journal, excludes its journal from candidates, records move intent before changing locations, and rejects category symlinks leading outside the target directory. Added SHA-256 content fingerprints for recovery checks. This remains a sequential educational tool, not a filesystem transaction robust to every concurrent writer or crash.
+- Git initializer no longer recursively deletes an existing target directory; it refuses and leaves the directory intact.
+- Failure diagnosis now runs in a disposable copy with a temporary Git repository and restores from its baseline commit. The learner’s working source is not deliberately corrupted. Cleanup traps remove only the disposable exercise copy.
+- `make clean` now preserves duplicate files, recovery journals, backups and demo repositories; it only removes bytecode caches.
+- Rewrote milestone instructions around a disposable fixture with expected two-file outputs, journal inspection, restore verification, an occupied-path experiment, and a practical evidence checklist. Removed unsupported production-grade, perfect rollback, universal portability and cache-residency guarantees. Clarified extension categorization and modification-time sorting.
+- Milestone UI describes the project as practice and explains what passing tests does and does not demonstrate. Added wrapping for long paths/commands.
+- Responsive checker no longer mutates theme classes during measurement. It seeds preference before document initialization, asserts the application’s resolved class and background, waits for main H1 plus assessment/exercise sections on lesson routes, and requires two stable snapshots. Static syntax check passed. The full CDP audit was NOT rerun in this review, so no new 48/48 claim is made. UI theme controls, reload persistence, interaction states, font settling and expected route titles still need broader coverage.
+
+## Verification
+- Academy: 42/42 existing tests passed with local C/Python/assembly execution allowed.
+- Workspace: 14/14 passed after five new conflict, missing-file, changed-file, existing-journal and destination-symlink regressions.
+- Failure demonstration: baseline and recovery suites passed in a disposable Git copy, 14 tests at each end.
+- Build passed. `node --check scripts/verify-responsive-theme.mjs` passed.
+- Browser: updated milestone page rendered; mobile width check at 390×844 reported no horizontal page overflow. This is a targeted check, not a new complete responsive/theme certification.
+- Docker/devcontainer build was not executed; these remain unverified setup recipes.
+
+## Teaching judgment and next increment
+The earlier README was largely a feature list and copy/paste commands, used advanced terms without enough mechanism or expected results, and equated automation success with learner mastery. The revised walkthrough improves that specific gap. This is not an independent certification of all four lessons’ technical or educational depth.
+
+Before marking Stage 0 fully complete, create a topic-to-evidence matrix against CURRICULUM_MASTER.md. Verify GPU basics, operating-system virtualization and basic internet architecture have sufficient teaching, examples and checks, rather than relying on four lesson titles. Text encoding/Unicode already has a real Lesson 2 section and must not be reported as wholly absent. Require the learner to explain a journal conflict and diagnose a different failure, not merely run the automatic recovery script.
+
+Remaining engineering limits: reporter parses human-readable `ls`/newline-delimited filenames and can misreport unusual names; shell implementation needs Bash/GNU tools despite older POSIX wording. No concurrent-writer or full power-loss guarantee for organizer journaling. Shared quiz code must not be mistaken for a practical mastery rubric. Container reproducibility and the corrected full browser audit still need actual runs.
+
+## Files changed
+`examples/stage-0-workspace-project/src/file_organizer.py`, `scripts/init_git_repo.sh`, `scripts/diagnose_failure.sh`, `tests/test_workspace.py`, `Makefile`, `README.md` inside that example; academy `src/pages/Projects.tsx`, `scripts/verify-responsive-theme.mjs`, `REVIEW_NOTES.md`, `PROGRESS_TRACKER.md`.

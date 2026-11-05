@@ -123,11 +123,11 @@ export const Projects: React.FC = () => {
         <div className="flex flex-wrap items-center justify-between gap-3">
           <div className="flex items-center space-x-2 text-xs font-mono text-cyber-emerald font-bold uppercase tracking-wider">
             <Sparkles className="w-4 h-4 text-cyber-emerald" />
-            <span>Stage 0 Milestone Showcase — Verified & Tested</span>
+            <span>Stage 0 Milestone — Practice Workspace</span>
           </div>
           <span className="px-2.5 py-1 rounded-full bg-cyber-emerald/15 text-cyber-emerald border border-cyber-emerald/30 font-mono text-[11px] font-bold flex items-center space-x-1.5">
             <CheckCircle2 className="w-3.5 h-3.5" />
-            <span>100% Passing Tests (9 Unit + Full Inode & DAG Audit)</span>
+            <span>14 workspace regression tests • Practical review required</span>
           </span>
         </div>
 
@@ -136,7 +136,7 @@ export const Projects: React.FC = () => {
             Reproducible Developer Workspace & Git Repository
           </h2>
           <p className="text-xs sm:text-sm text-slate-300 leading-relaxed font-sans max-w-4xl">
-            A standalone, production-grade engineering workspace implementing all Stage 0 fundamentals: CPU cache-conscious streaming file I/O, deep POSIX inode and permission metadata inspection, Unix shell pipelines with standard streams (0, 1, 2) and signal trap cleanup, and Git DAG internals with branching, non-fast-forward merge commits, and annotated releases.
+            An educational workspace connecting several Stage 0 concepts: bounded-buffer streaming file I/O, deep POSIX inode and permission metadata inspection, Unix shell pipelines with standard streams (0, 1, 2) and signal trap cleanup, and Git DAG internals with branching, non-fast-forward merge commits, and annotated releases.
           </p>
         </div>
 
@@ -148,7 +148,7 @@ export const Projects: React.FC = () => {
               <span>src/file_organizer.py</span>
             </div>
             <p className="text-[11px] text-slate-400 leading-relaxed">
-              CLI file organizer featuring categorized MIME mapping, streaming SHA-256 deduplication, collision resolution, dry-run simulation, and transactional JSON undo journaling.
+              CLI file organizer featuring extension-based categories, streaming SHA-256 deduplication, collision resolution, dry-run simulation, and conflict-aware JSON undo journaling.
             </p>
           </div>
 
@@ -168,22 +168,26 @@ export const Projects: React.FC = () => {
               <span>src/directory_reporter.sh</span>
             </div>
             <p className="text-[11px] text-slate-400 leading-relaxed">
-              POSIX-compliant shell pipeline script demonstrating streams (stdout vs stderr <code className="text-cyber-amber">&gt;&amp;2</code>), <code className="text-cyber-amber">trap</code> scratchpad cleanup, and automated permission audits.
+              Bash/GNU shell pipeline script demonstrating streams (stdout vs stderr <code className="text-cyber-amber">&gt;&amp;2</code>), <code className="text-cyber-amber">trap</code> scratchpad cleanup, and automated permission audits.
             </p>
           </div>
         </div>
 
+        <div className="rounded-xl border border-surface-border p-4 text-sm text-slate-300 space-y-2">
+          <p>Start with disposable sample files. Predict the dry-run result, organize them, inspect the undo journal, and restore them. Then create a conflicting original filename and confirm Undo preserves both copies.</p>
+          <p>The README includes a worked example and a practical evidence checklist. Passing the automated tests demonstrates tool behavior; completing the stage also requires explaining your results and diagnosing an unfamiliar failure.</p>
+        </div>
         {/* Quick Orchestration & Execution Instructions */}
         <div className="p-4 rounded-xl bg-surface/70 border border-surface-border space-y-2.5 font-mono text-xs">
-          <div className="text-slate-400 font-semibold flex items-center justify-between">
+          <div className="text-slate-400 font-semibold flex flex-wrap gap-2 items-center justify-between">
             <span>Isolated Workspace Repository Path:</span>
-            <span className="text-cyber-emerald font-bold">examples/stage-0-workspace-project/</span>
+            <span className="text-cyber-emerald font-bold break-all">examples/stage-0-workspace-project/</span>
           </div>
           <div className="bg-void/80 p-3 rounded-lg border border-surface-border/60 text-slate-300 space-y-1">
             <div className="text-slate-500"># Run the full automated verification suite:</div>
-            <div className="text-cyber-sky">make -C examples/stage-0-workspace-project all</div>
+            <div className="text-cyber-sky break-all">make -C examples/stage-0-workspace-project all</div>
             <div className="text-slate-500 pt-1"># Execute the Stage 0 failure diagnosis and recovery check:</div>
-            <div className="text-cyber-emerald">make -C examples/stage-0-workspace-project diagnose</div>
+            <div className="text-cyber-emerald break-all">make -C examples/stage-0-workspace-project diagnose</div>
           </div>
         </div>
 

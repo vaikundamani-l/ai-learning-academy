@@ -3,7 +3,8 @@
 @tailwind utilities;
 
 @layer base {
-  :root {
+  :root,
+  .light {
     color-scheme: light;
     /* Light Theme (Laboratory Aesthetic) */
     --color-void: 248 250 252;          /* #f8fafc */

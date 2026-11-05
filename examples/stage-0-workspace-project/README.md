@@ -2,21 +2,21 @@
 
 > **Stage 0 Capstone Demonstration**  
 > *Part I — Computing and Software Foundations*  
-> Certified reproducible developer workspace combining low-level POSIX filesystem operations, stream pipelines, cryptographic SHA deduplication, and Git DAG internals.
+> Educational developer workspace combining low-level POSIX filesystem operations, stream pipelines, cryptographic SHA deduplication, and Git DAG internals.
 
 ---
 
 ## 1. Architectural Overview & Foundations Alignment
 
-This milestone project serves as the hands-on synthesis for **Stage 0: Computer and Development Fundamentals**, directly translating the theoretical lessons into verified, production-grade tools:
+This milestone project serves as the hands-on synthesis for **Stage 0: Computer and Development Fundamentals**, directly translating the theoretical lessons into small educational tools whose behavior you can inspect and test:
 
 | Stage 0 Topic | Milestone Implementation & Architectural Evidence |
 | :--- | :--- |
-| **CPU, Cache & Memory Hierarchy** | `calculate_sha256()` uses streaming 64 KiB I/O chunks that comfortably fit within CPU L1/L2 data cache boundaries, preventing memory ballooning or page thrashing on large files. |
+| **CPU, Cache & Memory Hierarchy** | `calculate_sha256()` reads one 64 KiB chunk at a time instead of loading the whole file. This bounds the file buffer; it does not guarantee a cache hit or prevent OS paging. |
 | **POSIX Inodes & Permissions** | `metadata_inspector.py` queries `lstat()` to inspect filesystem inodes (`st_ino`), hard link counts (`st_nlink`), disk block allocations (`st_blocks`), and parses octal permission bitmasks (`0755`, SUID, SGID, Sticky bit). |
 | **Unix Shells & Standard Streams** | `directory_reporter.sh` demonstrates strict stream separation (sending telemetry to stdout and informational logs to stderr `1>&2`), pipeline composition (`find \| awk \| sort \| uniq`), and POSIX `trap` signal handling for clean temporary resource deallocation. |
 | **Git Internals & Content Addressability** | `init_git_repo.sh` constructs a real commit DAG containing branching paths, non-fast-forward merge commits, and annotated tags, verified via `git fsck --full` and `git cat-file -p HEAD`. |
-| **Reproducibility & Containerization** | Bundled `Dockerfile`, `.devcontainer/devcontainer.json`, and standardized `Makefile` guarantee deterministic, zero-config reproduction across Linux, macOS, and container runtimes. |
+| **Reproducibility & Containerization** | Bundled `Dockerfile`, `.devcontainer/devcontainer.json`, and standardized `Makefile` document a Linux/GNU-tool environment. Host tools and container image versions may differ; test on the environment you use. |
 
 ---
 
@@ -46,12 +46,12 @@ examples/stage-0-workspace-project/
 ## 3. Core Tooling Reference
 
 ### A. File Organizer CLI (`src/file_organizer.py`)
-A robust command-line utility for classifying files based on MIME types, extensions, or creation timestamps.
+A robust command-line utility for classifying files based on filename extension categories, extensions, or modification month.
 - **Categorization:** Automatically sorts files into `Documents/`, `Code/`, `Data/`, `Images/`, `Audio/`, `Video/`, `Archives/`, and `Misc/`.
-- **Deduplication (`--deduplicate`):** Computes cryptographic SHA-256 hashes of identical-size files and safely moves duplicates to a designated `_duplicates/` folder.
+- **Deduplication (`--deduplicate`):** Computes SHA-256 hashes of files and safely moves duplicates to a designated `_duplicates/` folder.
 - **Collision Resolution:** Automatically appends monotonic numeric suffixes to avoid destructive overwrites (`file_1.txt`, `file_2.txt`).
 - **Dry-Run Mode (`--dry-run`):** Simulates all moves and outputs planned filesystem mutations without modifying disk state.
-- **Transactional Rollback (`--undo-log` and `--undo`):** Records an atomic JSON journal of every move, allowing 100% loss-free rollback of previous operations.
+- **Undo journal (`--undo-log` and `--undo`):** Records each move intent before moving. Undo refuses to overwrite occupied original paths or restore modified organized files, and retains unresolved entries for retry. This is a sequential teaching tool, not a crash-proof filesystem transaction; keep backups for valuable data.
 
 ```bash
 # Example usage:
@@ -76,7 +76,7 @@ python3 src/metadata_inspector.py src/file_organizer.py --json
 ```
 
 ### C. Directory Telemetry Reporter (`src/directory_reporter.sh`)
-A POSIX-compliant shell pipeline script that traverses directory structures and generates an audit report.
+A Bash script requiring GNU-compatible command-line tools that traverses directory structures and generates an audit report.
 - **Metrics Collected:** Total disk usage, regular file count, subdirectories, symlinks, file extension frequency distribution with percentages, top 5 largest files.
 - **Security Audit:** Automatically flags world-writable files (`chmod o+w`) and binaries with dangerous SUID/SGID permission bits.
 - **Stream Redirection:** Directs log telemetry to stderr (`>&2`) while sending the formatted report (Markdown or plain text) to standard output or a designated file (`-o report.md`).
@@ -103,7 +103,7 @@ The project includes a standardized `Makefile` to simplify local testing and con
 | `make report` | Runs the shell directory reporter and prints the audit report. |
 | `make git-demo` | Builds a complete Git repository with branches, merges, and tags. |
 | `make diagnose` | Executes the full Stage 0 failure diagnosis and version recovery check. |
-| `make clean` | Wipes temporary build caches, bytecode, and demo directories. |
+| `make clean` | Removes bytecode caches; preserves journals, duplicates, backups, and demo repositories. |
 | `make all` | Executes both `test` and `report` (default target). |
 
 ---
@@ -118,39 +118,58 @@ You can execute this complete sequence automatically via:
 ./scripts/diagnose_failure.sh
 ```
 
-### Step-by-Step Manual Walkthrough:
-1. **Clean Environment Setup:**
+### Student walkthrough: predict, run, inspect, explain
+
+Use disposable sample files. Do not run the organizer on your home directory or academy source.
+
+1. From this example directory, create a fixture:
    ```bash
-   make clean
-   python3 -m unittest tests/test_workspace.py
+   lab_dir=$(mktemp -d /tmp/stage0-student.XXXXXX)
+   printf 'first notes\n' > "$lab_dir/notes.txt"
+   printf 'print(42)\n' > "$lab_dir/hello.py"
+   python3 src/file_organizer.py "$lab_dir" --dry-run
    ```
-2. **Inject a Controlled Failure:**
+   Predict the destination of each file. Expected: `Documents/notes.txt` and `Code/hello.py`. Dry-run leaves both original files in place.
+2. Execute the plan and inspect the journal:
    ```bash
-   # Inject syntax regression into the organizer
-   echo "FATAL_REGRESSION = [invalid syntax >>>" >> src/file_organizer.py
+   python3 src/file_organizer.py "$lab_dir" --undo-log "$lab_dir/.undo.json"
+   cat "$lab_dir/.undo.json"
+   python3 src/metadata_inspector.py "$lab_dir/Documents/notes.txt" --json
    ```
-3. **Diagnose the Failure:**
+   Expected: two moves; each journal record contains original/current paths and a SHA-256 content fingerprint. Explain why a fingerprint helps detect later edits.
+3. Restore, then inspect the two original files:
    ```bash
-   # Attempt execution - observe intercepted failure
-   python3 src/file_organizer.py --help
-   # Inspect file metadata using the inspector
-   python3 src/metadata_inspector.py src/file_organizer.py --json
+   python3 src/file_organizer.py --undo --undo-log "$lab_dir/.undo.json"
+   ls "$lab_dir"
    ```
-4. **Restore Known-Good Version:**
-   ```bash
-   # Restore clean working copy using Git
-   git checkout src/file_organizer.py
-   ```
-5. **Verify Full Recovery:**
-   ```bash
-   make test
-   ```
+   Expected: two restored files; the journal is removed only when no unresolved records remain. Generated empty folders may remain.
+4. Re-run the organization, create a **new** `notes.txt` at the original location, and attempt Undo. Predict the result first. Expected: Undo reports a conflict, keeps both files and retains its journal. Move your new file aside manually, then retry Undo. Never resolve a conflict by deleting an unfamiliar file.
+5. Run `make diagnose`. The script copies source and tests into a temporary Git repository, verifies the baseline, appends a syntax error, observes failure, restores the baseline with `git restore`, and reruns the tests. The working example source is untouched. This automates a demonstration; it does not prove you can diagnose an unfamiliar failure yourself.
+
+### What the mechanisms mean
+
+- **Hashing:** start with an empty hash state, read a chunk, update the state, repeat until end-of-file, then compare digests. Duplicate detection here compares content, not filenames. Every candidate is hashed; there is no file-size prefilter.
+- **Journaling:** write recovery intent before changing the file location. A later run must not overwrite that history. Undo checks both locations and the fingerprint before restoring.
+- **Pipes:** the reporter sends report text to stdout (descriptor 1) and progress messages to stderr (descriptor 2). Try redirecting stdout to a file and confirm the logs remain visible. A pipe connects one process’s stdout to another’s stdin.
+- **Git recovery:** `git restore --source=HEAD -- path` restores a tracked file from the current commit. Understand what will be replaced before using it. Practice only inside the disposable repository.
+
+### Completion evidence you must produce
+
+- Explain each tool’s inputs, outputs, and failure cases in your own words.
+- Submit your fixture, dry-run output, journal inspection and successful Undo output.
+- Demonstrate an occupied-path conflict and show that both files survive.
+- Inspect a regular file, directory and symlink; explain how their permission strings differ.
+- Run the reporter on filenames with spaces and explain its current limitations: it parses human-readable `ls` output and newline-delimited paths, so unusual names can be misreported.
+- Show a Git graph with a branch and merge, then diagnose a different seeded failure without following the recovery script line by line.
+- Repeat setup in a fresh Linux environment. Record tool versions and any missing dependencies. Container files are a setup recipe, not proof that a container build has passed.
+
+Before Stage 0 sign-off, map all source topics to sufficient teaching and practical evidence, particularly GPUs, virtualization and basic internet architecture. Text encoding and Unicode already have a section in Lesson 2. Four lessons and this project do not automatically certify coverage or learner mastery of every original topic.
 
 ---
 
 ## 6. Docker & Dev Container Setup
 
-To run this workspace in a hermetically sealed container:
+To run the documented Linux tool environment in a container (container execution must be verified separately):
 
 ```bash
 # Build the Docker image

@@ -249,3 +249,10 @@ Next task: create a genuine browser regression audit for all three lessons (load
 
 - **Next Task:** **Stage 1 (Part I): Python & Computational Thinking from First Principles.**
 
+## Milestone follow-up — 6 November 2026
+
+Independent teaching/implementation review reproduced an Undo data-loss case despite the initial 9 passing workspace tests. Fixed conflict handling, journal retention, existing-journal protection and escaped destinations; expanded workspace coverage to 14 passing tests. Git demo refuses existing destinations, recovery runs in a disposable Git copy, and cleanup preserves learner recovery data. The instructional guide now includes prediction, worked inputs/outputs, conflict experiments, mechanism explanations and practical evidence requirements.
+
+Validation: academy 42/42 tests passed; workspace 14/14 passed; disposable failure/recovery exercise passed; build passed; mobile milestone width check passed. Corrected the browser checker’s loading/theme assertions, but the full 48-case suite has not been rerun here. Docker and devcontainer execution are not independently verified.
+
+Stage 0 completion remains pending a source-topic-to-teaching-evidence review and real learner practical evaluation. Next: map every Stage 0 curriculum topic to explanations, worked examples, visuals and checks; fill uncovered requirements and rerun the corrected browser audit before announcing Stage 1 readiness. Do not infer stage mastery from passing implementation tests alone.
