@@ -19,7 +19,8 @@ import {
   ArrowRight,
   ShieldAlert,
   HardDrive,
-  Activity
+  Activity,
+  Server
 } from 'lucide-react';
 import { Stage } from '../../types/curriculum';
 import { useProgress } from '../../context/ProgressContext';
@@ -71,10 +72,11 @@ export const OperatingSystemsLesson: React.FC<OperatingSystemsLessonProps> = ({ 
     { id: 'filesystems-inodes', title: '13. Linux Inodes & Hard vs Soft Links' },
     { id: 'posix-permissions', title: '14. POSIX Permissions & SUID Bits' },
     { id: 'posix-permissions-lab', title: '15. Interactive Permissions Lab' },
-    { id: 'c-process-code', title: '16. C Fork & Pthread Implementation' },
-    { id: 'python-proc-maps', title: '17. Python /proc/self/maps Inspector' },
-    { id: 'assessment', title: '18. Diagnostic Mastery Exam' },
-    { id: 'exercises', title: '19. Practical Hands-On Exercises' },
+    { id: 'virtual-machines', title: '16. Virtual Machines & Hypervisors' },
+    { id: 'c-process-code', title: '17. C Fork & Pthread Implementation' },
+    { id: 'python-proc-maps', title: '18. Python /proc/self/maps Inspector' },
+    { id: 'assessment', title: '19. Diagnostic Mastery Exam' },
+    { id: 'exercises', title: '20. Practical Hands-On Exercises' },
   ];
 
   const toggleHint = (exerciseId: number) => {
@@ -587,11 +589,119 @@ export const OperatingSystemsLesson: React.FC<OperatingSystemsLessonProps> = ({ 
             <PosixPermissionsVisualizer />
           </section>
 
-          {/* Section 16: C Code Implementation */}
+          {/* Section 16: Virtual Machines & Hypervisors */}
+          <section id="virtual-machines" className="space-y-4">
+            <div className="flex items-center space-x-2 text-cyber-sky font-mono font-semibold text-xs tracking-wider uppercase">
+              <Server className="w-4 h-4 text-cyber-sky" />
+              <span>Section 16 — Systems Architecture</span>
+            </div>
+            <h2 className="text-xl font-bold text-slate-100 border-b border-surface-border pb-2">
+              Virtual Machines & Hypervisors: Type 1 vs. Type 2, Hardware Virtualization & Containers
+            </h2>
+            <div className="space-y-4 text-sm text-slate-300 leading-relaxed font-sans">
+              <p>
+                An operating system traditionally assumes sovereign ownership of bare silicon hardware. <strong>Virtualization</strong> abstracts this physical substrate, allowing multiple isolated operating system environments to execute concurrently on a single physical host machine.
+              </p>
+
+              <Callout type="note" title="Worked example: two guest operating systems">
+                A host is the physical machine. A guest is an operating system running inside a virtual machine. On a host with 16 GiB RAM, assigning 4 GiB to each of two guests accounts for 8 GiB of guest allocations; the host, virtualization layer and applications still need memory. A virtual CPU is a schedulable guest execution context, not a dedicated physical core. Two containers instead share the host kernel; they can isolate process views and resource usage but do not each boot an independent kernel. Predict which arrangement can test a different guest kernel, then explain why.
+              </Callout>
+              {/* Type 1 vs Type 2 Cards */}
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div className="p-4 rounded-xl bg-surface border border-surface-border space-y-2">
+                  <div className="flex items-center space-x-2 text-cyber-sky font-mono font-bold text-xs uppercase">
+                    <Server className="w-4 h-4 text-cyber-sky" />
+                    <span>Type 1 Hypervisor (Bare-Metal / Native)</span>
+                  </div>
+                  <p className="text-xs text-slate-300 leading-relaxed font-sans">
+                    A Type 1 hypervisor provides the privileged hardware virtualization layer (for example, <strong>VMware ESXi or Xen</strong>). Implementations such as KVM integrate virtualization into a host kernel, so this two-type classification is a useful introductory model rather than a complete architecture description. The hypervisor acts as the core kernel, directly scheduling virtual CPUs (vCPUs) on physical cores and managing hardware interrupts with near-native efficiency.
+                  </p>
+                </div>
+
+                <div className="p-4 rounded-xl bg-surface border border-surface-border space-y-2">
+                  <div className="flex items-center space-x-2 text-cyber-amber font-mono font-bold text-xs uppercase">
+                    <Layers className="w-4 h-4 text-cyber-amber" />
+                    <span>Type 2 Hypervisor (Hosted)</span>
+                  </div>
+                  <p className="text-xs text-slate-300 leading-relaxed font-sans">
+                    Executes as a standard application process inside an existing host operating system (e.g. <strong>VirtualBox, VMware Workstation, QEMU</strong>). Hardware I/O requests from the guest VM must be routed through the host OS kernel's system call interface, introducing additional context switching latency.
+                  </p>
+                </div>
+              </div>
+
+              {/* Hardware Virtualization VT-x / AMD-V */}
+              <div className="p-4 rounded-xl bg-surface-card border border-surface-border space-y-3">
+                <h3 className="text-xs font-mono font-bold text-slate-100 uppercase tracking-wider flex items-center space-x-2">
+                  <Cpu className="w-4 h-4 text-cyber-sky" />
+                  <span>Hardware-Assisted CPU Virtualization: Intel VT-x & AMD-V</span>
+                </h3>
+                <p className="text-xs text-slate-300 leading-relaxed">
+                  Hardware-assisted virtualization provides a controlled guest execution environment and mechanisms for returning control to the hypervisor. The exact controls differ between Intel VT-x and AMD-V:
+                </p>
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs font-mono">
+                  <div className="p-3 rounded-lg bg-surface border border-surface-border">
+                    <span className="text-cyber-sky font-bold block mb-1">VMX Root Operation</span>
+                    <span className="text-slate-400 text-[11px] leading-tight block">The hardware mode where the hypervisor executes with unrestricted hardware control, managing guest VM configuration registers and page translation roots.</span>
+                  </div>
+                  <div className="p-3 rounded-lg bg-surface border border-surface-border">
+                    <span className="text-cyber-emerald font-bold block mb-1">VMX Non-Root Operation</span>
+                    <span className="text-slate-400 text-[11px] leading-tight block">The hardware mode where guest OS code executes. Configured events can cause a <strong>VM-Exit</strong> back to the hypervisor. This is separate from guest user/kernel privilege transitions; not every guest instruction exits.</span>
+                  </div>
+                </div>
+              </div>
+
+              {/* VMs vs Containers Table */}
+              <div className="overflow-x-auto max-w-full min-w-0">
+                <table className="min-w-full text-xs font-mono border-collapse border border-surface-border text-left">
+                  <thead>
+                    <tr className="bg-surface text-slate-300 border-b border-surface-border">
+                      <th className="p-2.5 border-r border-surface-border font-bold">Feature</th>
+                      <th className="p-2.5 border-r border-surface-border text-cyber-sky font-bold">Virtual Machine (Hardware Virtualization)</th>
+                      <th className="p-2.5 text-cyber-emerald font-bold">OS Container (Namespaces & cgroups)</th>
+                    </tr>
+                  </thead>
+                  <tbody className="divide-y divide-surface-border text-slate-300">
+                    <tr>
+                      <td className="p-2.5 border-r border-surface-border font-semibold text-slate-400">Kernel Isolation</td>
+                      <td className="p-2.5 border-r border-surface-border">Each VM runs its own independent guest kernel</td>
+                      <td className="p-2.5">All containers share the single host Linux kernel</td>
+                    </tr>
+                    <tr>
+                      <td className="p-2.5 border-r border-surface-border font-semibold text-slate-400">Isolation Mechanism</td>
+                      <td className="p-2.5 border-r border-surface-border">Hardware hypervisor boundary (VT-x VMCS / AMD-V)</td>
+                      <td className="p-2.5">Kernel namespaces (<code className="text-cyber-emerald">pid, net, mnt</code>) & cgroups</td>
+                    </tr>
+                    <tr>
+                      <td className="p-2.5 border-r border-surface-border font-semibold text-slate-400">Startup Latency</td>
+                      <td className="p-2.5 border-r border-surface-border">Requires guest startup; duration depends on image, configuration and resume strategy</td>
+                      <td className="p-2.5 text-cyber-emerald font-bold">Starts isolated processes; image preparation and application startup still take time</td>
+                    </tr>
+                    <tr>
+                      <td className="p-2.5 border-r border-surface-border font-semibold text-slate-400">Memory Footprint</td>
+                      <td className="p-2.5 border-r border-surface-border">Guest memory plus virtualization overhead; allocation can be dynamic</td>
+                      <td className="p-2.5">Application memory plus isolation overhead; not guaranteed to be smaller for every workload</td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+
+              <div className="p-3.5 rounded-lg bg-surface border border-surface-border font-mono text-xs space-y-1.5">
+                <div className="text-slate-400 font-bold">Inspect Hardware Virtualization on your Linux machine:</div>
+                <div className="text-cyber-sky bg-void/80 p-2 rounded border border-surface-border/60">
+                  grep -E --color=auto 'vmx|svm' /proc/cpuinfo || systemd-detect-virt
+                </div>
+                <p className="text-[11px] text-slate-400">
+                  <code className="text-cyber-emerald">vmx</code> indicates Intel VT-x hardware support; <code className="text-cyber-emerald">svm</code> indicates AMD-V Secure Virtual Machine extensions.
+                </p>
+              </div>
+            </div>
+          </section>
+
+          {/* Section 17: C Code Implementation */}
           <section id="c-process-code" className="space-y-4">
             <div className="flex items-center space-x-2 text-cyber-sky font-mono font-semibold text-xs tracking-wider uppercase">
               <Cpu className="w-4 h-4 text-cyber-sky" />
-              <span>Section 16 — Practical Verification</span>
+              <span>Section 17 — Practical Verification</span>
             </div>
             <h2 className="text-xl font-bold text-slate-100 border-b border-surface-border pb-2">
               Verifying Process Isolation & POSIX Threads in C11
@@ -607,11 +717,11 @@ export const OperatingSystemsLesson: React.FC<OperatingSystemsLessonProps> = ({ 
             />
           </section>
 
-          {/* Section 17: Python /proc/self/maps */}
+          {/* Section 18: Python /proc/self/maps */}
           <section id="python-proc-maps" className="space-y-4">
             <div className="flex items-center space-x-2 text-cyber-indigo font-mono font-semibold text-xs tracking-wider uppercase">
               <Terminal className="w-4 h-4 text-cyber-indigo" />
-              <span>Section 17 — Implementation From Scratch</span>
+              <span>Section 18 — Implementation From Scratch</span>
             </div>
             <h2 className="text-xl font-bold text-slate-100 border-b border-surface-border pb-2">
               Inspecting Linux Virtual Address Segments & Inodes in Python
@@ -630,20 +740,19 @@ export const OperatingSystemsLesson: React.FC<OperatingSystemsLessonProps> = ({ 
           <Callout type="note" title="What this completion gate measures">
             The quiz checks conceptual recall and reasoning. Passing it records lesson progress; it does not verify that you completed the programming exercises or demonstrate practical mastery.
           </Callout>
-          {/* Section 18: Diagnostic Mastery Exam */}
-          {/* Section 18: Diagnostic Mastery Exam */}
+          {/* Section 19: Diagnostic Mastery Exam */}
           <AssessmentGate
             currentPath={currentPath}
             lessonTitle={OS_LESSON_CONTENT.title}
-            sectionNumber={18}
+            sectionNumber={19}
             questions={OS_LESSON_CONTENT.quizQuestions}
           />
 
-          {/* Section 19: Practical Exercises */}
+          {/* Section 20: Practical Exercises */}
           <section id="exercises" className="space-y-6 pt-6 border-t border-surface-border">
             <div className="flex items-center space-x-2 text-cyber-indigo font-mono font-semibold text-xs tracking-wider uppercase">
               <Wrench className="w-4 h-4 text-cyber-indigo" />
-              <span>Section 19 — Practical Exercises</span>
+              <span>Section 20 — Practical Exercises</span>
             </div>
             <div className="space-y-2">
               <h2 className="text-xl sm:text-2xl font-bold text-slate-100">

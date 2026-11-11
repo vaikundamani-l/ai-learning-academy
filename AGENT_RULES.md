@@ -10,7 +10,7 @@
 Every development task must follow this exact loop. Never skip steps:
 
 1. **Inspect Existing State:** Read `PROJECT_PLAN.md`, `CURRICULUM_MASTER.md`, `PROGRESS_TRACKER.md`, and verify existing codebase files.
-2. **Understand Current Context:** Identify exactly where the project stands and what dependencies are required.
+2. **Understand Current Context:** Read the standing owner requirement in `CONTENT_STANDARDS.md` and apply its teaching-quality gate before advancing lessons. Identify exactly where the project stands and what dependencies are required.
 3. **Plan the Next Increment:** Formulate a bounded, high-impact implementation step. If a task is too large, break it down.
 4. **Implement the Task:** Write clean, modular, production-ready code with complete explanations and comments.
 5. **Run the Application / Code:** Execute the dev server or test runner to confirm clean execution.

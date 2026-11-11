@@ -20,7 +20,8 @@ import {
   ShieldAlert, 
   GitBranch,
   FolderTree,
-  Search
+  Search,
+  Globe
 } from 'lucide-react';
 import { Stage } from '../../types/curriculum';
 import { useProgress } from '../../context/ProgressContext';
@@ -72,10 +73,11 @@ export const DeveloperToolingLesson: React.FC<DeveloperToolingLessonProps> = ({ 
     { id: 'git-dag-theory', title: '13. Directed Acyclic Graph (DAG)' },
     { id: 'git-dag-lab', title: '14. Interactive Git DAG Explorer' },
     { id: 'merging-conflicts', title: '15. Branching, Merging & Conflicts' },
-    { id: 'c-pipeline-code', title: '16. C Pipeline & dup2 Implementation' },
-    { id: 'python-git-code', title: '17. Python Raw Git Object Creator' },
-    { id: 'assessment', title: '18. Diagnostic Mastery Exam' },
-    { id: 'exercises', title: '19. Practical Hands-On Exercises' },
+    { id: 'internet-architecture', title: '16. Internet Architecture & TCP' },
+    { id: 'c-pipeline-code', title: '17. C Pipeline & dup2 Implementation' },
+    { id: 'python-git-code', title: '18. Python Raw Git Object Creator' },
+    { id: 'assessment', title: '19. Diagnostic Mastery Exam' },
+    { id: 'exercises', title: '20. Practical Hands-On Exercises' },
   ];
 
   const toggleHint = (exerciseId: number) => {
@@ -457,11 +459,138 @@ export const DeveloperToolingLesson: React.FC<DeveloperToolingLessonProps> = ({ 
             </div>
           </section>
 
-          {/* Section 16: C Code Pipeline */}
+          {/* Section 16: Basic Internet Architecture & TCP */}
+          <section id="internet-architecture" className="space-y-4">
+            <div className="flex items-center space-x-2 text-cyber-sky font-mono font-semibold text-xs tracking-wider uppercase">
+              <Globe className="w-4 h-4 text-cyber-sky" />
+              <span>Section 16 — Network Systems Foundations</span>
+            </div>
+            <h2 className="text-xl font-bold text-slate-100 border-b border-surface-border pb-2">
+              Basic Internet Architecture: Packet Switching, IP Addressing, CIDR Subnetting & The TCP 3-Way Handshake
+            </h2>
+            <div className="space-y-4 text-sm text-slate-300 leading-relaxed font-sans">
+              <p>
+                Modern software engineering and AI systems execute across distributed networks. Understanding how data travels across the Internet—from raw packet routing to transport-layer reliability—is fundamental to building distributed systems.
+              </p>
+
+              {/* Packet Switching vs Circuit Switching */}
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div className="p-4 rounded-xl bg-surface border border-surface-border space-y-2">
+                  <div className="flex items-center space-x-2 text-cyber-sky font-mono font-bold text-xs uppercase">
+                    <Layers className="w-4 h-4 text-cyber-sky" />
+                    <span>Packet Switching (The Internet Standard)</span>
+                  </div>
+                  <p className="text-xs text-slate-300 leading-relaxed font-sans">
+                    Data streams are decomposed into discrete, variable-sized datagrams (packets) containing header metadata (source IP, destination IP, port). Routers forward packets independently along optimal dynamic routes using <strong>statistical multiplexing</strong>, maximizing shared fiber link utilization.
+                  </p>
+                </div>
+
+                <div className="p-4 rounded-xl bg-surface border border-surface-border space-y-2">
+                  <div className="flex items-center space-x-2 text-cyber-amber font-mono font-bold text-xs uppercase">
+                    <Terminal className="w-4 h-4 text-cyber-amber" />
+                    <span>Circuit Switching (Legacy Telecom)</span>
+                  </div>
+                  <p className="text-xs text-slate-300 leading-relaxed font-sans">
+                    Establishes a dedicated, reserved physical electrical circuit between sender and receiver for the entire session duration. Guarantees constant bandwidth but wastes link capacity when nodes are idle.
+                  </p>
+                </div>
+              </div>
+
+              <Callout type="note" title="Follow one message through a five-layer teaching model">
+                Application: HTTP defines the request message. Transport: TCP carries its bytes between ports. Internet: IP addresses identify endpoints and support routing. Link: Ethernet or Wi-Fi carries frames across a local hop. Physical: electrical, optical or radio signals carry bits. Sending adds information for these responsibilities; receiving interprets it in reverse. This five-layer diagram separates link and physical roles for teaching; other models group layers differently. IP addresses identify network endpoints, while ports distinguish transport endpoints on a host.
+              </Callout>
+              {/* IP Addressing & CIDR Subnetting */}
+              <div className="p-4 rounded-xl bg-surface-card border border-surface-border space-y-3">
+                <h3 className="text-xs font-mono font-bold text-slate-100 uppercase tracking-wider flex items-center space-x-2">
+                  <Terminal className="w-4 h-4 text-cyber-sky" />
+                  <span>IPv4 Addressing & CIDR Subnetting Mechanics</span>
+                </h3>
+                <p className="text-xs text-slate-300 leading-relaxed">
+                  An IPv4 address is an unsigned 32-bit integer displayed as four dotted-decimal octets (e.g. <code className="text-cyber-sky">192.168.1.100</code>). In <strong>CIDR (Classless Inter-Domain Routing)</strong> notation, a suffix (e.g. <code className="text-cyber-emerald">/24</code>) defines the boundary between the network prefix and host bits:
+                </p>
+                <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 text-xs font-mono">
+                  <div className="p-3 rounded-lg bg-surface border border-surface-border">
+                    <span className="text-slate-400 block text-[10px]">SUBNET MASK (/24)</span>
+                    <span className="text-cyber-sky font-bold text-sm">255.255.255.0</span>
+                    <span className="text-slate-500 text-[10px] block mt-1">24 ones, 8 host zero bits</span>
+                  </div>
+                  <div className="p-3 rounded-lg bg-surface border border-surface-border">
+                    <span className="text-slate-400 block text-[10px]">NETWORK & BROADCAST</span>
+                    <span className="text-cyber-emerald font-bold text-sm">192.168.1.0 / .255</span>
+                    <span className="text-slate-500 text-[10px] block mt-1">First ID & All-hosts broadcast</span>
+                  </div>
+                  <div className="p-3 rounded-lg bg-surface border border-surface-border">
+                    <span className="text-slate-400 block text-[10px]">USABLE HOST ADDRESSES</span>
+                    <span className="text-cyber-amber font-bold text-sm">254 Hosts (2^8 - 2)</span>
+                    <span className="text-slate-500 text-[10px] block mt-1">192.168.1.1 to 192.168.1.254</span>
+                  </div>
+                </div>
+              </div>
+
+              <Callout type="note" title="Worked example: network boundary and host bits">
+                For 192.168.1.100/24, the first 24 bits identify the network and the final 8 are host bits. AND with 255.255.255.0 keeps 192.168.1 and clears the last octet: 100 AND 0 = 0. The network is 192.168.1.0; setting all eight host bits gives .255, the broadcast address. A conventional /24 therefore has 256 addresses and 254 host addresses. Predict the network for 192.168.1.200/24: it is still 192.168.1.0. The subtract-two rule is not universal: /31 point-to-point links use both addresses, and /32 denotes one address.
+              </Callout>
+              {/* The TCP 3-Way Handshake */}
+              <div className="p-4 rounded-xl bg-surface border border-surface-border space-y-3">
+                <h3 className="text-xs font-mono font-bold text-slate-100 uppercase tracking-wider flex items-center space-x-2">
+                  <Cpu className="w-4 h-4 text-cyber-emerald" />
+                  <span>The TCP 3-Way Handshake Lifecycle</span>
+                </h3>
+                <p className="text-xs text-slate-300 leading-relaxed font-sans">
+                  The Transmission Control Protocol (TCP) provides a reliable, ordered, full-duplex byte stream over unreliable IP. Before any application data (HTTP, SSH) can be transmitted, the client and server synchronize initial sequence numbers (ISNs):
+                </p>
+                <div className="space-y-2 text-xs font-mono">
+                  <div className="p-2.5 rounded bg-void/80 border border-surface-border flex items-start space-x-2">
+                    <span className="px-2 py-0.5 rounded bg-cyber-sky/20 text-cyber-sky font-bold">1. SYN</span>
+                    <div className="text-slate-300">
+                      <strong>Client &rarr; Server:</strong> Packet with <code className="text-cyber-sky">SYN=1, Seq=ISN_c</code>. Client state transitions to <code className="text-slate-400">SYN_SENT</code>.
+                    </div>
+                  </div>
+                  <div className="p-2.5 rounded bg-void/80 border border-surface-border flex items-start space-x-2">
+                    <span className="px-2 py-0.5 rounded bg-cyber-emerald/20 text-cyber-emerald font-bold">2. SYN-ACK</span>
+                    <div className="text-slate-300">
+                      <strong>Server &rarr; Client:</strong> Packet with <code className="text-cyber-emerald">SYN=1, ACK=1, Seq=ISN_s, Ack=ISN_c + 1</code>. Server state transitions to <code className="text-slate-400">SYN_RCVD</code>.
+                    </div>
+                  </div>
+                  <div className="p-2.5 rounded bg-void/80 border border-surface-border flex items-start space-x-2">
+                    <span className="px-2 py-0.5 rounded bg-cyber-amber/20 text-cyber-amber font-bold">3. ACK</span>
+                    <div className="text-slate-300">
+                      <strong>Client &rarr; Server:</strong> Packet with <code className="text-cyber-amber">ACK=1, Seq=ISN_c + 1, Ack=ISN_s + 1</code>. The client enters ESTABLISHED when sending this ACK; the server enters ESTABLISHED after receiving it. This diagram assumes successful delivery.
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <Callout type="note" title="Worked example: why the acknowledgement adds one">
+                Suppose the client starts at sequence 1000 and the server at 5000. SYN consumes one sequence number, so SYN-ACK acknowledges 1001. The final ACK has Seq=1001 and Ack=5001. ACK without data does not itself consume a sequence number. These counters wrap modulo 2³². Ask yourself: after the server receives the final ACK, which sequence number will its first application byte use? Answer: 5001.
+              </Callout>
+              <p className="text-xs text-slate-400">Protocol sources: <a className="text-cyber-sky underline" href="https://www.rfc-editor.org/rfc/rfc9293.html">TCP (RFC 9293)</a> and <a className="text-cyber-sky underline" href="https://www.rfc-editor.org/rfc/rfc3021.html">/31 links (RFC 3021)</a>.</p>
+              {/* DNS Resolution Overview */}
+              <div className="p-3.5 rounded-lg bg-surface border border-surface-border text-xs space-y-1.5">
+                <div className="text-slate-200 font-bold font-mono">Application Layer: The Domain Name System (DNS) Resolution Hierarchy</div>
+                <p className="text-slate-400 leading-relaxed font-sans text-xs">
+                  Humans use domain names (<code className="text-cyber-sky">example.com</code>); network routers only understand binary IP addresses. When resolving a domain, a client queries: <strong>Client Stub &rarr; Recursive Resolver (ISP or 1.1.1.1) &rarr; Root Nameserver (.) &rarr; TLD Nameserver (.com) &rarr; Authoritative Nameserver</strong>, returning address records that an application may use when connecting. Caches can answer earlier, so not every lookup contacts every server in this chain.
+                </p>
+              </div>
+
+              <div>
+                <h3 className="text-xs font-mono font-bold text-cyber-emerald mb-2">
+                  Python Loopback TCP Example: Exchange Real Application Bytes
+                </h3>
+                <CodeBlock
+                  language="python"
+                  code={TOOLING_LESSON_CONTENT.codeExamples.pythonSocketAndDns}
+                  title="dns_and_socket_demo.py"
+                />
+              </div>
+            </div>
+          </section>
+
+          {/* Section 17: C Code Pipeline */}
           <section id="c-pipeline-code" className="space-y-4">
             <div className="flex items-center space-x-2 text-cyber-sky font-mono font-semibold text-xs tracking-wider uppercase">
               <Cpu className="w-4 h-4 text-cyber-sky" />
-              <span>Section 16 — Practical Verification</span>
+              <span>Section 17 — Practical Verification</span>
             </div>
             <h2 className="text-xl font-bold text-slate-100 border-b border-surface-border pb-2">
               Verifying Kernel Pipes & Redirection in C11
@@ -477,11 +606,11 @@ export const DeveloperToolingLesson: React.FC<DeveloperToolingLessonProps> = ({ 
             />
           </section>
 
-          {/* Section 17: Python Git Creator */}
+          {/* Section 18: Python Git Creator */}
           <section id="python-git-code" className="space-y-4">
             <div className="flex items-center space-x-2 text-cyber-indigo font-mono font-semibold text-xs tracking-wider uppercase">
               <Terminal className="w-4 h-4 text-cyber-indigo" />
-              <span>Section 17 — Implementation From Scratch</span>
+              <span>Section 18 — Implementation From Scratch</span>
             </div>
             <h2 className="text-xl font-bold text-slate-100 border-b border-surface-border pb-2">
               Building a Raw Git Object Engine in Pure Python
@@ -497,19 +626,19 @@ export const DeveloperToolingLesson: React.FC<DeveloperToolingLessonProps> = ({ 
             />
           </section>
 
-          {/* Section 18: Diagnostic Mastery Exam */}
+          {/* Section 19: Diagnostic Mastery Exam */}
           <AssessmentGate
             currentPath={currentPath}
             lessonTitle={TOOLING_LESSON_CONTENT.title}
-            sectionNumber={18}
+            sectionNumber={19}
             questions={TOOLING_LESSON_CONTENT.quizQuestions}
           />
 
-          {/* Section 19: Practical Exercises */}
+          {/* Section 20: Practical Exercises */}
           <section id="exercises" className="space-y-6 pt-6 border-t border-surface-border">
             <div className="flex items-center space-x-2 text-cyber-indigo font-mono font-semibold text-xs tracking-wider uppercase">
               <Wrench className="w-4 h-4 text-cyber-indigo" />
-              <span>Section 19 — Practical Exercises</span>
+              <span>Section 20 — Practical Exercises</span>
             </div>
             <div className="space-y-2">
               <h2 className="text-xl sm:text-2xl font-bold text-slate-100">

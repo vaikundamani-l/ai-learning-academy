@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { 
   FolderGit2, 
@@ -11,11 +11,27 @@ import {
   ShieldCheck, 
   ExternalLink,
   FileCode,
-  Sparkles
+  Sparkles,
+  ChevronDown,
+  ChevronUp,
+  CheckSquare,
+  Square,
+  HelpCircle
 } from 'lucide-react';
 import { CURRICULUM_STAGES } from '../data/curriculumData';
 
 export const Projects: React.FC = () => {
+  const [checklist, setChecklist] = useState<Record<string, boolean>>({});
+  const [revealedAnswers, setRevealedAnswers] = useState<Record<string, boolean>>({});
+
+  const toggleCheck = (id: string) => {
+    setChecklist(prev => ({ ...prev, [id]: !prev[id] }));
+  };
+
+  const toggleAnswer = (id: string) => {
+    setRevealedAnswers(prev => ({ ...prev, [id]: !prev[id] }));
+  };
+
   const capstones = [
     {
       id: 'capstone-a',
@@ -176,6 +192,92 @@ export const Projects: React.FC = () => {
         <div className="rounded-xl border border-surface-border p-4 text-sm text-slate-300 space-y-2">
           <p>Start with disposable sample files. Predict the dry-run result, organize them, inspect the undo journal, and restore them. Then create a conflicting original filename and confirm Undo preserves both copies.</p>
           <p>The README includes a worked example and a practical evidence checklist. Passing the automated tests demonstrates tool behavior; completing the stage also requires explaining your results and diagnosing an unfamiliar failure.</p>
+        </div>
+
+        {/* Interactive Learner Reflection & Diagnostics */}
+        <div className="p-5 rounded-xl bg-surface border border-surface-border space-y-4">
+          <div className="flex items-center space-x-2 text-xs font-mono text-cyber-sky font-bold uppercase tracking-wider">
+            <HelpCircle className="w-4 h-4 text-cyber-sky" />
+            <span>Learner Reflection & Diagnostic Evaluation Challenge</span>
+          </div>
+
+          <div className="space-y-3">
+            {/* Prompt 1: Undo conflict */}
+            <div className="p-3.5 rounded-lg bg-surface-card border border-surface-border space-y-2 text-xs">
+              <div className="flex items-start justify-between gap-2">
+                <span className="font-bold text-slate-200">
+                  1. Journal Conflict & Safety Invariant: Why does <code className="text-cyber-sky">file_organizer.py</code> refuse to restore an item if the destination file is already occupied or modified?
+                </span>
+                <button
+                  onClick={() => toggleAnswer('q1')}
+                  className="px-2 py-1 rounded bg-surface hover:bg-surface-elevated text-cyber-sky border border-surface-border font-mono text-[11px] shrink-0 flex items-center space-x-1"
+                >
+                  <span>{revealedAnswers['q1'] ? 'Hide' : 'Explain'}</span>
+                  {revealedAnswers['q1'] ? <ChevronUp className="w-3 h-3" /> : <ChevronDown className="w-3 h-3" />}
+                </button>
+              </div>
+              {revealedAnswers['q1'] && (
+                <div className="p-3 rounded bg-void/80 border border-cyber-sky/30 text-slate-300 leading-relaxed space-y-1 text-xs">
+                  <p><strong>Safety Invariant:</strong> In transactional filesystem design, an undo action must never destroy newly created user data. If the user creates a new file at the original path after organization, or if the organized file was subsequently edited, overwriting it would cause irreversible data loss.</p>
+                  <p>By refusing to overwrite and <strong>retaining the un-restored journal entry</strong>, the tool preserves both files and ensures the learner has a complete audit trail to reconcile the collision manually.</p>
+                </div>
+              )}
+            </div>
+
+            {/* Prompt 2: Failure diagnosis */}
+            <div className="p-3.5 rounded-lg bg-surface-card border border-surface-border space-y-2 text-xs">
+              <div className="flex items-start justify-between gap-2">
+                <span className="font-bold text-slate-200">
+                  2. Regression Diagnosis: In <code className="text-cyber-sky">diagnose_failure.sh</code>, how do you isolate whether a failure is in the Python categorization logic versus a Git repository state error?
+                </span>
+                <button
+                  onClick={() => toggleAnswer('q2')}
+                  className="px-2 py-1 rounded bg-surface hover:bg-surface-elevated text-cyber-emerald border border-surface-border font-mono text-[11px] shrink-0 flex items-center space-x-1"
+                >
+                  <span>{revealedAnswers['q2'] ? 'Hide' : 'Explain'}</span>
+                  {revealedAnswers['q2'] ? <ChevronUp className="w-3 h-3" /> : <ChevronDown className="w-3 h-3" />}
+                </button>
+              </div>
+              {revealedAnswers['q2'] && (
+                <div className="p-3 rounded bg-void/80 border border-cyber-emerald/30 text-slate-300 leading-relaxed space-y-1 text-xs">
+                  <p><strong>Isolation Strategy:</strong> First execute <code className="text-cyber-emerald">python3 -m unittest discover</code> to view the exact stack trace and assertion failure (e.g. unexpected category mapping). Next inspect <code className="text-cyber-emerald">git diff</code> or <code className="text-cyber-emerald">git log -p -1</code> to see what source lines changed relative to the baseline commit.</p>
+                  <p>Finally, run <code className="text-cyber-emerald">git checkout HEAD -- src/</code> to restore working source and verify that all 14 unit tests return to clean green status.</p>
+                </div>
+              )}
+            </div>
+          </div>
+
+          {/* Interactive Practical Checklist */}
+          <div className="pt-2 border-t border-surface-border space-y-2">
+            <span className="text-[11px] font-mono text-slate-400 font-bold uppercase tracking-wider block">
+              Practical Milestone Evidence Checklist
+            </span>
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 text-xs font-mono">
+              {[
+                { id: 'c1', label: 'make all: 14 regression tests passing' },
+                { id: 'c2', label: 'make inspect: /etc/passwd inode & octal verified' },
+                { id: 'c3', label: 'make organize: Dry-run and journal tested' },
+                { id: 'c4', label: 'make diagnose: Deliberate failure identified & restored' },
+              ].map(item => (
+                <button
+                  key={item.id}
+                  onClick={() => toggleCheck(item.id)}
+                  className={`p-2.5 rounded-lg border text-left flex items-center space-x-2 transition ${
+                    checklist[item.id]
+                      ? 'bg-cyber-emerald/15 border-cyber-emerald/40 text-cyber-emerald'
+                      : 'bg-surface-card border-surface-border text-slate-400 hover:text-slate-200'
+                  }`}
+                >
+                  {checklist[item.id] ? (
+                    <CheckSquare className="w-4 h-4 text-cyber-emerald shrink-0" />
+                  ) : (
+                    <Square className="w-4 h-4 text-slate-500 shrink-0" />
+                  )}
+                  <span className="text-[11px] truncate">{item.label}</span>
+                </button>
+              ))}
+            </div>
+          </div>
         </div>
         {/* Quick Orchestration & Execution Instructions */}
         <div className="p-4 rounded-xl bg-surface/70 border border-surface-border space-y-2.5 font-mono text-xs">

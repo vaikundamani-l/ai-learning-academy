@@ -32,19 +32,19 @@ export const LessonHeader: React.FC<LessonHeaderProps> = ({
   return (
     <div className="flex flex-wrap items-center justify-between gap-4 border-b border-surface-border pb-4">
       {/* Title & Navigation */}
-      <div className="flex items-center space-x-3">
+      <div className="flex items-start gap-3 min-w-0">
         <Link
           to={`/stage/${stageNumber}`}
-          className="p-2 rounded-lg bg-surface border border-surface-border text-slate-400 hover:text-slate-100 hover:bg-surface-elevated transition"
+          className="min-h-11 min-w-11 p-2 rounded-lg bg-surface border border-surface-border text-slate-400 hover:text-slate-100 hover:bg-surface-elevated transition"
           title={`Return to Stage ${stageNumber} Dashboard`}
         >
           <ArrowLeft className="w-4 h-4" />
         </Link>
         <div>
-          <div className="flex items-center space-x-2 text-xs font-mono text-cyber-sky">
+          <div className="flex flex-wrap items-center gap-2 text-xs font-mono text-cyber-sky">
             <span>Stage {stageNumber}</span>
             <span>•</span>
-            <span>Lesson {lessonIndex} of {totalLessons}</span>
+            <span>Lesson {lessonIndex}{totalLessons > 0 ? ` of ${totalLessons}` : ''}</span>
             <span>•</span>
             <span className="text-slate-400">{estimatedReadTime}</span>
           </div>
@@ -58,7 +58,7 @@ export const LessonHeader: React.FC<LessonHeaderProps> = ({
       <div className="flex items-center space-x-2">
         <button
           onClick={onOpenNotes}
-          className="px-3 py-1.5 rounded-lg bg-surface border border-surface-border text-xs font-mono text-slate-300 hover:text-slate-100 hover:bg-surface-elevated transition flex items-center space-x-1.5"
+          className="min-h-11 px-3 py-1.5 rounded-lg bg-surface border border-surface-border text-xs font-mono text-slate-300 hover:text-slate-100 hover:bg-surface-elevated transition flex items-center space-x-1.5"
           title="Open Notes Drawer"
         >
           <FileText className="w-3.5 h-3.5 text-cyber-sky" />
@@ -67,7 +67,7 @@ export const LessonHeader: React.FC<LessonHeaderProps> = ({
 
         <button
           onClick={() => toggleBookmark(currentPath)}
-          className={`px-3 py-1.5 rounded-lg border text-xs font-mono transition flex items-center space-x-1.5 ${
+          className={`min-h-11 px-3 py-1.5 rounded-lg border text-xs font-mono transition flex items-center space-x-1.5 ${
             bookmarked
               ? 'bg-cyber-sky/10 border-cyber-sky/40 text-cyber-sky'
               : 'bg-surface border-surface-border text-slate-400 hover:text-slate-200 hover:bg-surface-elevated'
@@ -79,7 +79,7 @@ export const LessonHeader: React.FC<LessonHeaderProps> = ({
         </button>
 
         <div
-          className={`px-3 py-1.5 rounded-lg border text-xs font-mono flex items-center space-x-1.5 ${
+          className={`min-h-11 px-3 py-1.5 rounded-lg border text-xs font-mono flex items-center space-x-1.5 ${
             completed
               ? 'bg-cyber-emerald/10 border-cyber-emerald/40 text-cyber-emerald font-bold'
               : isMastered
@@ -88,7 +88,7 @@ export const LessonHeader: React.FC<LessonHeaderProps> = ({
           }`}
         >
           <CheckCircle2 className="w-3.5 h-3.5" />
-          <span>{completed ? 'Certified & Completed' : isMastered ? 'Mastery Unlocked' : 'In Progress'}</span>
+          <span>{completed ? 'Completed' : isMastered ? 'Knowledge Check Passed' : 'In Progress'}</span>
         </div>
       </div>
     </div>

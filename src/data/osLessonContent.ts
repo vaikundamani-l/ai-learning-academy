@@ -97,6 +97,17 @@ export const OS_LESSON_CONTENT = {
       term: 'Race Condition',
       definition: 'A bug in concurrent software where the output depends on the non-deterministic timing, order, or scheduling of multiple threads accessing shared state.',
       significance: 'Mitigated using mutual exclusion locks (mutexes), atomic CPU instructions (Compare-and-Swap), or semaphores.'
+    },
+    {
+      term: 'Hypervisor (VMM)',
+      alias: 'Virtual Machine Monitor',
+      definition: 'Software or firmware that creates and runs virtual machines. Type 1 (bare-metal) runs directly on host hardware (e.g. ESXi, KVM), while Type 2 (hosted) runs as an application inside a host OS (e.g. VirtualBox).',
+      significance: 'Enables safe hardware consolidation, isolated tenant environments, and cross-platform operating system virtualization.'
+    },
+    {
+      term: 'Hardware Virtualization (VT-x / AMD-V)',
+      definition: 'Silicon-level CPU extensions that provide distinct privilege modes (VMX root operation for the hypervisor and VMX non-root operation for guest VMs) managed via hardware control structures (VMCS/VMCB).',
+      significance: 'Eliminates costly software binary translation, allowing guest OS instructions to execute directly on physical CPU cores with hardware-enforced traps.'
     }
   ],
 
@@ -376,22 +387,22 @@ if __name__ == "__main__":
     },
     {
       id: 9,
-      question: "What are the three standard POSIX file descriptors automatically opened by the kernel for every new process?",
+      question: "What is the primary architectural difference between a Type 1 (bare-metal) Hypervisor and a Type 2 (hosted) Hypervisor?",
       options: [
         {
-          text: "1: root, 2: home, 3: temp.",
+          text: "Type 1 hypervisors execute as regular user-space processes inside a host Linux desktop, whereas Type 2 hypervisors replace the physical motherboard BIOS permanently.",
           isCorrect: false,
-          explanation: "These are filesystem directories, not process file descriptors."
+          explanation: "Type 1 hypervisors run directly on the raw server hardware; they do not run inside a desktop OS."
         },
         {
-          text: "0: CPU, 1: RAM, 2: Disk.",
+          text: "Type 1 hypervisors only support single-threaded operating systems, whereas Type 2 hypervisors require hardware-assisted virtualization extensions like VT-x.",
           isCorrect: false,
-          explanation: "File descriptors represent I/O streams, not hardware components."
+          explanation: "Type 1 hypervisors support massive multi-core virtualization and rely heavily on hardware extensions like Intel VT-x and AMD-V."
         },
         {
-          text: "0: Standard Input (stdin), 1: Standard Output (stdout), 2: Standard Error (stderr).",
+          text: "Type 1 hypervisors run directly on bare-metal hardware without an underlying host OS, whereas Type 2 hypervisors run as software applications on top of an existing host operating system.",
           isCorrect: true,
-          explanation: "Correct! 0 is stdin (keyboard/pipe input), 1 is stdout (screen/pipe output), and 2 is stderr (diagnostic logging)."
+          explanation: "Correct! Type 1 hypervisors (e.g. VMware ESXi, bare-metal KVM/Xen) manage CPU, memory, and devices directly on hardware for near-native efficiency. Type 2 hypervisors (e.g. VirtualBox, VMware Workstation) run inside a host OS and translate guest requests through host system calls."
         }
       ]
     },

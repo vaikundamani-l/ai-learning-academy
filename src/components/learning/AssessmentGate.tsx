@@ -77,6 +77,8 @@ export const AssessmentGate: React.FC<AssessmentGateProps> = ({
     (assessmentScore !== null && assessmentScore >= passingScore) ||
     (recordedScore !== undefined && recordedScore >= passingScore);
 
+  const attemptPassed = assessmentScore !== null && assessmentScore >= passingScore;
+
   const allAnswered = questions.every((q) => userAnswers[q.id] !== undefined);
   const answeredCount = Object.keys(userAnswers).length;
 
@@ -85,15 +87,15 @@ export const AssessmentGate: React.FC<AssessmentGateProps> = ({
       {/* Section Header */}
       <div className="flex items-center space-x-2 text-cyber-emerald font-mono font-semibold text-xs tracking-wider uppercase">
         <Award className="w-4 h-4 text-cyber-emerald" />
-        <span>Section {sectionNumber} — Verified Diagnostic Mastery Gate</span>
+        <span>Section {sectionNumber} — Lesson Knowledge Check</span>
       </div>
 
       <div className="space-y-2">
         <h2 className="text-xl sm:text-2xl font-bold text-slate-100">
-          Diagnostic Mastery Exam
+          Lesson Knowledge Check
         </h2>
         <p className="text-sm text-slate-300 leading-relaxed font-sans">
-          To certify completion of {lessonTitle}, you must demonstrate technical mastery by answering the following {questions.length} questions. A passing score of <strong>&ge; {passingScore}% ({Math.ceil((passingScore / 100) * questions.length)} of {questions.length} correct)</strong> unlocks certified completion.
+          Check your understanding of {lessonTitle} with these {questions.length} questions. A passing score of <strong>&ge; {passingScore}% ({Math.ceil((passingScore / 100) * questions.length)} of {questions.length} correct)</strong> unlocks lesson completion. Complete the practical exercises as well.
         </p>
       </div>
 
@@ -101,22 +103,22 @@ export const AssessmentGate: React.FC<AssessmentGateProps> = ({
       {assessmentSubmitted && (
         <div
           className={`p-5 rounded-xl border space-y-3 transition ${
-            isMastered
+            attemptPassed
               ? 'bg-cyber-emerald/10 border-cyber-emerald/40 text-cyber-emerald'
               : 'bg-cyber-rose/10 border-cyber-rose/40 text-cyber-rose'
           }`}
         >
           <div className="flex items-center justify-between">
             <div className="flex items-center space-x-2 font-mono font-bold text-sm">
-              {isMastered ? <CheckCircle2 className="w-5 h-5" /> : <AlertCircle className="w-5 h-5" />}
-              <span>{isMastered ? 'Mastery Verified!' : 'Score Threshold Not Reached'}</span>
+              {attemptPassed ? <CheckCircle2 className="w-5 h-5" /> : <AlertCircle className="w-5 h-5" />}
+              <span>{attemptPassed ? 'Knowledge Check Passed!' : 'Score Threshold Not Reached'}</span>
             </div>
             <span className="text-lg font-mono font-extrabold">{assessmentScore}%</span>
           </div>
           <p className="text-xs text-slate-300 leading-relaxed font-sans">
-            {isMastered
-              ? `Congratulations! You scored ${assessmentScore}%, meeting the ${passingScore}% mastery requirement for ${lessonTitle}. Your achievement is recorded in progress storage.`
-              : `You scored ${assessmentScore}%. An ${passingScore}% score (at least ${Math.ceil((passingScore / 100) * questions.length)} correct questions) is required to certify mastery. Review the technical explanations below and retry.`}
+            {attemptPassed
+              ? `Congratulations! You scored ${assessmentScore}%, meeting the ${passingScore}% passing requirement for ${lessonTitle}. Your achievement is recorded in progress storage.`
+              : `You scored ${assessmentScore}%. An ${passingScore}% score (at least ${Math.ceil((passingScore / 100) * questions.length)} correct questions) is required to pass this check. Review the technical explanations below and retry.`}
           </p>
         </div>
       )}
@@ -237,7 +239,7 @@ export const AssessmentGate: React.FC<AssessmentGateProps> = ({
                   }`}
                 >
                   <Check className="w-4 h-4" />
-                  <span>{completed ? 'Certified & Completed' : 'Certify & Complete Lesson'}</span>
+                  <span>{completed ? 'Lesson Completed' : 'Complete Lesson'}</span>
                 </button>
               )}
             </>

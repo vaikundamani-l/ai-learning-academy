@@ -113,6 +113,17 @@ export const CPU_LESSON_CONTENT = {
       term: 'Syscall (System Call)',
       definition: 'A controlled programmatic mechanism by which a user-space application requests services from the operating system kernel.',
       significance: 'Triggers a privilege transition from Ring 3 to Ring 0 via instructions like `syscall` (x86-64) or `svc` (ARM64).'
+    },
+    {
+      term: 'GPU (Graphics Processing Unit)',
+      alias: 'Throughput Processor / Accelerator',
+      definition: 'A specialized processor architected with thousands of lightweight arithmetic cores designed to execute thousands of parallel threads simultaneously using SIMT (Single Instruction, Multiple Threads).',
+      significance: 'Powers modern deep learning and AI tensor matrix multiplications (GEMM) by providing massive parallel compute and terabyte/s memory bandwidth.'
+    },
+    {
+      term: 'SIMT (Single Instruction, Multiple Threads)',
+      definition: 'An execution model that groups threads for instruction issue. NVIDIA CUDA warps contain 32 threads; divergence and synchronization rules depend on the architecture.',
+      significance: 'Scheduling another ready resident warp can hide part of a memory stall. It does not remove memory latency or synchronization costs.'
     }
   ],
 
@@ -475,22 +486,22 @@ add_and_scale_arm:
     },
     {
       id: 10,
-      question: "Which Linux tool utilizes CPU hardware performance counters to report exact instructions retired, CPU cycles, and branch miss rates?",
+      question: "What fundamental architectural difference distinguishes modern GPUs from general-purpose CPUs?",
       options: [
         {
-          text: "`top`",
+          text: "GPUs feature single-core 10 GHz processors executing out-of-order x86 instructions with deep speculative branch predictors.",
           isCorrect: false,
-          explanation: "`top` reads sampling statistics from `/proc/stat`, not low-level hardware performance counters."
+          explanation: "GPUs do not use 10 GHz single cores; they use thousands of low-frequency, energy-efficient cores optimized for massive parallelism."
         },
         {
-          text: "`grep`",
+          text: "GPUs lack hardware arithmetic logic units (ALUs) and execute calculations exclusively through operating system software emulation.",
           isCorrect: false,
-          explanation: "`grep` is a text searching utility."
+          explanation: "GPUs contain thousands of physical ALUs and tensor cores fabricated directly in hardware."
         },
         {
-          text: "`perf stat`",
+          text: "CPUs dedicate significant die area to large caches and complex control logic to minimize single-thread latency, whereas GPUs dedicate most die area to thousands of lightweight ALUs operating in parallel (SIMT) to maximize throughput for data-parallel tasks.",
           isCorrect: true,
-          explanation: "Correct! `perf stat` interfaces with the kernel PMU (Performance Monitoring Unit) subsystem to measure exact hardware events."
+          explanation: "Correct! CPUs optimize latency for complex serial execution; GPUs optimize throughput for massive data parallelism (e.g. matrix multiplication and graphics) with parallel threads and device-dependent memory systems. HBM and GDDR are different memory technologies."
         }
       ]
     }

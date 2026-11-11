@@ -26,9 +26,10 @@ import { PosixPermissionsVisualizer } from '../components/visual/os/PosixPermiss
 import { GitDagVisualizer } from '../components/visual/tools/GitDagVisualizer';
 import { ShellPipelineVisualizer } from '../components/visual/tools/ShellPipelineVisualizer';
 import { EnvPathVisualizer } from '../components/visual/tools/EnvPathVisualizer';
+import { PythonMemoryVisualizer } from '../components/visual/python/PythonMemoryVisualizer';
 
 export const SimulationLab: React.FC = () => {
-  const [activeSim, setActiveSim] = useState<'cpu' | 'alu' | 'cache' | 'pipeline' | 'registers' | 'bitwise' | 'ieee754' | 'memory-pyramid' | 'process' | 'mmu' | 'permissions' | 'git' | 'pipeline-sim' | 'path'>('cpu');
+  const [activeSim, setActiveSim] = useState<'cpu' | 'alu' | 'cache' | 'pipeline' | 'registers' | 'bitwise' | 'ieee754' | 'memory-pyramid' | 'process' | 'mmu' | 'permissions' | 'git' | 'pipeline-sim' | 'path' | 'python-memory'>('cpu');
 
   return (
     <div className="space-y-8">
@@ -214,6 +215,18 @@ export const SimulationLab: React.FC = () => {
           <Zap className="w-3.5 h-3.5" />
           <span>$PATH & FHS Resolution</span>
         </button>
+
+        <button
+          onClick={() => setActiveSim('python-memory')}
+          className={`px-3.5 py-2 rounded-xl border transition flex items-center space-x-2 flex-shrink-0 ${
+            activeSim === 'python-memory'
+              ? 'bg-cyber-sky text-void font-bold border-cyber-sky shadow-lg shadow-cyber-sky/20'
+              : 'bg-surface-card border-surface-border text-slate-300 hover:text-slate-100 hover:bg-surface-elevated'
+          }`}
+        >
+          <Database className="w-3.5 h-3.5" />
+          <span>Python Reference Graph</span>
+        </button>
       </div>
 
       {/* Active Featured Simulator Viewport */}
@@ -232,6 +245,7 @@ export const SimulationLab: React.FC = () => {
         {activeSim === 'git' && <GitDagVisualizer />}
         {activeSim === 'pipeline-sim' && <ShellPipelineVisualizer />}
         {activeSim === 'path' && <EnvPathVisualizer />}
+        {activeSim === 'python-memory' && <PythonMemoryVisualizer />}
       </div>
 
       {/* Simulator Directory Catalog */}

@@ -525,7 +525,7 @@ test('directory permission mode uses the directory prefix and sticky execute ind
 // ============================================================================
 // Stage 0 Lesson 4: Developer Tooling, Shell & Git Internals Tests
 // ============================================================================
-import { sha1, computeGitBlobHash, parsePipeline, resolveCommandPath } from '../src/utils/devTooling.ts';
+import { sha1, computeGitBlobHash, parsePipeline, resolveCommandPath, calculateCidrSubnet, simulateTcpHandshake } from '../src/utils/devTooling.ts';
 import { TOOLING_LESSON_CONTENT } from '../src/data/toolingLessonContent.ts';
 
 test('pure SHA-1 and Git blob hashing produces canonical Git-compatible hashes', () => {
@@ -677,6 +677,66 @@ test('Tooling lesson metadata and quiz have the expected structure', () => {
   }
 });
 
+test('calculateCidrSubnet performs bit-accurate IPv4 subnetting and host range calculations', () => {
+  // Standard /24 Class C subnet: 192.168.1.100/24
+  const res24 = calculateCidrSubnet('192.168.1.100/24');
+  assert.equal(res24.netmask, '255.255.255.0');
+  assert.equal(res24.networkAddress, '192.168.1.0');
+  assert.equal(res24.broadcastAddress, '192.168.1.255');
+  assert.equal(res24.firstUsableIp, '192.168.1.1');
+  assert.equal(res24.lastUsableIp, '192.168.1.254');
+  assert.equal(res24.totalAddresses, 256);
+  assert.equal(res24.usableHosts, 254);
+
+  // Large /16 subnet: 10.0.50.1/16
+  const res16 = calculateCidrSubnet('10.0.50.1/16');
+  assert.equal(res16.netmask, '255.255.0.0');
+  assert.equal(res16.networkAddress, '10.0.0.0');
+  assert.equal(res16.broadcastAddress, '10.0.255.255');
+  assert.equal(res16.usableHosts, 65534);
+
+  // Rejects invalid inputs
+  assert.throws(() => calculateCidrSubnet('192.168.1.1/33'), RangeError);
+  assert.throws(() => calculateCidrSubnet('256.0.0.1/24'), RangeError);
+  assert.throws(() => calculateCidrSubnet('invalid_ip'), Error);
+});
+
+test('simulateTcpHandshake verifies the discrete 3-step TCP connection lifecycle', () => {
+  const steps = simulateTcpHandshake(1000, 5000);
+  assert.equal(steps.length, 3);
+
+  // Step 1: Client SYN
+  assert.equal(steps[0].sender, 'Client');
+  assert.equal(steps[0].flags.SYN, true);
+  assert.equal(steps[0].flags.ACK, false);
+  assert.equal(steps[0].seq, 1000);
+  assert.equal(steps[0].clientState, 'SYN_SENT');
+
+  // Step 2: Server SYN-ACK
+  assert.equal(steps[1].sender, 'Server');
+  assert.equal(steps[1].flags.SYN, true);
+  assert.equal(steps[1].flags.ACK, true);
+  assert.equal(steps[1].seq, 5000);
+  assert.equal(steps[1].ack, 1001);
+  assert.equal(steps[1].serverState, 'SYN_RCVD');
+
+  // Step 3: Client ACK -> ESTABLISHED
+  assert.equal(steps[2].sender, 'Client');
+  assert.equal(steps[2].flags.SYN, false);
+  assert.equal(steps[2].flags.ACK, true);
+  assert.equal(steps[2].seq, 1001);
+  assert.equal(steps[2].ack, 5001);
+  assert.equal(steps[2].clientState, 'ESTABLISHED');
+  assert.equal(steps[2].serverState, 'ESTABLISHED');
+});
+
+test('Developer Tooling Python example exchanges real TCP bytes on loopback', () => {
+  fs.writeFileSync('/tmp/test_py_net.py', TOOLING_LESSON_CONTENT.codeExamples.pythonSocketAndDns);
+  const out = execSync('python3 /tmp/test_py_net.py', { encoding: 'utf-8', timeout: 15000 });
+  assert.ok(out.includes('Local TCP reply: hello'));
+  assert.ok(out.includes('Verified: local TCP connection exchanged application bytes.'));
+});
+
 test('Stage 0 diagnostic quiz option positions are balanced without position bias', () => {
   const lessons = [
     { name: 'CPU Architecture', content: CPU_LESSON_CONTENT },
@@ -710,3 +770,136 @@ test('Stage 0 diagnostic quiz option positions are balanced without position bia
   }
 });
 
+
+
+test('CIDR calculator rejects partial prefixes and noninteger or empty octets', () => {
+  for (const input of ['1.2.3.4/24junk', '1.2.3.4/24/8', '1.2.3.4/2.5', '1.2..4/24', '1.2.3.4.5/24', '1.2.3.1e2/24']) {
+    assert.throws(() => calculateCidrSubnet(input));
+  }
+});
+test('CIDR /31 and /32 use point-to-point and single-address semantics', () => {
+  const point = calculateCidrSubnet('192.0.2.5/31');
+  assert.equal(point.usableHosts, 2);
+  assert.equal(point.broadcastAddress, null);
+  assert.equal(point.firstUsableIp, '192.0.2.4');
+  assert.equal(point.lastUsableIp, '192.0.2.5');
+  const host = calculateCidrSubnet('192.0.2.5/32');
+  assert.equal(host.usableHosts, 1);
+  assert.equal(host.broadcastAddress, null);
+  assert.equal(host.firstUsableIp, '192.0.2.5');
+});
+test('TCP sequence numbers wrap as unsigned 32-bit integers', () => {
+  const steps = simulateTcpHandshake(0xffffffff, 0xffffffff);
+  assert.equal(steps[1].ack, 0);
+  assert.equal(steps[2].seq, 0);
+  assert.equal(steps[2].ack, 0);
+  for (const value of [-1, 0x100000000, NaN, 1.5]) assert.throws(() => simulateTcpHandshake(value, 0), RangeError);
+});
+
+// ============================================================================
+// Bounded Python reference graph (not measured CPython refcounts)
+// ============================================================================
+import {
+  createMemoryEnvironment,
+  allocatePyObject,
+  assignVariable,
+  deleteVariable,
+  getPythonMemoryScenarios
+} from '../src/utils/pythonMemory.ts';
+import { PYTHON_BASICS_LESSON_CONTENT } from '../src/data/pythonBasicsLessonContent.ts';
+
+test('teaching reference graph counts drawn edges during rebinding and zero-edge release', () => {
+  const env = createMemoryEnvironment();
+
+  // Allocate integer 100
+  const id1 = allocatePyObject(env, 'int', '100');
+  assert.equal(env.heap[id1].refCount, 0);
+  assert.equal(env.heap[id1].isMutable, false);
+
+  // Assign x = 100 -> refCount increments to 1
+  assignVariable(env, 'x', id1);
+  assert.equal(env.stack.x, id1);
+  assert.equal(env.heap[id1].refCount, 1);
+
+  // Assign y = x -> pointer aliasing, refCount increments to 2
+  assignVariable(env, 'y', id1);
+  assert.equal(env.stack.y, id1);
+  assert.equal(env.heap[id1].refCount, 2);
+
+  // Rebind x = 101 -> allocate new int, decrement id1, increment id2
+  const id2 = allocatePyObject(env, 'int', '101');
+  assignVariable(env, 'x', id2);
+  assert.equal(env.stack.x, id2);
+  assert.equal(env.heap[id2].refCount, 1);
+  assert.equal(env.heap[id1].refCount, 1); // y still holds id1
+
+  // Delete y -> id1 refCount reaches 0 and is removed from heap
+  deleteVariable(env, 'y');
+  assert.equal(env.stack.y, undefined);
+  assert.equal(env.heap[id1], undefined);
+
+  // Delete x -> id2 refCount reaches 0 and is removed from heap
+  deleteVariable(env, 'x');
+  assert.equal(env.stack.x, undefined);
+  assert.equal(env.heap[id2], undefined);
+});
+
+test('teaching reference graph distinguishes a shared list from an independent outer copy', () => {
+  const env = createMemoryEnvironment();
+
+  // Create list [1, 2]
+  const listId = allocatePyObject(env, 'list', '[1, 2]');
+  assignVariable(env, 'a', listId);
+  assignVariable(env, 'b', listId); // Alias
+
+  assert.equal(env.stack.a, env.stack.b);
+  assert.equal(env.heap[listId].refCount, 2);
+
+  // Mutate the list in-place
+  env.heap[listId].value = '[1, 2, 3]';
+  assert.equal(env.heap[env.stack.a].value, '[1, 2, 3]');
+  assert.equal(env.heap[env.stack.b].value, '[1, 2, 3]');
+
+  // Create independent shallow copy
+  const copyId = allocatePyObject(env, 'list', '[1, 2, 3]');
+  assignVariable(env, 'c', copyId);
+  assert.notEqual(env.stack.a, env.stack.c);
+  assert.equal(env.heap[copyId].refCount, 1);
+});
+
+test('Python memory scenarios return fully formed deterministic simulation frames', () => {
+  const scenarios = getPythonMemoryScenarios();
+  assert.ok(Array.isArray(scenarios));
+  assert.equal(scenarios.length, 5);
+
+  for (const sc of scenarios) {
+    assert.ok(sc.id, 'Scenario must have an id');
+    assert.ok(sc.title, 'Scenario must have a title');
+    assert.ok(sc.description, 'Scenario must have a description');
+    assert.ok(sc.steps.length >= 3, `Scenario ${sc.id} must have at least 3 steps`);
+
+    for (let i = 0; i < sc.steps.length; i++) {
+      const step = sc.steps[i];
+      assert.ok(step.title, `Step ${i} must include title`);
+      assert.ok(step.code, `Step ${i} must include code`);
+      assert.ok(step.explanation, `Step ${i} must include explanation`);
+      assert.ok(step.environment, `Step ${i} must have an environment state`);
+      assert.ok(step.environment.stack, `Step ${i} must have a stack frame`);
+      assert.ok(step.environment.heap, `Step ${i} must have heap memory`);
+    }
+  }
+});
+
+test('reviewed CPython knowledge check distinguishes evidence and implementation limits', () => {
+  const content = PYTHON_BASICS_LESSON_CONTENT;
+  assert.equal(content.stageNumber, 1);
+  assert.match(content.title, /CPython/);
+  assert.equal(content.quizQuestions.length, 10);
+  const positions = new Set();
+  for (const question of content.quizQuestions) {
+    assert.equal(question.options.filter(option => option.isCorrect).length, 1);
+    positions.add(question.options.findIndex(option => option.isCorrect));
+    assert.ok(question.options.every(option => option.explanation.length > 20));
+  }
+  assert.equal(positions.size, 3);
+});

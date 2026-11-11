@@ -2,6 +2,7 @@ import React from 'react';
 import { Play, Pause, RotateCcw, StepForward, StepBack, FastForward, Clock } from 'lucide-react';
 
 export interface AnimationControllerProps {
+  unitLabel?: string;
   currentCycle: number;
   totalCycles: number;
   isPlaying: boolean;
@@ -19,6 +20,7 @@ export interface AnimationControllerProps {
 }
 
 export const AnimationController: React.FC<AnimationControllerProps> = ({
+  unitLabel = 'Cycle',
   currentCycle,
   totalCycles,
   isPlaying,
@@ -53,7 +55,7 @@ export const AnimationController: React.FC<AnimationControllerProps> = ({
           <div className="flex items-center space-x-1 px-2.5 py-1 rounded bg-surface border border-surface-border text-slate-200">
             <Clock className="w-3.5 h-3.5 text-cyber-sky" />
             <span>
-              Cycle <strong className="text-cyber-sky">{currentCycle}</strong> / {totalCycles}
+              {unitLabel} <strong className="text-cyber-sky">{currentCycle}</strong> / {totalCycles}
             </span>
           </div>
 
@@ -81,7 +83,7 @@ export const AnimationController: React.FC<AnimationControllerProps> = ({
             value={currentCycle}
             onChange={(e) => onSeek && onSeek(Number(e.target.value))}
             disabled={!onSeek}
-            aria-label="Cycle progress scrubber"
+            aria-label={`${unitLabel} progress scrubber`}
             className="w-full h-1.5 bg-surface-elevated rounded-lg appearance-none cursor-pointer accent-cyber-sky focus:outline-none"
           />
         </div>
@@ -93,8 +95,8 @@ export const AnimationController: React.FC<AnimationControllerProps> = ({
           {/* Reset */}
           <button
             onClick={onReset}
-            className="p-2 rounded-lg bg-surface border border-surface-border text-slate-300 hover:text-slate-100 hover:bg-surface-elevated transition"
-            title="Reset to Cycle 0"
+            className="min-h-11 min-w-11 p-2 rounded-lg bg-surface border border-surface-border text-slate-300 hover:text-slate-100 hover:bg-surface-elevated transition"
+            title={`Reset to ${unitLabel} 0`}
             aria-label="Reset animation"
           >
             <RotateCcw className="w-4 h-4" />
@@ -104,9 +106,9 @@ export const AnimationController: React.FC<AnimationControllerProps> = ({
           <button
             onClick={onStepBackward}
             disabled={!canStepBackward || currentCycle <= 0}
-            className="p-2 rounded-lg bg-surface border border-surface-border text-slate-300 hover:text-slate-100 hover:bg-surface-elevated disabled:opacity-40 transition"
+            className="min-h-11 min-w-11 p-2 rounded-lg bg-surface border border-surface-border text-slate-300 hover:text-slate-100 hover:bg-surface-elevated disabled:opacity-40 transition"
             title="Step Backward (Left Arrow)"
-            aria-label="Step backward one cycle"
+            aria-label={`Step backward one ${unitLabel.toLowerCase()}`}
           >
             <StepBack className="w-4 h-4" />
           </button>
@@ -114,7 +116,7 @@ export const AnimationController: React.FC<AnimationControllerProps> = ({
           {/* Play / Pause Toggle */}
           <button
             onClick={onPlayToggle}
-            className={`px-4 py-2 rounded-lg font-mono font-bold text-xs flex items-center space-x-2 transition shadow-md ${
+            className={`min-h-11 px-4 py-2 rounded-lg font-mono font-bold text-xs flex items-center space-x-2 transition shadow-md ${
               isPlaying
                 ? 'bg-cyber-amber text-void hover:bg-amber-400'
                 : 'bg-cyber-sky text-void hover:bg-sky-400'
@@ -139,9 +141,9 @@ export const AnimationController: React.FC<AnimationControllerProps> = ({
           <button
             onClick={onStepForward}
             disabled={!canStepForward || currentCycle >= totalCycles}
-            className="p-2 rounded-lg bg-surface border border-surface-border text-slate-300 hover:text-slate-100 hover:bg-surface-elevated disabled:opacity-40 transition"
+            className="min-h-11 min-w-11 p-2 rounded-lg bg-surface border border-surface-border text-slate-300 hover:text-slate-100 hover:bg-surface-elevated disabled:opacity-40 transition"
             title="Step Forward (Right Arrow)"
-            aria-label="Step forward one cycle"
+            aria-label={`Step forward one ${unitLabel.toLowerCase()}`}
           >
             <StepForward className="w-4 h-4" />
           </button>
@@ -155,7 +157,7 @@ export const AnimationController: React.FC<AnimationControllerProps> = ({
               key={opt}
               aria-pressed={speed === opt}
               onClick={() => onSpeedChange(opt)}
-              className={`px-2 py-0.5 rounded text-[11px] font-mono transition ${
+              className={`min-h-11 min-w-11 px-2 py-0.5 rounded text-[11px] font-mono transition ${
                 speed === opt
                   ? 'bg-cyber-sky text-void font-bold'
                   : 'text-slate-400 hover:text-slate-200'

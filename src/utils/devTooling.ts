@@ -183,3 +183,130 @@ export function resolveCommandPath(
     steps,
   };
 }
+
+/**
+ * CIDR Subnet Calculation Details
+ */
+export interface CidrSubnetInfo {
+  ip: string;
+  prefixLength: number;
+  netmask: string;
+  networkAddress: string;
+  broadcastAddress: string | null; // No directed broadcast for /31 or /32.
+  firstUsableIp: string;
+  lastUsableIp: string;
+  totalAddresses: number;
+  usableHosts: number;
+}
+
+/**
+ * Pure CIDR Subnet Calculator
+ * Decomposes an IPv4 address with prefix length into its network boundary, netmask, and usable host range.
+ */
+export function calculateCidrSubnet(cidrStr: string): CidrSubnetInfo {
+  const [ipPart, prefixPart] = cidrStr.trim().split('/');
+  if (!ipPart || prefixPart === undefined) {
+    throw new Error('Invalid CIDR format. Expected IP/prefix (e.g. 192.168.1.100/24)');
+  }
+
+  if (!/^[0-9]{1,2}$/.test(prefixPart) || cidrStr.trim().split('/').length !== 2) throw new RangeError('Invalid CIDR prefix');
+  const prefix = Number(prefixPart);
+  if (isNaN(prefix) || prefix < 0 || prefix > 32) {
+    throw new RangeError('CIDR prefix length must be between 0 and 32');
+  }
+
+  if (!/^(?:[0-9]{1,3}\.){3}[0-9]{1,3}$/.test(ipPart)) throw new RangeError('Invalid IPv4 decimal octets');
+  const octets = ipPart.split('.').map(Number);
+  if (octets.length !== 4 || octets.some(o => isNaN(o) || o < 0 || o > 255)) {
+    throw new RangeError('Invalid IPv4 address format. Must have 4 octets (0-255)');
+  }
+
+  // Convert octets to unsigned 32-bit integer
+  const ipInt = ((octets[0] << 24) | (octets[1] << 16) | (octets[2] << 8) | octets[3]) >>> 0;
+  const maskInt = prefix === 0 ? 0 : ((0xffffffff << (32 - prefix)) >>> 0);
+  const netInt = (ipInt & maskInt) >>> 0;
+  const wildInt = (~maskInt) >>> 0;
+  const broadInt = (netInt | wildInt) >>> 0;
+
+  const intToIp = (val: number) => [
+    (val >>> 24) & 0xff,
+    (val >>> 16) & 0xff,
+    (val >>> 8) & 0xff,
+    val & 0xff,
+  ].join('.');
+
+  const totalAddresses = Math.pow(2, 32 - prefix);
+  const usableHosts = prefix === 32 ? 1 : prefix === 31 ? 2 : totalAddresses - 2;
+
+  const firstUsableIp = prefix >= 31 ? intToIp(netInt) : intToIp(netInt + 1);
+  const lastUsableIp = prefix >= 31 ? intToIp(broadInt) : intToIp(broadInt - 1);
+
+  return {
+    ip: ipPart,
+    prefixLength: prefix,
+    netmask: intToIp(maskInt),
+    networkAddress: intToIp(netInt),
+    broadcastAddress: prefix >= 31 ? null : intToIp(broadInt),
+    firstUsableIp,
+    lastUsableIp,
+    totalAddresses,
+    usableHosts,
+  };
+}
+
+/**
+ * TCP 3-Way Handshake Packet Telemetry
+ */
+export interface TcpHandshakeStep {
+  step: number;
+  sender: 'Client' | 'Server';
+  flags: { SYN: boolean; ACK: boolean };
+  seq: number;
+  ack: number;
+  clientState: string;
+  serverState: string;
+  description: string;
+}
+
+/**
+ * Deterministic TCP 3-Way Handshake Simulation
+ */
+export function simulateTcpHandshake(clientISN: number = 1000, serverISN: number = 5000): TcpHandshakeStep[] {
+  if (![clientISN, serverISN].every(value => Number.isInteger(value) && value >= 0 && value <= 0xffffffff)) {
+    throw new RangeError('Initial sequence numbers must be unsigned 32-bit integers');
+  }
+  const nextClient = (clientISN + 1) >>> 0;
+  const nextServer = (serverISN + 1) >>> 0;
+  return [
+    {
+      step: 1,
+      sender: 'Client',
+      flags: { SYN: true, ACK: false },
+      seq: clientISN,
+      ack: 0,
+      clientState: 'SYN_SENT',
+      serverState: 'LISTEN',
+      description: `Client initiates connection by transmitting SYN=1 with initial sequence number ISN_c=${clientISN}.`,
+    },
+    {
+      step: 2,
+      sender: 'Server',
+      flags: { SYN: true, ACK: true },
+      seq: serverISN,
+      ack: nextClient,
+      clientState: 'SYN_SENT',
+      serverState: 'SYN_RCVD',
+      description: `Server acknowledges client's ISN with ACK=${nextClient} and responds with its own SYN=1 and ISN_s=${serverISN}.`,
+    },
+    {
+      step: 3,
+      sender: 'Client',
+      flags: { SYN: false, ACK: true },
+      seq: nextClient,
+      ack: nextServer,
+      clientState: 'ESTABLISHED',
+      serverState: 'ESTABLISHED',
+      description: `Client acknowledges server's ISN with ACK=${nextServer}. After the server receives this ACK, both endpoints are ESTABLISHED. This trace assumes delivery without loss.`,
+    },
+  ];
+}

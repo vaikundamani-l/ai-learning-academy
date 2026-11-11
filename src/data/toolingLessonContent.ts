@@ -36,7 +36,8 @@ export const TOOLING_LESSON_CONTENT = {
     'Understand environment variables: Process inheritance during fork(), subshells, and how the kernel resolves executables via $PATH.',
     'Explore the Linux Filesystem Hierarchy Standard (FHS): The distinct roles of /bin, /usr, /etc, /var, /proc, and /sys.',
     'Deconstruct Git internals: Content-addressable storage, SHA-1 object hashing, blobs, trees, commits, and the .git directory structure.',
-    'Analyze Git branching and graph theory: Directed Acyclic Graphs (DAG), HEAD pointer tracking, fast-forward vs. three-way recursive merges, and conflict resolution.'
+    'Analyze Git branching and graph theory: Directed Acyclic Graphs (DAG), HEAD pointer tracking, fast-forward vs. three-way recursive merges, and conflict resolution.',
+    'Demystify basic internet architecture: Packet switching, IPv4 addresses, CIDR subnetting (/24), transport layer ports, DNS resolution, and the TCP 3-way handshake.'
   ],
 
   prerequisites: [
@@ -96,6 +97,22 @@ export const TOOLING_LESSON_CONTENT = {
       term: 'Three-Way Merge',
       definition: 'A merge operation that reconciles divergent branch histories by comparing two branch tips against their Most Recent Common Ancestor (MRCA).',
       significance: 'Automatically integrates non-overlapping edits and flags true conflicting lines for human developer resolution.'
+    },
+    {
+      term: 'Packet Switching',
+      definition: 'A networking paradigm where digital data is segmented into independent packets containing header metadata (source, destination IP) routed across a distributed network.',
+      significance: 'Contrasts with circuit switching (traditional telephone networks); maximizes link utilization through statistical multiplexing.'
+    },
+    {
+      term: 'CIDR Subnetting',
+      alias: 'Classless Inter-Domain Routing',
+      definition: 'A method for allocating IP addresses and IP routing where a prefix length (/24) specifies the number of leading bits identifying the network boundary versus host addresses.',
+      significance: 'Determines the broadcast address, netmask, and maximum usable client devices on a local subnet.'
+    },
+    {
+      term: 'TCP 3-Way Handshake',
+      definition: 'The connection establishment protocol (SYN, SYN-ACK, ACK) used by the Transmission Control Protocol to synchronize sequence numbers and flow control windows before data transmission.',
+      significance: 'Guarantees reliable, ordered, full-duplex byte stream delivery over unreliable packet-switched IP networks.'
     }
   ],
 
@@ -193,6 +210,57 @@ print(f"Compressed Size: {len(compressed_data)} bytes")
 # Git's universal hash for 'Hello World\\n'
 assert hash_val == "557db03de997c86a4a028e1ebd3a1ceb225be238", "Git SHA-1 hash mismatch!"
 print("Verdict: Hash matches git hash-object exactly!")
+`,
+
+    pythonSocketAndDns: `# Local TCP example: no Internet service or external DNS is required.
+# The operating system performs TCP connection setup; this is not a packet capture.
+import socket
+import threading
+
+with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as listener:
+    listener.bind(("127.0.0.1", 0))  # Ask the OS for an available local port.
+    listener.listen(1)
+    listener.settimeout(5)
+    address = listener.getsockname()
+    errors = []
+
+    def serve_once():
+        try:
+            connection, _ = listener.accept()
+            with connection:
+                connection.settimeout(5)
+                chunks = []
+                while True:
+                    chunk = connection.recv(1024)
+                    if not chunk:
+                        break
+                    chunks.append(chunk)
+                connection.sendall(b"".join(chunks))
+        except Exception as error:
+            errors.append(error)
+
+    server = threading.Thread(target=serve_once)
+    server.start()
+    try:
+        with socket.create_connection(address, timeout=5) as client:
+            client.sendall(b"hello")
+            client.shutdown(socket.SHUT_WR)
+            chunks = []
+            while True:
+                chunk = client.recv(1024)
+                if not chunk:
+                    break
+                chunks.append(chunk)
+            reply = b"".join(chunks)
+        print("Local TCP reply:", reply.decode("ascii"))
+        assert reply == b"hello"
+    finally:
+        server.join(timeout=6)
+    assert not server.is_alive(), "Server did not finish"
+    if errors:
+        raise errors[0]
+    print("Verified: local TCP connection exchanged application bytes.")
+    print("DNS is separate: a domain lookup may resolve a name before connection setup.")
 `
   },
 
@@ -388,22 +456,22 @@ print("Verdict: Hash matches git hash-object exactly!")
     },
     {
       id: 10,
-      question: "What happens inside .git/refs/heads/main when you make a new commit on the 'main' branch?",
+      question: "In basic internet architecture, how does the Transmission Control Protocol (TCP) establish a reliable connection between a client and server before data transfer begins?",
       options: [
         {
-          text: "The entire repository is re-uploaded to GitHub automatically.",
+          text: "The client immediately streams UDP packets without waiting for connection confirmation or sequence synchronization.",
           isCorrect: false,
-          explanation: "Local commits are never uploaded to remote servers until an explicit 'git push' is run."
+          explanation: "UDP is connectionless; TCP requires a 3-way handshake to synchronize sequence numbers and flow control parameters."
         },
         {
-          text: "The text file .git/refs/heads/main is updated with the new 40-character SHA-1 commit hash.",
+          text: "Via the TCP 3-Way Handshake: the client sends a SYN packet with an initial sequence number (ISN), the server responds with SYN-ACK acknowledging the client's ISN and offering its own, and the client replies with an ACK.",
           isCorrect: true,
-          explanation: "Correct! In Git, a branch is merely a lightweight 41-byte text file storing the SHA-1 hash of its latest commit."
+          explanation: "Correct! The SYN -> SYN-ACK -> ACK handshake synchronizes initial sequence numbers ($ISN_c$ and $ISN_s$) and establishes flow control parameters for a reliable byte stream."
         },
         {
-          text: "The operating system kernel reboots.",
+          text: "The client broadcasts an ARP request to all global routers to reserve a dedicated physical copper wire for circuit switching.",
           isCorrect: false,
-          explanation: "Git operates entirely in userland; committing does not reboot the system."
+          explanation: "The internet uses packet switching over shared infrastructure, not circuit switching with dedicated copper lines."
         }
       ]
     }

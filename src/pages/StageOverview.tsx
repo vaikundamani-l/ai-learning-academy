@@ -37,6 +37,8 @@ export const StageOverview: React.FC = () => {
     markStageStarted(stage.id);
     if (stage.id === 0) {
       navigate('/stage/0/lesson/cpu-architecture');
+    } else if (stage.id === 1) {
+      navigate('/stage/1/lesson/python-basics');
     }
   };
 
@@ -122,7 +124,7 @@ export const StageOverview: React.FC = () => {
 
         {/* Action Bar */}
         <div className="pt-2 flex flex-wrap gap-3">
-          {stage.id === 0 ? (
+          {stage.id === 0 && (
             <>
               <Link
                 to="/stage/0/lesson/cpu-architecture"
@@ -153,7 +155,19 @@ export const StageOverview: React.FC = () => {
                 <span>Lesson 4: Shell & Git</span>
               </Link>
             </>
-          ) : (
+          )}
+
+          {stage.id === 1 && (
+            <Link
+              to="/stage/1/lesson/python-basics"
+              className="px-4 py-2.5 rounded-lg bg-cyber-sky text-void font-bold text-xs font-mono hover:bg-sky-400 transition flex items-center space-x-2 shadow-lg shadow-cyber-sky/20"
+            >
+              <Play className="w-3.5 h-3.5 fill-current" />
+              <span>Lesson 1: Your First Python Program</span>
+            </Link>
+          )}
+
+          {stage.id > 1 && (
             <button
               onClick={handleStartOrContinue}
               className="px-4 py-2.5 rounded-lg bg-cyber-sky text-void font-bold text-xs font-mono hover:bg-sky-400 transition flex items-center space-x-2 shadow-lg shadow-cyber-sky/20"
@@ -210,6 +224,54 @@ export const StageOverview: React.FC = () => {
             >
               <span>Lesson 4: Shell & Git Internals &rarr;</span>
             </Link>
+          </div>
+        </div>
+      )}
+
+      {stage.id === 2 && (
+        <div className="p-5 rounded-xl bg-cyber-sky/5 border border-cyber-sky/40 space-y-3">
+          <h2 className="font-semibold text-slate-100">Stage 2 starts with a cost model</h2>
+          <p className="text-sm text-slate-300">Derive operation counts, separate input cases and account for storage before comparing algorithm choices. Begin after Stage 1 programming practice.</p>
+          <Link to="/stage/2/lesson/complexity-foundations" className="inline-flex min-h-11 items-center text-cyber-sky underline">Lesson 1: Time, Space &amp; Big-O →</Link>
+        </div>
+      )}
+
+      {/* Stage 1 Active Lessons Banner */}
+      {stage.id === 1 && (
+        <div className="p-5 rounded-xl bg-gradient-to-r from-cyber-sky/15 via-surface-card to-surface-card border border-cyber-sky/40 space-y-3">
+          <div className="flex items-center space-x-2 text-cyber-sky font-mono font-semibold text-xs uppercase tracking-wider">
+            <Sparkles className="w-4 h-4 text-cyber-sky" />
+            <span>Stage 1 Python & Computational Thinking Lessons</span>
+          </div>
+          <p className="text-xs text-slate-300 leading-relaxed max-w-3xl">
+            Start by running a Python program, naming values, calculating results, reading input and diagnosing errors. Build confidence with a worked trace and a small independent project, then explore decisions, loops and boundary tests. Deeper execution models follow programming practice.
+          </p>
+          <div className="flex flex-wrap gap-4 pt-1">
+            <Link
+              to="/stage/1/lesson/python-basics"
+              className="text-xs font-mono font-semibold text-cyber-sky hover:underline flex items-center space-x-1"
+            >
+              <span>Lesson 1: Your First Python Program &rarr;</span>
+            </Link>
+            <Link to="/stage/1/lesson/python-control-flow" className="text-xs font-mono font-semibold text-cyber-sky hover:underline flex items-center min-h-11">Lesson 2: Decisions &amp; Loops &rarr;</Link>
+            <Link to="/stage/1/lesson/python-functions" className="text-xs font-mono font-semibold text-cyber-sky hover:underline flex items-center min-h-11">Lesson 3: Functions &amp; Return Values &rarr;</Link>
+            <Link to="/stage/1/lesson/python-collections" className="text-xs font-mono font-semibold text-cyber-sky hover:underline flex items-center min-h-11">Lesson 4: Collections &amp; Shared State &rarr;</Link>
+            <Link to="/stage/1/lesson/python-exceptions" className="text-xs font-mono font-semibold text-cyber-sky hover:underline flex items-center min-h-11">Lesson 5: Exceptions &amp; Validation &rarr;</Link>
+            <Link to="/stage/1/lesson/python-modules" className="text-xs font-mono font-semibold text-cyber-sky hover:underline flex items-center min-h-11">Lesson 6: Modules &amp; Environments &rarr;</Link>
+            <Link to="/stage/1/lesson/python-files" className="text-xs font-mono font-semibold text-cyber-sky hover:underline flex items-center min-h-11">Lesson 7: Files &amp; Record Processing &rarr;</Link>
+            <Link to="/stage/1/lesson/python-structured-data" className="text-xs font-mono font-semibold text-cyber-sky hover:underline flex items-center min-h-11">Lesson 8: CSV, JSON &amp; Validation &rarr;</Link>
+            <Link to="/stage/1/lesson/python-classes" className="text-xs font-mono font-semibold text-cyber-sky hover:underline flex items-center min-h-11">Lesson 9: Classes &amp; Composition &rarr;</Link>
+            <Link to="/stage/1/lesson/python-testing" className="text-xs font-mono font-semibold text-cyber-sky hover:underline flex items-center min-h-11">Lesson 10: Testing, Debugging &amp; Logging &rarr;</Link>
+            <Link to="/stage/1/lesson/python-cpython-evidence" className="text-xs font-mono font-semibold text-cyber-sky hover:underline flex items-center min-h-11">Lesson 20: CPython Evidence &rarr;</Link>
+            <Link to="/stage/1/lesson/python-data-capstone" className="text-xs font-mono font-semibold text-cyber-sky hover:underline flex items-center min-h-11">Lesson 19: Data-Processing Capstone &rarr;</Link>
+            <Link to="/stage/1/lesson/python-task-manager" className="text-xs font-mono font-semibold text-cyber-sky hover:underline flex items-center min-h-11">Lesson 18: Task Manager Project &rarr;</Link>
+            <Link to="/stage/1/lesson/python-pytest-coverage" className="text-xs font-mono font-semibold text-cyber-sky hover:underline flex items-center min-h-11">Lesson 17: Pytest &amp; Coverage Evidence &rarr;</Link>
+            <Link to="/stage/1/lesson/python-context-decorators" className="text-xs font-mono font-semibold text-cyber-sky hover:underline flex items-center min-h-11">Lesson 16: Context Managers &amp; Decorators &rarr;</Link>
+            <Link to="/stage/1/lesson/python-concurrency" className="text-xs font-mono font-semibold text-cyber-sky hover:underline flex items-center min-h-11">Lesson 15: Concurrency &amp; Cancellation &rarr;</Link>
+            <Link to="/stage/1/lesson/python-http-client" className="text-xs font-mono font-semibold text-cyber-sky hover:underline flex items-center min-h-11">Lesson 14: HTTP Requests &amp; Byte Streams &rarr;</Link>
+            <Link to="/stage/1/lesson/python-regex-logs" className="text-xs font-mono font-semibold text-cyber-sky hover:underline flex items-center min-h-11">Lesson 13: Regex &amp; Reliable Log Parsing &rarr;</Link>
+            <Link to="/stage/1/lesson/python-iteration-scope" className="text-xs font-mono font-semibold text-cyber-sky hover:underline flex items-center min-h-11">Lesson 12: Iterators, Generators &amp; Scope &rarr;</Link>
+            <Link to="/stage/1/lesson/python-typing-profiling" className="text-xs font-mono font-semibold text-cyber-sky hover:underline flex items-center min-h-11">Lesson 11: Type Hints &amp; Profiling &rarr;</Link>
           </div>
         </div>
       )}

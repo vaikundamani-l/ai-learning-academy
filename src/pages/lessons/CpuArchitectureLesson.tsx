@@ -11,7 +11,9 @@ import {
   AlertCircle,
   RotateCcw,
   Wrench,
-  HelpCircle
+  HelpCircle,
+  Cpu,
+  Layers
 } from 'lucide-react';
 import { Stage } from '../../types/curriculum';
 import { useProgress } from '../../context/ProgressContext';
@@ -71,7 +73,7 @@ export const CpuArchitectureLesson: React.FC<CpuArchitectureLessonProps> = ({ st
     { id: 'code', title: '14. C, Python & Assembly Implementations' },
     { id: 'security', title: '15. Hardware Security: Meltdown & Spectre' },
     { id: 'linux-tools', title: '16. Linux CPU Tools & /proc/cpuinfo' },
-    { id: 'future', title: '17. Future of CPU: Heterogeneous & NPU' },
+    { id: 'future', title: '17. GPU Architecture & Future Trends' },
     { id: 'assessment', title: '18. Verified Diagnostic Mastery Exam' },
     { id: 'exercises', title: '19. Practical Hands-On Exercises' },
   ];
@@ -582,28 +584,106 @@ export const CpuArchitectureLesson: React.FC<CpuArchitectureLessonProps> = ({ st
             <ProcCpuInfoExplorer />
           </section>
 
-          {/* 17. Future of CPU Architecture */}
-          <section id="future" className="p-5 rounded-xl bg-surface-card border border-surface-border space-y-3">
+          {/* 17. GPU Architecture, Throughput Computing & Future Trends */}
+          <section id="future" className="p-5 rounded-xl bg-surface-card border border-surface-border space-y-4">
             <h2 className="text-base font-bold text-slate-100 font-mono flex items-center space-x-2 border-b border-surface-border pb-2">
               <span className="text-cyber-sky">17.</span>
-              <span>The Future of CPU Architecture: Heterogeneous Computing, NPUs & Chiplets</span>
+              <span>GPU Architecture, Throughput Computing & Future Microarchitectures</span>
             </h2>
-            <div className="space-y-3 text-sm text-slate-300 leading-relaxed font-sans">
+
+            <div className="space-y-4 text-sm text-slate-300 leading-relaxed font-sans">
               <p>
-                As Dennard scaling ended and silicon feature sizes approached atomic limits, processor performance gains transitioned from raw clock frequency increases to specialized domain architectures:
+                While a CPU is engineered as a <strong>latency-optimized</strong> machine designed to execute complex, branched, sequential code as fast as physically possible, a <strong>GPU (Graphics Processing Unit)</strong> is a <strong>throughput-optimized</strong> machine designed to perform massive data-parallel arithmetic across thousands of execution streams simultaneously.
               </p>
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-3 text-xs font-mono">
-                <div className="p-3.5 rounded-lg bg-surface border border-surface-border space-y-1">
-                  <span className="text-cyber-sky font-bold">Heterogeneous Cores</span>
-                  <p className="text-slate-300 text-[11px]">ARM big.LITTLE, Apple Silicon, and Intel Alder Lake pair wide Out-of-Order Performance cores (P-cores) with energy-sipping in-order Efficiency cores (E-cores).</p>
+
+              <Callout type="note" title="Worked example: eight independent additions">
+                Let A = [1,2,3,4,5,6,7,8] and B = [10,10,10,10,10,10,10,10]. Worker i computes C[i] = A[i] + B[i], giving [11,12,13,14,15,16,17,18]. No worker needs another worker’s result, so the work can be divided. A CPU loop can also compute this, and may vectorize it. This tiny example is a dependency model, not a speed benchmark. In contrast, a running total S[i] = S[i-1] + A[i] has dependencies and needs a different parallel algorithm.
+              </Callout>
+              <a href="https://docs.nvidia.com/cuda/cuda-programming-guide/03-advanced/advanced-kernel-programming.html" className="text-cyber-sky underline text-sm">Source: NVIDIA CUDA execution and thread scheduling</a>
+              {/* Silicon Allocation Comparison Card */}
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div className="p-4 rounded-xl bg-surface border border-surface-border space-y-2">
+                  <div className="flex items-center space-x-2 text-cyber-sky font-mono font-bold text-xs uppercase">
+                    <Cpu className="w-4 h-4 text-cyber-sky" />
+                    <span>CPU: Latency-Oriented Silicon</span>
+                  </div>
+                  <p className="text-xs text-slate-300 leading-relaxed font-sans">
+                    Uses substantial hardware for branch predictors, out-of-order reorder buffers, speculative execution engines, and multi-megabyte L2/L3 cache hierarchies. The balance and number of cores vary by processor; the design can prioritize fast progress through dependent instructions.
+                  </p>
                 </div>
-                <div className="p-3.5 rounded-lg bg-surface border border-surface-border space-y-1">
-                  <span className="text-cyber-emerald font-bold">NPU / TPU Accelerators</span>
-                  <p className="text-slate-300 text-[11px]">Dedicated 2D systolic arrays optimized strictly for matrix multiplication (GEMM) and INT8/FP16 tensor activations for local AI model inference.</p>
+
+                <div className="p-4 rounded-xl bg-surface border border-surface-border space-y-2">
+                  <div className="flex items-center space-x-2 text-cyber-emerald font-mono font-bold text-xs uppercase">
+                    <Layers className="w-4 h-4 text-cyber-emerald" />
+                    <span>GPU: Throughput-Oriented Silicon</span>
+                  </div>
+                  <p className="text-xs text-slate-300 leading-relaxed font-sans">
+                    Devotes substantial resources to parallel arithmetic units; some GPUs also include specialized matrix units. Employs <strong>SIMT (Single Instruction, Multiple Threads)</strong> where threads are grouped for instruction issue. NVIDIA CUDA warps contain 32 threads; other GPU architectures differ. Scheduling another ready resident warp can hide a memory stall, but does not remove latency. Modern NVIDIA GPUs support independent thread scheduling; never assume unsynchronized lockstep communication is safe.
+                  </p>
                 </div>
-                <div className="p-3.5 rounded-lg bg-surface border border-surface-border space-y-1">
-                  <span className="text-cyber-amber font-bold">3D Chiplet Packaging</span>
-                  <p className="text-slate-300 text-[11px]">Breaking monolithic silicon dies into modular compute chiplets and stacking SRAM vertically (e.g. AMD 3D V-Cache with 96 MB L3 per CCD) connected via silicon interposers.</p>
+              </div>
+
+              {/* Comparative Technical Table */}
+              <div className="overflow-x-auto max-w-full min-w-0">
+                <table className="min-w-full text-xs font-mono border-collapse border border-surface-border text-left">
+                  <thead>
+                    <tr className="bg-surface text-slate-300 border-b border-surface-border">
+                      <th className="p-2.5 border-r border-surface-border font-bold">Architectural Metric</th>
+                      <th className="p-2.5 border-r border-surface-border text-cyber-sky font-bold">General-Purpose CPU (x86-64 / ARM64)</th>
+                      <th className="p-2.5 text-cyber-emerald font-bold">Accelerated GPU (NVIDIA / AMD)</th>
+                    </tr>
+                  </thead>
+                  <tbody className="divide-y divide-surface-border text-slate-300">
+                    <tr>
+                      <td className="p-2.5 border-r border-surface-border font-semibold text-slate-400">Core Architecture</td>
+                      <td className="p-2.5 border-r border-surface-border">General-purpose cores; count and execution design vary</td>
+                      <td className="p-2.5">Many arithmetic lanes grouped into compute units</td>
+                    </tr>
+                    <tr>
+                      <td className="p-2.5 border-r border-surface-border font-semibold text-slate-400">Execution Paradigm</td>
+                      <td className="p-2.5 border-r border-surface-border">MIMD with hardware branch prediction</td>
+                      <td className="p-2.5">Grouped SIMT / SIMD execution; divergence affects efficiency</td>
+                    </tr>
+                    <tr>
+                      <td className="p-2.5 border-r border-surface-border font-semibold text-slate-400">Memory Bandwidth</td>
+                      <td className="p-2.5 border-r border-surface-border">Depends on memory channels, processor, and workload</td>
+                      <td className="p-2.5 text-cyber-emerald font-bold">Depends on device and memory: HBM and GDDR are different technologies</td>
+                    </tr>
+                    <tr>
+                      <td className="p-2.5 border-r border-surface-border font-semibold text-slate-400">Latency Tolerance</td>
+                      <td className="p-2.5 border-r border-surface-border">Deep on-die SRAM caches (L1/L2/L3)</td>
+                      <td className="p-2.5">Schedules ready resident warps to hide some stalls</td>
+                    </tr>
+                    <tr>
+                      <td className="p-2.5 border-r border-surface-border font-semibold text-slate-400">Optimal Workload</td>
+                      <td className="p-2.5 border-r border-surface-border">Operating system kernels, compilers, sequential logic</td>
+                      <td className="p-2.5">Dense matrix multiplication (GEMM), graphics rasterization, AI tensors</td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+
+              <Callout type="note" title="Why parallel workloads can benefit from GPUs">
+                For the standard multiplication of two N-by-N matrices, there are N³ scalar products to accumulate. Different output cells can be assigned to parallel workers, while each cell still needs a reduction over its input products. GPUs can help when there is enough work and suitable memory access. CPUs and other accelerators can also run AI; transfer, launch and synchronization costs can outweigh parallelism for small jobs.
+              </Callout>
+
+              <div className="pt-2 space-y-3">
+                <h3 className="text-xs font-mono font-bold text-slate-200 uppercase tracking-wider">
+                  Specialized Heterogeneous Microarchitectures
+                </h3>
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-3 text-xs font-mono">
+                  <div className="p-3.5 rounded-lg bg-surface border border-surface-border space-y-1">
+                    <span className="text-cyber-sky font-bold">Heterogeneous Cores</span>
+                    <p className="text-slate-300 text-[11px] leading-relaxed">ARM big.LITTLE, Apple Silicon, and Intel Alder Lake pair wide Out-of-Order Performance cores (P-cores) with energy-sipping in-order Efficiency cores (E-cores).</p>
+                  </div>
+                  <div className="p-3.5 rounded-lg bg-surface border border-surface-border space-y-1">
+                    <span className="text-cyber-emerald font-bold">NPU / TPU Accelerators</span>
+                    <p className="text-slate-300 text-[11px] leading-relaxed">Dedicated 2D systolic arrays optimized strictly for matrix multiplication (GEMM) and INT8/FP16 tensor activations for local AI model inference.</p>
+                  </div>
+                  <div className="p-3.5 rounded-lg bg-surface border border-surface-border space-y-1">
+                    <span className="text-cyber-amber font-bold">3D Chiplet Packaging</span>
+                    <p className="text-slate-300 text-[11px] leading-relaxed">Breaking monolithic silicon dies into modular compute chiplets and stacking SRAM vertically (e.g. AMD 3D V-Cache with 96 MB L3 per CCD) connected via silicon interposers.</p>
+                  </div>
                 </div>
               </div>
             </div>

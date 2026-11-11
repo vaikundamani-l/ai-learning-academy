@@ -4,6 +4,27 @@
 
 ---
 
+## Standing owner requirement — understanding before coverage
+
+Recorded 9 November 2026: The owner requires every lesson to earn its place through useful teaching and deep understanding. Spend the time needed to improve quality. A definition, long page, impressive terminology, polished interface, section count or passing test suite is insufficient evidence of educational value.
+
+For every core concept, the teaching review must find concrete evidence of:
+
+1. **Purpose:** a problem the learner understands, why this concept helps, and when it is useful.
+2. **Meaning:** plain-language definitions before jargon, explicit prerequisites, and the limits of any analogy.
+3. **Mechanism:** an explanation of how and why it works, with observable state changes or a derivation rather than unexplained claims.
+4. **Worked reasoning:** a small complete example, predicted result, intermediate steps, verified output and explanation of each important line or decision.
+5. **Experiment:** a meaningful change the learner can make, a prediction to commit to, and feedback that explains the resulting behavior. Decorative interaction does not satisfy this requirement.
+6. **Failure and boundaries:** common misconceptions, at least one revealing failure or counterexample, and relevant edge cases with explanations and repairs.
+7. **Transfer:** a different problem to solve with less help, a way to check the result, and questions requiring explanation rather than recognition alone.
+8. **Accuracy and scope:** sources for specialist or version-dependent claims, verified code/results, and clear distinctions between a teaching model and real implementation behavior.
+
+Depth must follow prerequisite order: build intuition, explain the mechanism, apply it, then introduce relevant deeper details. Do not overwhelm beginners with unrelated internals or add advanced vocabulary to simulate rigor. Each paragraph, diagram, example and exercise must serve a learning objective; remove repetition and filler. Review cognitive load, readability, accessibility and feedback alongside technical accuracy.
+
+Before advancing, record where these requirements are demonstrated and resolve substantive teaching gaps. Distinguish “implemented,” “technically verified,” “teaching reviewed,” and “learner demonstrated mastery.” Never label all existing content excellent, a lesson fully audited, or a learner proficient without supporting evidence. Independent learner evaluation remains separate from automated verification.
+
+---
+
 ## 1. The Standard 18-Point Lesson Framework
 
 Every complete lesson within the Academy must adaptively implement this comprehensive structure:

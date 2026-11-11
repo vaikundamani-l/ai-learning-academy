@@ -370,3 +370,209 @@ Remaining engineering limits: reporter parses human-readable `ls`/newline-delimi
 
 ## Files changed
 `examples/stage-0-workspace-project/src/file_organizer.py`, `scripts/init_git_repo.sh`, `scripts/diagnose_failure.sh`, `tests/test_workspace.py`, `Makefile`, `README.md` inside that example; academy `src/pages/Projects.tsx`, `scripts/verify-responsive-theme.mjs`, `REVIEW_NOTES.md`, `PROGRESS_TRACKER.md`.
+
+
+# Stage 0 Topic-to-Evidence Audit, Curriculum Gap Remediation & Full CDP Verification — 6 November 2026
+
+## Scope & Audit Execution
+Audited every verbatim topic, expanded subtopic, scratch build, and planned simulator from `CURRICULUM_MASTER.md` for Stage 0 against the codebase. Generated the comprehensive Stage 0 Topic-to-Evidence Matrix artifact. Identified and resolved three specific curriculum gaps and deployed an interactive practical mastery reflection challenge:
+1. **GPU Architecture & Throughput Computing:** Added Section 17 deep dive to `CpuArchitectureLesson.tsx` comparing latency-oriented CPU design (deep caches, out-of-order execution, branch prediction) with throughput-oriented GPU design (thousands of lightweight ALUs, SIMT execution, warps, HBM3 3+ TB/s bandwidth vs DDR5, and AI tensor GEMM matrix multiplication). Added GPU/SIMT lexicon entries and updated Q10 in `cpuLessonContent.ts`.
+2. **Virtual Machines & Hypervisors:** Added Section 16 to `OperatingSystemsLesson.tsx` covering Type 1 (bare-metal) vs Type 2 (hosted) hypervisors, hardware-assisted virtualization (Intel VT-x VMX root/non-root, VMCS; AMD-V VMCB), and an in-depth architectural comparison between Virtual Machines (virtualized hardware + guest kernel) and Linux Containers (shared host kernel + cgroups + namespaces). Updated Q9 in `osLessonContent.ts` to test hypervisors.
+3. **Basic Internet Architecture & Networking Foundations:** Added Section 16 to `DeveloperToolingLesson.tsx` teaching packet switching vs circuit switching, 5-layer internet protocol stack, IPv4 & CIDR subnetting (`/24`, network ID, broadcast, 254 usable hosts), transport layer ports (0-65535, well-known ports 80/443/22), the TCP 3-way handshake (SYN, SYN-ACK, ACK sequence and acknowledgment synchronization), and DNS resolution flow. Added pure `calculateCidrSubnet` and `simulateTcpHandshake` to `src/utils/devTooling.ts`, python socket script, and updated Q10 in `toolingLessonContent.ts`.
+4. **Milestone Project Practical Reflection & Failure Diagnosis Challenge:** Enhanced `src/pages/Projects.tsx` with interactive conceptual reflection toggles (journal conflict safety invariant, failure regression diagnosis commands) and an interactive 4-point practical milestone evidence checklist.
+5. **Quiz Balance Integrity:** Re-verified all 4 lesson quizzes; each retains exactly 10 questions with balanced correct option positions across indices 0, 1, 2 (`{ '0': 3, '1': 4, '2': 3 }`).
+
+## Verification & Browser Audit Results
+- **Unit & Logic Regressions:** 45/45 tests passing in `tests/core.test.mjs`, including new CIDR subnet calculations, TCP handshake lifecycle steps, and Python networking socket resolution.
+- **Milestone Project Suite:** 14/14 tests passing in `examples/stage-0-workspace-project/tests/test_workspace.py`.
+- **Production Build:** `npm run build` cleanly compiled and bundled in 1.07s with zero TypeScript or Vite errors.
+- **Genuine Chrome CDP Browser Audit:** Executed `scripts/verify-responsive-theme.mjs` against Google Chrome (CDP port 9225). Audited all 12 routes across Mobile (390×844) and Desktop (1440×900) in both Dark and Light themes:
+  - Total checks: 48
+  - Passed checks: 48 (Zero horizontal layout overflow, valid theme classes, verified heading counts, fully rendered lesson content).
+  - Failed checks: 0
+
+# Evidence matrix and new topic teaching review — 6 November 2026
+
+## Teaching assessment
+Dedicated GPU, virtualization and networking introductions now exist, closing the earlier omission of those topics. However, the initial new sections used dense jargon and universal hardware/performance claims without worked results. This review added explicit examples: eight independent vector additions versus a dependent running sum, two guest memory allocations, the bit-mask derivation for a /24 subnet, five-layer message responsibilities, and numerical SYN/ACK sequence values.
+
+Corrected CPU/GPU die-area percentages, universal core/bandwidth ranges, unconditional zero-cost scheduling and GPU-required-for-AI language. Qualified warp scheduling using NVIDIA's documentation. VM startup/memory claims now depend on configuration rather than fixed guarantees; KVM’s host-kernel integration is distinguished from the simple Type 1/2 teaching taxonomy. The full virtualization text has not been independently certified against vendor manuals.
+
+## Functional corrections
+- CIDR input validation now rejects partial prefixes, extra slashes, empty/nondecimal/fractional octets.
+- /31 uses the point-to-point convention with two usable addresses; /32 represents one address. Neither returns a directed broadcast address.
+- TCP ISNs must be unsigned 32-bit integers; sequence arithmetic wraps correctly.
+- The original Python networking example only resolved a name and printed a fictional successful handshake. Replaced it with a real bounded loopback TCP echo, independent of external DNS. It asserts exchanged bytes and explicitly does not claim packet capture or direct observation of handshake fields.
+- DNS teaching now mentions caches, and TCP text distinguishes client establishment from server receipt of the final ACK.
+
+## Evidence quality
+Copied the external matrix into repository file STAGE_0_TOPIC_EVIDENCE_MATRIX.md with review qualifications; the original external artifact was not changed. A CPU block diagram is not a GPU simulator; a page translator is not a hypervisor; shell pipes are not network packets. Whole-matrix “certified” labels were removed in the repository review copy. The diagram/keyboard claims in the external inventory are not established by viewport-width checks alone.
+
+## Verification
+- Expanded academy suite: 48/48 passed, including an actual local TCP byte exchange and three new networking edge-case tests.
+- Workspace suite: 14/14 passed.
+- Build passed. Desktop GPU section rendered and had no horizontal page overflow in the targeted browser check.
+- Full 48-case browser/theme audit, all source curriculum topics, external DNS behavior and GPU execution performance were not independently recertified in this pass. No claim of blanket contrast compliance or learner mastery is made.
+
+## Progress recommendation
+The identified missing-topic introductions have now been implemented and strengthened. Stage 1 introductory development can begin while preserving the remaining review scope honestly. Stage 1 Lesson 1 should teach running a program, print/input, values, variables, expressions and errors with worked examples. CPython internals and a detailed reference/memory model should follow basic language use rather than constitute the beginner’s first exposure. Do not interpret this recommendation as certification that a particular learner has mastered Stage 0.
+
+## Sources used
+- [NVIDIA CUDA thread scheduling](https://docs.nvidia.com/cuda/cuda-programming-guide/03-advanced/advanced-kernel-programming.html)
+- [TCP RFC 9293](https://www.rfc-editor.org/rfc/rfc9293.html)
+- [/31 point-to-point links RFC 3021](https://www.rfc-editor.org/rfc/rfc3021.html)
+
+## Changed files
+`src/utils/devTooling.ts`, `src/data/toolingLessonContent.ts`, `src/data/cpuLessonContent.ts`, the CPU/OS/developer-tooling lesson components, `tests/core.test.mjs`, `STAGE_0_TOPIC_EVIDENCE_MATRIX.md`, `PROGRESS_TRACKER.md`, and `REVIEW_NOTES.md`. Existing agent changes were preserved.
+
+---
+
+# Stage 1, Lesson 1: Python Basics & Computational Thinking Review — 6 November 2026
+
+## Scope and verified state
+Implemented Stage 1 Lesson 1 ("Python Basics from First Principles") in accordance with the strict 18-point lesson framework, covering the CPython VM architecture, the `PyObject` structure, bit-level primitive representations, LEGB scoping, mutability aliasing, interactive memory exploration, the iteration protocol, first-class functions/closures, cyclic garbage collection, and bytecode disassembly.
+
+## Teaching & Implementation Details
+- **CPython Virtual Machine Architecture:** Traced source code tokenization, concrete syntax trees, Abstract Syntax Tree (`ast` module) generation, bytecode compilation, and the stack-based evaluation loop in `ceval.c`.
+- **The PyObject Reference Model:** Deconstructed the `PyObject` C header (`ob_refcnt`, `ob_type`), pointer equality (`is`) vs. value equality (`==`), integer memory addresses (`id()`), and arbitrary-precision integer representations.
+- **Mutability Aliasing:** Documented pointer aliasing bugs, deep copy vs shallow copy, and the default mutable argument anti-pattern (`def func(x=[])`).
+- **Interactive Visualizer:** Built `PythonMemoryVisualizer` featuring 4 pre-packaged interactive scenarios (Integer Rebinding & Immutability, Mutable List Aliasing, Shallow vs. Deep Copy, Reference Counting & Deallocation) with dual Stack Frame vs Heap PyObject visual cards and CPython mechanism commentary. Embedded in `PythonBasicsLesson.tsx` and `SimulationLab.tsx`.
+- **Iteration Protocol & AST Parser:** Provided 3 verified, runnable Python 3 code examples: bytecode disassembly with `dis`, custom `CountdownSequence` iterator implementing `__iter__` and `__next__`, and a recursive-descent arithmetic AST tokenizer and evaluator.
+- **Diagnostic Gate:** 10 rigorous diagnostic multiple-choice questions requiring $\ge 80\%$ (8/10) to certify lesson completion, with option positions balanced across indices 0, 1, 2 (`{ '0': 3, '1': 4, '2': 3 }`).
+- **Hands-On Exercises:** 3 engineering challenges (Integer intern pool diagnostic, circular reference detector, bytecode instruction tracer) with derivation hints.
+
+## Verification & Audit
+- `npm test`: 53/53 automated unit and regression tests passing.
+- `npm run build`: Production bundle succeeded with zero errors or warnings.
+- Genuine Headless Chrome DevTools Protocol (CDP) Responsive Audit: 56/56 checks passed across 14 routes in Mobile (390×844) and Desktop (1440×900) under Dark and Light themes with zero horizontal scroll overflow.
+- Live Python 3 execution: Verified all 3 code examples against real Python 3.12 interpreter.
+
+## Changed files
+`src/utils/pythonMemory.ts`, `src/components/visual/python/PythonMemoryVisualizer.tsx`, `src/data/pythonBasicsLessonContent.ts`, `src/pages/lessons/PythonBasicsLesson.tsx`, `src/pages/LessonViewer.tsx`, `src/pages/StageOverview.tsx`, `src/pages/SimulationLab.tsx`, `scripts/verify-responsive-theme.mjs`, `tests/core.test.mjs`, `PROGRESS_TRACKER.md`, `REVIEW_NOTES.md`.
+
+## 9 November 2026 — Responsibility handover / first-program increment
+
+Replaced the advanced Python entry route with an introductory lesson while preserving existing CPython files. Added a distinct canonical progress key to prevent an old advanced quiz score from qualifying for the replacement lesson. 55 tests and production build pass. Browser evidence covers prediction, trace completion and invalid input; dark layout inspected. This is a bounded implementation increment, not full Stage 1 or 18-point-framework certification. See PROGRESS_TRACKER.md for remaining UI and verification work.
+
+## 9 November 2026 — Decisions & Loops / beginner lesson controls
+
+Added a beginner control-flow lesson and two bounded teaching trace models; integrated shared notes, bookmarks and playback into the first-program lesson. Primary sources: official Python control-flow tutorial and compound-statement reference (linked in the lesson). Teaching review checked definitions before mechanisms, line-by-line worked explanations, branch thresholds, empty iteration, loop progress, accumulator state, failure diagnosis and transfer tasks with expected results.
+
+Verification: 61 tests pass, production build passes, both Python lessons measured at mobile/desktop sizes in light/dark with no document overflow. Browser checked prediction, autoplay/pausing, replay/rewind, empty range and sum output, saved notes/bookmarks, Escape dismissal, inter-lesson navigation, 70% rejection and 80% unlock. New trace and planner tests execute real Python for comparison. The shared quiz copy now distinguishes a knowledge check from practical mastery; current attempt determines its result message. Existing CPU lesson controls retain their default Cycle terminology while Python controls use Step.
+
+Full CDP route suite not rerun. No claim of complete Stage 1 coverage or independent learner mastery. Next: functions and reusable tests, before collections and advanced CPython material. See PROGRESS_TRACKER.md for detailed boundaries and remaining curriculum.
+
+## 9 November 2026 — Teaching depth, counterexamples and transfer
+
+Focused review found insufficient counterexamples for calculated name binding, conversion order, exclusive branching and accumulator placement. Implemented paired-program reasoning challenges with predictions, written self-explanations, verified outputs, chronological mechanisms and follow-up transfer experiments. Derived the sum formula and changed the first lesson’s project context. See PYTHON_TEACHING_REVIEW.md for evidence against each owner requirement and precise verification limits. Build and 63 tests passed; new mobile layout and feedback/reset behavior inspected. No blanket educational certification inferred.
+
+## 9 November 2026 — Functions lesson
+
+Added a beginner functions lesson with explicit argument/local/return/caller boundaries, print-versus-return counterexamples, contract guards and tests that detect an incorrect formula. Avoided premature closures/decorators/CPython internals; preserved the distinction between integer rebinding and mutable-object side effects. The perimeter exercise requires transfer beyond the worked planner. Build and 68 tests pass. Browser checks cover trace output/reset, reasoning feedback and mobile light/dark layout. Full verification boundaries and teaching evidence are in PYTHON_TEACHING_REVIEW.md. Next: collections and then shared mutability.
+
+## 9 November 2026 — Collections and shared mutable state
+
+Added Lesson 4 with collection-selection rationale, six executable examples, a counting invariant, append/return counterexamples and an order/duplicate-preserving transfer task. The alias/copy explorer explicitly shows whether names reach one or two outer objects and requires a prediction; nested-list copying is taught separately to avoid implying deep independence. Real Python tests validate outputs, failures, input preservation and model results. Build and 74 tests pass. Browser verified copy/share state and prediction/rewind behavior; mobile light/dark and desktop width had no document overflow. Full browser matrix and learner evaluation remain open. See PYTHON_TEACHING_REVIEW.md for detailed evidence. Next: exceptions and validation.
+
+## 9 November 2026 — Exceptions and validation
+
+Added Lesson 5 with a real traceback exercise, narrow conversion handling, separate range checks, explicit failure signaling, caller propagation, else/finally and bounded retry exhaustion. Paired reasoning rejects silent zero fallbacks; transfer requires adapting the domain rule to quantities 1–100. All displayed executable variants and trace cases are checked against Python; build and 81 tests pass. Mobile review found and fixed shared trace-panel overflow and clarified select names. Light/dark mobile measurements passed after the fix. Full browser matrix and learner practical sign-off remain open. Detailed evidence: PYTHON_TEACHING_REVIEW.md. Next: modules/imports and environments.
+
+## 9 November 2026 — Modules/imports and project environments
+
+Added Lesson 6 around one reusable implementation, caller namespaces, top-level execution, cache reuse and guarded/package entries. The real offline venv exercise verifies interpreter and pip ownership without inventing a third-party dependency. Pins, freeze and pip check are not represented as complete reproducibility or correctness guarantees. Build and 88 tests pass; new tests exercise exact multi-file code, model outputs, wrong-context imports, local shadowing, Linux venv creation and package transfer. Browser verified predictions/reset/rewind and mobile/desktop light/dark widths. Windows/macOS execution, full browser matrix and learner practical sign-off remain unverified. Detailed teaching evidence: PYTHON_TEACHING_REVIEW.md. Next: files, encodings and resource handling.
+
+## 9 November 2026 — File I/O and reliable record processing
+
+Added Lesson 7 with explicit encoding/mode/lifecycle semantics, exact fixture creation, invalid-byte reproduction and a fail-fast minute-record parser. The guided trace and reasoning contrast distinguish file closing from rollback and valid totals from rejected partial results. Transfer changes the domain to quantity files. Build and 96 tests pass; filesystem experiments are temporary and verify preservation/error cases. Browser checked trace paths, predictions/reset/rewind and mobile/desktop light/dark widths; no document overflow measured. Full browser matrix, cross-platform file execution and learner evaluation remain open. Evidence: PYTHON_TEACHING_REVIEW.md. Next: CSV/JSON and structured-data validation.
+
+## 9 November 2026 — CSV/JSON, schema validation and the limited parser
+
+Added Lesson 8 with format-aware quoted/multiline CSV, JSON value mapping, exact schema checks and real importer/serializer examples. Built a bounded single-record CSV parser with character-level state explanations, committed predictions and reversible traces; its supported subset is explicit. Boolean/integer confusion, duplicate-key merging, non-finite JSON defaults, header/row-width failures and round-trip limits are addressed. Build and 106 tests pass, including 341 short record combinations and independent standard-reader comparisons on accepted inputs. Browser checked parser outcomes and mobile/desktop light/dark widths without document overflow. Full browser matrix/cross-platform execution/learner sign-off remain open. Detailed teaching evidence: PYTHON_TEACHING_REVIEW.md. Next: classes and composition.
+
+## 9 November 2026 — Classes, state ownership and composition
+
+Added Lesson 9 with bound self/instance explanations, initialization versus allocation, a guarded Budget API and a reversible instance-state trace. Paired mutable-list examples expose class-level sharing; explicit composition separates Budget, MemoryLog and StudyPlanner responsibilities. The recorder failure case remains intentionally non-atomic and tested, rather than being presented as automatic rollback. A stock/order transfer changes the domain and checks invalid/independent-state cases. Build and 113 tests pass; the expanded class test file passed again. Browser verified updates/rejections, prediction reset, zero case and rewind, with no mobile/desktop light/dark document overflow. Full browser/cross-platform/learner sign-off remains open. Detailed evidence: PYTHON_TEACHING_REVIEW.md. Next: testing/debugging/logging.
+
+## 9 November 2026 — Test quality, debugging and diagnostic logging
+
+Added Lesson 10 with independent expectations, real unittest assertions, isolated state and explicit PASS/FAILURE/ERROR distinctions. The explorer shows a faulty implementation passing weak checks, then exposes it with boundary cases. Actual Python tests verify all selected-suite outcomes and a scripted pdb session. Logging configuration and INFO/DEBUG output are tested; warning diagnostics do not swallow the rejection. Build and 121 tests pass after a Node content-import fix. Browser verified predictions/reset/rewind and mobile/desktop light/dark widths without document overflow. Full browser/cross-platform/learner sign-off remains open. Evidence: PYTHON_TEACHING_REVIEW.md. Next: typing/runtime validation and profiling.
+
+
+## Stage 1 Lesson 11 review — 9 November 2026
+
+Added Type Hints, Runtime Validation & Profiling with explicit evidence boundaries: static checking is not runtime validation, validation is not workflow correctness, and profiling is not a neutral benchmark. Executable counterexamples show string repetition despite an int annotation and boolean acceptance by static int typing versus exact-integer rejection. Strict model configuration is explained alongside coercion, assignment and nested-mutation limits. Real timeit samples retain units and scope; cProfile verifies actual calls without fabricated timings. Derived before/after bars are expressly hypothetical and use the same scale.
+
+Production build passed. Full test run with the temporary mypy tool directory passed 130/130 with no skips; nine new lesson tests passed separately. Python 3.12.3, mypy 2.4.1 and existing Pydantic 2.14.1 were exercised; no host Pydantic modification. Optional tool setup documents skip behavior. A combined fresh pinned venv installation and Windows/macOS execution were not verified.
+
+Browser checked prediction matches/mismatch, resets and 0%/100% boundaries. Mobile 390×844 and desktop 1440×900 light/dark had no document overflow; screenshots inspected and no console errors captured. Light theme/default viewport restored. Full browser matrix and learner practical demonstration remain open. Detailed teaching evidence is in PYTHON_TEACHING_REVIEW.md. Stage 1 remains in progress; next increment is iterators, generators and scope.
+
+
+## Stage 1 Lesson 12 review — 9 November 2026
+
+Added Iterators, Generators & Scope. Teaching separates reusable sources from consumed cursors and generator creation from body execution. A scratch iterator and three fixed replay cases connect progress/state to Python’s actual output and generator states. A lazy minute pipeline shows successful prefixes, delayed failure and physical line numbers; a real temporary-file example demonstrates the resource-lifetime boundary. Scope/closure examples expose local-before-assignment errors, independent factory state, shared enclosing bindings and mutable-reference limits of defaults.
+
+Build and responsive-script syntax check passed. Full suite passed 139/139, zero skips, with the same optional typing-tool directory used for Lesson 11. Nine new tests cover complete programs, all replay cases/states, aliasing/exhaustion, input guards, lazy consumption/errors, StopIteration rules, closure behavior and quantity reporting. Browser verified prediction/reset/rewind and normal/error/empty cases; light/dark mobile and desktop layouts had no document overflow, with no captured console errors. Original theme/viewport restored. Full browser matrix, platform execution, frame-rate measurement, quiz end-to-end retest and independent learner evaluation remain unverified. Detailed teaching audit: PYTHON_TEACHING_REVIEW.md. Next: regex and a tested log parser; Stage 1 remains in progress.
+
+
+## Stage 1 Lesson 13 review — 9 November 2026
+
+Added Regular Expressions & Reliable Log Parsing. Examples distinguish fragment matching, whole-record validation and converted-value rules. The format deliberately limits severities, ASCII service/duration fields, exact whitespace, body length and line endings. A character scanner exposes diagnostic partial captures without presenting them as accepted records or pretending to replay Python’s regex internals. The complete file CLI preserves source files, bounds line-read size, rejects invalid UTF-8 and prints JSON only after full success. Empty and blank input are distinguished. Mobile glossary definitions were converted to stacked cards after visual inspection.
+
+Build and responsive-script syntax check passed; ten new tests passed independently and the full suite passed 149/149 with no skips using the optional typing-tool directory. Tests compare scanner decisions with real Python parsing, verify summary invariants and command exit/stdout behavior, and preserve existing fixtures. Browser checked valid/range/trailing/Unicode/blank cases, prediction reset, rewind and actual play/pause. Light/dark mobile/desktop widths had no document overflow or captured console errors; theme and viewport restored. Full browser/platform matrix, frame-rate measurement, independent quiz completion and learner practical sign-off remain open. Teaching evidence is in PYTHON_TEACHING_REVIEW.md. Next: HTTP and a local socket-based client; Stage 1 remains in progress.
+
+
+## Stage 1 Lesson 14 review — 10 November 2026
+
+Added HTTP Requests, Byte Streams & Failure Boundaries. Teaching distinguishes TCP reads from HTTP framing and byte lengths from Unicode characters; status success from valid application data; per-operation timeouts from a decreasing network deadline. The scratch client’s restricted statuses/headers/codings and lack of general HTTP/TLS interoperability are explicit. A real local server, CLI and http.client comparison preserve failures without successful partial output. The browser lab models fixed response partitions and does not pretend to send traffic or measure latency.
+
+Build and responsive-script syntax check passed. Twelve new tests passed; full suite finally passed 161/161 with no skips after restoring optional mypy in a temporary directory (the first run had one missing-tool skip). New verification includes all single split positions, exact limits, real loopback/server command/CLI/library cases and independent inventory transfer. Browser verified counters, reset/rewind and actual play/pause; mobile/desktop light/dark layouts showed no document overflow or captured console errors. Theme/viewport restored. Full browser/platform matrix, frame-rate measurement, new quiz end-to-end completion, general external HTTP/TLS compatibility and learner practical sign-off remain open. Evidence and scope are recorded in PYTHON_TEACHING_REVIEW.md. Next: concurrency fundamentals; Stage 1 remains in progress.
+
+
+## Stage 1 Lesson 15 review — 10 November 2026
+
+Added Concurrency, Ownership & Cancellation. The teaching separates overlap from parallel CPU execution, coroutine creation from task scheduling, shared-state completion from invariant preservation, and cancelling/waiting from forcibly stopping running work. Three fixed counter schedules expose saved values and compare full-update locking with parent aggregation. Complete examples cover bounded thread/async work, TaskGroup failure/cancellation cleanup, timeouts, spawn-based processes and real measured synthetic waits. GIL claims are build/version qualified; no universal speedup is implied.
+
+Build and responsive-script syntax check passed. Eleven new tests passed independently; final full suite passed 172/172, zero skips, including real worker threads, spawned processes and event-coordinated cleanup checks. Corrected intermediate lock-held/released replay states before that run. A later title-only test edit did not change executable coverage. Browser verified all three strategy results, reset/rewind and actual play/pause. Light/dark mobile/desktop widths had no document overflow or captured console errors. Original theme/viewport restored. Full browser/platform matrix, frame-rate measurement, free-threaded runtime execution, new quiz end-to-end completion and independent learner practical evaluation remain open. Detailed audit: PYTHON_TEACHING_REVIEW.md. Next: context managers/decorators; Stage 1 remains in progress.
+
+
+## Stage 1 Lesson 16 review — 10 November 2026
+
+Added Context Managers, Decorators & Resource Lifetime. Teaching distinguishes construction/acquisition, failed entry versus body failure, successful release versus operation success, narrow suppression and cleanup-error context. Wrappers preserve arguments/results/errors by explicit implementation, while metadata is treated separately from identity. Complete programs demonstrate generator contexts, ExitStack cleanup, decorator factory/application/call order, and deferred coroutine/generator/async boundaries. Six fixed browser paths expose state and caller outcomes with prediction and rewind.
+
+Build and responsive-script syntax check passed; eleven new tests passed separately and full suite passed 183/183 with zero skips. Actual Python coverage includes exception/result identity, temporary files, one-shot/yield-count failures, overlapping reuse/as-binding errors and async cancellation cleanup. Browser verified lifetime outcomes, case reset and rewind, autoplay completion and pause. Fixed squeezed mobile playback labels using short phase names and retained full explanations. Light/dark mobile/desktop widths had no document overflow or captured console errors; theme/viewport restored. Full browser/platform matrix, frame-rate measurement, new quiz completion and independent learner evaluation remain open. Detailed evidence: PYTHON_TEACHING_REVIEW.md. Next: pytest fixtures/parameterization/coverage, then remaining application work. Stage 1 remains in progress.
+
+
+## Stage 1 Lesson 17 review — 10 November 2026
+
+Added Pytest Fixtures, Parameterization & Coverage Evidence. Real examples teach named dependencies, isolated handle state, parameter ids, exceptions, captured output and scoped environment changes. An intentional separate test failure demonstrates teardown without becoming part of the passing suite. Actual coverage reports verify a > to >= defect surviving full statement/branch coverage until equality/zero assertions distinguish it. The denominator and source scope are explicit, and browser counters are labeled as fixed-model execution evidence.
+
+Build and responsive-script syntax check passed. Eleven new academy checks passed independently; the full suite passed 194/194 with zero skips using isolated pytest/coverage and typing tool directories. Verified pytest 9.2.0 and coverage.py 7.17.2 on Python 3.12.3. Corrected the verifier’s duplicate counting of pytest directory aliases when inspecting a cleanup marker. Browser checked weak full coverage, boundary failures, corrected helper, partial counts, reset/rewind and playback. Light/dark mobile/desktop widths showed no document overflow or captured console errors; theme/viewport restored. Full browser/platform matrix, fresh combined venv installation, frame-rate measurement, new quiz completion and independent learner evaluation remain open. Detailed evidence: PYTHON_TEACHING_REVIEW.md. Next: tested command-line task manager; Stage 1 remains in progress.
+
+## Stage 1 Lesson 18 Review — 10 November 2026
+
+Added a complete runnable command-line task manager and teaching lesson with canonical raw source imports, explicit state invariants, independent candidate snapshots, bounded strict JSON, exclusive initialization and staged replacement. The central worked comparison separates a pre-commit save error from a post-commit output error; saved state and return status are checked independently. Seven replay fixtures match actual Python behavior. Repeated completion skips saving; blind add retry and two stale writers expose duplicates/lost updates rather than hiding the design's single-writer boundary. Transfer asks for an independently implemented reopen command and practical evidence.
+
+Build and responsive-script syntax check passed; 12 new checks and the full 206-check suite passed with zero skips using the existing isolated pytest/coverage/typing tool directories. Seven shipped unittest cases also ran inside that verification. Fault injection covers write/flush/fsync/replace and stdout, alongside actual subprocess/file integration. Browser verified successful add, save failure, output failure, corrupt state, repeated completion, prediction reset, rewind, play/pause toggling and canonical code expansion. Mobile/desktop light/dark layouts contained the document without overflow; no captured console errors; theme/viewport restored. Timed playback advancement, independent quiz completion, full browser/platform matrix, power-loss behavior and independent learner practical sign-off were not verified. Detailed teaching evidence: PYTHON_TEACHING_REVIEW.md. Next: tested Stage 1 data-processing capstone and topic-to-evidence readiness review before stage advancement. Stage 1 remains in progress.
+
+## Stage 1 Lesson 19 Capstone Review — 10 November 2026
+
+Implemented a real bounded orders/catalog processing CLI, complete examples and an interactive pipeline that keeps internal arithmetic separate from published report stdout. Canonical Python files render directly. The lesson derives grouped exact-cent totals, explains schema versus syntax versus HTTP status, and rejects late errors without silently omitting records. It explicitly limits currency/HTTP scope, socket timeout semantics and output delivery/redirection guarantees. Independent warehouse transfer changes the validation rules to include valid zero values.
+
+Eleven shipped unittest methods passed after allowing local listeners; sixteen new academy checks run actual subprocesses/files/loopback fixtures, compare ten replay variants and launch the displayed fixture-server command. Final full suite: 222/222 with zero skips using recorded optional tool directories. Final build and responsive-script syntax check passed. Browser checked all five scenarios, both price totals, prediction/reset/rewind, autoplay completion/pause and source rendering. Mobile/desktop light/dark showed no document overflow or captured console errors; shortened scenario labels after inspection and restored theme/viewport. Full browser/platform audit, timed frame-rate/deadline claims, new quiz completion and independent learner evaluation remain unverified.
+
+STAGE_1_TOPIC_EVIDENCE_MATRIX.md inventories original topics, scratch builds and mastery-check paths without recertifying every prior line. Targeted preserved-memory inspection found exact-refcount claims and overbroad deepcopy/no-sharing language; bytecode objectives alone are insufficient executable evidence. These are recorded required follow-up, so Stage 1 remains in progress rather than being declared complete from lesson/test counts. Next: correct/version-qualify that CPython material, then evaluate independent capstone evidence before Stage 2.
+
+## CPython Teaching Correction & Readiness Update — 11 November 2026
+
+Rebuilt the preserved advanced draft as a focused Lesson 20 after prerequisites. Corrected allocation/refcount/address/deepcopy generalizations and the simulator's missing nested edges/global labels/rebinding-release behavior. Five reference-graph cases include a positive-count unreachable cycle; drawn counts are explicitly distinct from ob_refcnt. Canonical Python programs verify controlled list-count deltas, copy memo and atom sharing, weakly observed cycle collection/GC-state restoration, and actual version-qualified dis instructions/stack effects. Bytecode inputs 2/5 produce 10/19 with independently checked transitions. Existing beginner aliases remain on the first-program lesson; the standalone graph shares the corrected component. Replaced duplicate/unrouted draft scaffolding with focused mechanisms and independent transfer work.
+
+Eighteen new checks passed; final full suite 239/239, zero skips, with optional pinned tools restored to /tmp/academy-cpython-tools (the initial run had eight missing-tool skips). Actual CPython version 3.12.3. Production build and responsive-script syntax passed; touched test whitespace corrected. Browser verified integer/copy/cycle state, reasoning self-review/reset, both bytecode inputs, rewind, autoplay completion/pause, canonical source expansion and standalone catalog mounting. Mobile/desktop light/dark containment passed with no captured console errors; original theme/viewport restored. Full browser/platform matrix, frame-rate measurement, other CPython builds and learner/quiz sign-off remain unverified. PYTHON_TEACHING_REVIEW.md records exact scope and commands.
+
+Updated STAGE_1_TOPIC_EVIDENCE_MATRIX.md: known CPython blockers now resolved for the stated scope; twenty lessons, scratch artifacts and reference capstone available. Learner mastery still requires independent work. Stage 2 foundation development can begin without representing reference implementation as learner proficiency. Next increment: time/space complexity with concrete operation counting, worked examples and measured-runtime limitations.
+
+## Stage 2 Complexity Foundations Review — 11 November 2026
+
+Added Stage 2's first lesson with explicit size/case/cost-model definitions, independently derived operation counts, formal O/Ω/Θ distinctions and peak input/output/auxiliary storage conventions. Four prediction-driven kernel replays match actual Python; the growth graph provides coefficient-1 mathematical curves, numeric values and visible scale-change warnings. Runnable timing uses an uninstrumented absent-target kernel, excludes input construction, reports all samples/scope/version and does not assert a universal speed ratio. Transfer tasks distinguish sequential versus rectangular work and caller-required outputs. Canonical Python files render directly.
+
+Twelve new checks passed; final full suite 251/251, zero skips with existing pinned optional tools. Final build and responsive-script syntax passed. Browser verified search case differences, pair/halving/zero boundaries, filter output storage, growth math/scaling, reset/rewind/playback, expanded source and overview navigation. Mobile/desktop light/dark showed no document overflow or captured console errors; light theme/default viewport restored. Added plain-text graph axis ranges to improve mobile readability. STAGE_2_TEACHING_REVIEW.md records teaching evidence, exact commands and unverified independent quiz/practical/platform/frame-rate work. Stage 2 remains in progress. Next: arrays/dynamic storage with indexing/insertion and amortized growth evidence.
