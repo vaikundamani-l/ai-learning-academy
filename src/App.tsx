@@ -1,5 +1,5 @@
 import React, { lazy, Suspense } from 'react';
-import { BrowserRouter, Routes, Route } from 'react-router-dom';
+import { HashRouter, Routes, Route } from 'react-router-dom';
 import { ProgressProvider } from './context/ProgressContext';
 import { ThemeProvider } from './context/ThemeContext';
 import { AppLayout } from './components/layout/AppLayout';
@@ -24,7 +24,7 @@ export const App: React.FC = () => {
   return (
     <ThemeProvider>
       <ProgressProvider>
-        <BrowserRouter>
+        <HashRouter>
           <Routes>
             <Route element={<AppLayout />}>
               <Route index element={<Dashboard />} />
@@ -46,7 +46,7 @@ export const App: React.FC = () => {
               <Route path="*" element={<NotFound />} />
             </Route>
           </Routes>
-        </BrowserRouter>
+        </HashRouter>
       </ProgressProvider>
     </ThemeProvider>
   );
