@@ -1,3 +1,4 @@
+import {SectionLink} from '../../components/learning/SectionLink';
 import { useCallback, useState, type ReactNode } from 'react';
 import { Link } from 'react-router-dom';
 import type { Stage } from '../../types/curriculum';
@@ -20,7 +21,7 @@ export function PythonExceptionsLesson({currentPath}:{stage:Stage;currentPath:st
  <LessonHeader stageNumber={1} lessonIndex={5} totalLessons={0} estimatedReadTime="55–70 minutes" title="Exceptions, Validation & Useful Errors" currentPath={currentPath} onOpenNotes={()=>setNotesOpen(true)}/>
  <LessonNotesDrawer isOpen={notesOpen} onClose={closeNotes} lessonPath={currentPath} lessonTitle="Exceptions, Validation & Useful Errors"/>
  <p className="text-lg">A trustworthy program preserves the difference between a valid answer and an operation that failed. Learn where execution goes when an operation cannot produce its promised result.</p>
- <nav aria-label="Lesson sections" className="flex flex-wrap gap-2">{sections.map(([id,title])=><a key={id} href={`#${id}`} className="min-h-11 p-3 border border-surface-border rounded-lg text-cyber-sky text-sm">{title}</a>)}</nav>
+ <nav aria-label="Lesson sections" className="flex flex-wrap gap-2">{sections.map(([id,title])=><SectionLink key={id} sectionId={id} className="min-h-11 p-3 border border-surface-border rounded-lg text-cyber-sky text-sm">{title}</SectionLink>)}</nav>
  <Section id="purpose" title="1. Failure is part of the result contract">
  <p>Prerequisite: <Link className="text-cyber-sky underline" to="/stage/1/lesson/python-collections">Collections, Lookup &amp; Shared State</Link>. You should be able to trace calls, distinguish zero from None, loop over a list, and explain a missing dictionary key.</p>
  <ul className="list-disc pl-6 space-y-2"><li>Locate the failing operation using its exception type and traceback.</li><li>Separate conversion, range validation and unexpected program defects.</li><li>Trace try, except, else, finally and propagation to a caller.</li><li>Build bounded recovery that reports failure without saving a fabricated result.</li></ul>

@@ -1,3 +1,4 @@
+import {SectionLink} from '../../components/learning/SectionLink';
 import { useCallback, useState, type ReactNode } from 'react';
 import { Link } from 'react-router-dom';
 import type { Stage } from '../../types/curriculum';
@@ -17,7 +18,7 @@ export function PythonCollectionsLesson({currentPath}:{stage:Stage;currentPath:s
  <LessonHeader stageNumber={1} lessonIndex={4} totalLessons={0} estimatedReadTime="60–75 minutes" title="Collections, Lookup & Shared State" currentPath={currentPath} onOpenNotes={()=>setNotesOpen(true)}/>
  <LessonNotesDrawer isOpen={notesOpen} onClose={closeNotes} lessonPath={currentPath} lessonTitle="Collections, Lookup & Shared State"/>
  <p className="text-lg">Move from individual values to groups of data. Choose the structure by the questions your program must answer, then trace which objects a change actually affects.</p>
- <nav aria-label="Lesson sections" className="flex flex-wrap gap-2">{sections.map(([id,title])=><a key={id} href={`#${id}`} className="min-h-11 p-3 border border-surface-border rounded-lg text-cyber-sky text-sm">{title}</a>)}</nav>
+ <nav aria-label="Lesson sections" className="flex flex-wrap gap-2">{sections.map(([id,title])=><SectionLink key={id} sectionId={id} className="min-h-11 p-3 border border-surface-border rounded-lg text-cyber-sky text-sm">{title}</SectionLink>)}</nav>
  <Section id="purpose" title="1. Start with the question, then choose the collection">
  <p>Prerequisite: <Link className="text-cyber-sky underline" to="/stage/1/lesson/python-functions">Functions, Parameters &amp; Return Values</Link>. You should be able to trace a loop, pass values to a function and distinguish a returned value from a printed result.</p>
  <ul className="list-disc pl-6 space-y-2"><li>Choose a list, tuple, dictionary or set from concrete data requirements.</li><li>Read, update and iterate over small collections while explaining boundary cases.</li><li>Distinguish rebinding a name from changing a shared object.</li><li>Build and test a frequency counter without changing its input.</li></ul>

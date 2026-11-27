@@ -1,3 +1,4 @@
+import {SectionLink} from '../../components/learning/SectionLink';
 import {useCallback,useState,type ReactNode} from 'react';
 import {Link} from 'react-router-dom';
 import type {Stage} from '../../types/curriculum';
@@ -19,7 +20,7 @@ export function PythonTaskManagerLesson({currentPath}:{stage:Stage;currentPath:s
  <LessonHeader stageNumber={1} lessonIndex={18} totalLessons={0} estimatedReadTime="100–140 minutes" title="Project: A Tested Command-Line Task Manager" currentPath={currentPath} onOpenNotes={()=>setNotesOpen(true)}/>
  <LessonNotesDrawer isOpen={notesOpen} onClose={closeNotes} lessonPath={currentPath} lessonTitle="Project: A Tested Command-Line Task Manager"/>
  <p className="text-lg">Build a small useful application whose validation, saved state and reported success have explicit boundaries.</p>
- <nav aria-label="Lesson sections" className="flex flex-wrap gap-2">{sections.map(([id,title])=><a key={id} href={`#${id}`} className="min-h-11 p-3 rounded-lg border border-surface-border text-cyber-sky text-sm">{title}</a>)}</nav>
+ <nav aria-label="Lesson sections" className="flex flex-wrap gap-2">{sections.map(([id,title])=><SectionLink key={id} sectionId={id} className="min-h-11 p-3 rounded-lg border border-surface-border text-cyber-sky text-sm">{title}</SectionLink>)}</nav>
  <Section id="purpose" title="1. Integrate the tools around a concrete contract">
  <p>Prerequisites: functions/references, JSON/schema validation, file modes, exceptions, modules, context managers and <Link className="text-cyber-sky underline" to="/stage/1/lesson/python-pytest-coverage">independent test evidence</Link>. You should explain why a valid in-memory dictionary is not proof that a save succeeded.</p>
  <ul className="list-disc pl-6 space-y-2"><li>Implement init, add, list and done commands over an explicit task file.</li><li>Validate stored state before mutation and keep candidate changes independent.</li><li>Stage writes, identify the commit point and preserve pre-commit failures.</li><li>Test actual subprocesses and diagnose uncertain outcomes after output failure.</li></ul>

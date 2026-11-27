@@ -1,3 +1,4 @@
+import {SectionLink} from '../../components/learning/SectionLink';
 import {useCallback,useState,type ReactNode} from 'react';
 import {Link} from 'react-router-dom';
 import type {Stage} from '../../types/curriculum';
@@ -16,7 +17,7 @@ export function PythonHttpLesson({currentPath}:{stage:Stage;currentPath:string})
  <LessonHeader stageNumber={1} lessonIndex={14} totalLessons={0} estimatedReadTime="90–110 minutes" title="HTTP Requests, Byte Streams & Failure Boundaries" currentPath={currentPath} onOpenNotes={()=>setNotesOpen(true)}/>
  <LessonNotesDrawer isOpen={notesOpen} onClose={closeNotes} lessonPath={currentPath} lessonTitle="HTTP Requests, Byte Streams & Failure Boundaries"/>
  <p className="text-lg">Reconstruct one response from arbitrary receive results, then decide separately whether its status, text and data are acceptable.</p>
- <nav aria-label="Lesson sections" className="flex flex-wrap gap-2">{sections.map(([id,title])=><a key={id} href={`#${id}`} className="min-h-11 p-3 rounded-lg border border-surface-border text-cyber-sky text-sm">{title}</a>)}</nav>
+ <nav aria-label="Lesson sections" className="flex flex-wrap gap-2">{sections.map(([id,title])=><SectionLink key={id} sectionId={id} className="min-h-11 p-3 rounded-lg border border-surface-border text-cyber-sky text-sm">{title}</SectionLink>)}</nav>
  <Section id="purpose" title="1. One useful request crosses several contracts">
  <p>Prerequisites: Stage 0 networking/TCP basics, byte encodings, exceptions, JSON validation, file/resource lifetime, and <Link className="text-cyber-sky underline" to="/stage/1/lesson/python-regex-logs">complete-report parsing</Link>. Explain why complete UTF-8 text can still be invalid JSON and why a valid JSON object can still violate its schema.</p>
  <ul className="list-disc pl-6 space-y-2"><li>Identify an HTTP method, target, status, headers and body.</li><li>Accumulate a bounded Content-Length response across arbitrary byte reads.</li><li>Separate transport, framing, HTTP-status, decoding and domain failures.</li><li>Run a local fixture/client pair and verify failures without publishing a partial success.</li></ul>

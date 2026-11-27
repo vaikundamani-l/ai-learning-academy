@@ -1,3 +1,4 @@
+import {SectionLink} from '../../components/learning/SectionLink';
 import {useCallback,useState,type ReactNode} from 'react';
 import {Link} from 'react-router-dom';
 import type {Stage} from '../../types/curriculum';
@@ -21,7 +22,7 @@ export function PythonStructuredDataLesson({currentPath}:{stage:Stage;currentPat
  <LessonHeader stageNumber={1} lessonIndex={8} totalLessons={0} estimatedReadTime="75–100 minutes" title="CSV, JSON & Structured-Data Validation" currentPath={currentPath} onOpenNotes={()=>setNotesOpen(true)}/>
  <LessonNotesDrawer isOpen={notesOpen} onClose={closeNotes} lessonPath={currentPath} lessonTitle="CSV, JSON & Structured-Data Validation"/>
  <p className="text-lg">Preserve field boundaries, decode structured values, and validate a record’s meaning before admitting it into your application.</p>
- <nav aria-label="Lesson sections" className="flex flex-wrap gap-2">{sections.map(([id,title])=><a key={id} href={`#${id}`} className="min-h-11 p-3 border border-surface-border rounded-lg text-cyber-sky text-sm">{title}</a>)}</nav>
+ <nav aria-label="Lesson sections" className="flex flex-wrap gap-2">{sections.map(([id,title])=><SectionLink key={id} sectionId={id} className="min-h-11 p-3 border border-surface-border rounded-lg text-cyber-sky text-sm">{title}</SectionLink>)}</nav>
  <Section id="purpose" title="1. A format describes structure; a schema describes your contract">
  <p>Prerequisite: <Link className="text-cyber-sky underline" to="/stage/1/lesson/python-files">Files, Encodings &amp; Reliable Record Processing</Link>. You should be able to read text with an explicit encoding, process collections and reject a malformed record without publishing a partial report.</p>
  <ul className="list-disc pl-6 space-y-2"><li>Explain delimiter, quoting and logical-record boundaries in CSV.</li><li>Build and trace a deliberately restricted single-record parser.</li><li>Map JSON values into Python and distinguish syntax from application validity.</li><li>Validate and round-trip small session records without silently dropping or coercing fields.</li></ul>

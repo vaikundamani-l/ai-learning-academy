@@ -15,7 +15,7 @@ import { spawn } from 'child_process';
 import http from 'http';
 import fs from 'fs';
 
-const BASE_URL = process.env.TEST_BASE_URL || 'http://127.0.0.1:3000';
+const BASE_URL = process.env.TEST_BASE_URL || 'http://127.0.0.1:3000/ai-learning-academy/';
 const CDP_PORT = 9225;
 const USER_DATA_DIR = `/tmp/chrome-responsive-audit-${Date.now()}`;
 
@@ -201,7 +201,7 @@ try {
 
       for (const route of routes) {
         totalChecks++;
-        const targetUrl = `${BASE_URL}${route}`;
+        const targetUrl = `${BASE_URL.replace(/\/?$/, "/")}#${route}`;
 
         // Navigate
         await sendCdp('Page.navigate', { url: targetUrl });

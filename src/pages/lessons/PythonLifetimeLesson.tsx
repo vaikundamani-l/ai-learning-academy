@@ -1,3 +1,4 @@
+import {SectionLink} from '../../components/learning/SectionLink';
 import {useCallback,useState,type ReactNode} from 'react';
 import {Link} from 'react-router-dom';
 import type {Stage} from '../../types/curriculum';
@@ -17,7 +18,7 @@ export function PythonLifetimeLesson({currentPath}:{stage:Stage;currentPath:stri
  <LessonHeader stageNumber={1} lessonIndex={16} totalLessons={0} estimatedReadTime="80–100 minutes" title="Context Managers, Decorators & Resource Lifetime" currentPath={currentPath} onOpenNotes={()=>setNotesOpen(true)}/>
  <LessonNotesDrawer isOpen={notesOpen} onClose={closeNotes} lessonPath={currentPath} lessonTitle="Context Managers, Decorators & Resource Lifetime"/>
  <p className="text-lg">Make acquisition and cleanup explicit, then preserve a function’s contract while adding behavior around its call.</p>
- <nav aria-label="Lesson sections" className="flex flex-wrap gap-2">{sections.map(([id,title])=><a key={id} href={`#${id}`} className="min-h-11 p-3 rounded-lg border border-surface-border text-cyber-sky text-sm">{title}</a>)}</nav>
+ <nav aria-label="Lesson sections" className="flex flex-wrap gap-2">{sections.map(([id,title])=><SectionLink key={id} sectionId={id} className="min-h-11 p-3 rounded-lg border border-surface-border text-cyber-sky text-sm">{title}</SectionLink>)}</nav>
  <Section id="purpose" title="1. Two boundaries solve two different repetition problems">
  <p>Prerequisites: classes/methods, functions as values, closures, exceptions, generators, file contexts and <Link className="text-cyber-sky underline" to="/stage/1/lesson/python-concurrency">task cancellation and cleanup</Link>. Before starting, explain why a finally block can run even though no successful result is returned.</p>
  <ul className="list-disc pl-6 space-y-2"><li>Implement entry/exit responsibilities and explain suppression versus propagation.</li><li>Trace body return, failed acquisition and cleanup errors separately.</li><li>Build wrappers that forward arguments/results/errors and preserve useful metadata.</li><li>Manage dynamic resources and distinguish synchronous construction from asynchronous execution.</li></ul>

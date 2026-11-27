@@ -1,3 +1,4 @@
+import {SectionLink} from '../../components/learning/SectionLink';
 import {useCallback,useState,type ReactNode} from 'react';
 import {Link} from 'react-router-dom';
 import type {Stage} from '../../types/curriculum';
@@ -17,7 +18,7 @@ export function PythonTypingLesson({currentPath}:{stage:Stage;currentPath:string
  <LessonHeader stageNumber={1} lessonIndex={11} totalLessons={0} estimatedReadTime="75–95 minutes" title="Type Hints, Runtime Validation & Profiling" currentPath={currentPath} onOpenNotes={()=>setNotesOpen(true)}/>
  <LessonNotesDrawer isOpen={notesOpen} onClose={closeNotes} lessonPath={currentPath} lessonTitle="Type Hints, Runtime Validation & Profiling"/>
  <p className="text-lg">Use different evidence for different claims: static consistency, accepted runtime values, correct behavior and measured performance.</p>
- <nav aria-label="Lesson sections" className="flex flex-wrap gap-2">{sections.map(([id,title])=><a key={id} href={`#${id}`} className="min-h-11 p-3 rounded-lg border border-surface-border text-cyber-sky text-sm">{title}</a>)}</nav>
+ <nav aria-label="Lesson sections" className="flex flex-wrap gap-2">{sections.map(([id,title])=><SectionLink key={id} sectionId={id} className="min-h-11 p-3 rounded-lg border border-surface-border text-cyber-sky text-sm">{title}</SectionLink>)}</nav>
  <Section id="purpose" title="1. Types, validation and measurement answer different questions">
  <p>Prerequisite: <Link className="text-cyber-sky underline" to="/stage/1/lesson/python-testing">Testing, Debugging &amp; Diagnostic Logging</Link>. You should be able to explain a failed assertion, preserve an invalid input’s error, and compare expected with observed behavior.</p>
  <ul className="list-disc pl-6 space-y-2"><li>Read annotations and explain what a static checker can and cannot establish.</li><li>Validate external values explicitly and distinguish strict rejection from coercion.</li><li>Measure equivalent workloads with stated setup, repetition and units.</li><li>Use a profile to locate work and estimate the whole-program effect of a local improvement.</li></ul>

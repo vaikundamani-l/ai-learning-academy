@@ -1,3 +1,4 @@
+import {SectionLink} from '../../components/learning/SectionLink';
 import {useCallback,useState,type ReactNode} from 'react';
 import {Link} from 'react-router-dom';
 import type {Stage} from '../../types/curriculum';
@@ -21,7 +22,7 @@ export function PythonCapstoneLesson({currentPath}:{stage:Stage;currentPath:stri
  <LessonHeader stageNumber={1} lessonIndex={19} totalLessons={0} estimatedReadTime="120–180 minutes plus independent practice" title="Stage 1 Capstone: A Checked Data-Processing CLI" currentPath={currentPath} onOpenNotes={()=>setNotes(true)}/>
  <LessonNotesDrawer isOpen={notes} onClose={close} lessonPath={currentPath} lessonTitle="Stage 1 Capstone: A Checked Data-Processing CLI"/>
  <p className="text-lg">A total is useful only when you can explain which inputs it represents, how it was calculated and why invalid data cannot quietly disappear.</p>
- <nav aria-label="Lesson sections" className="flex flex-wrap gap-2">{sections.map(([id,label])=><a key={id} href={`#${id}`} className="min-h-11 p-3 rounded-lg border border-surface-border text-cyber-sky text-sm">{label}</a>)}</nav>
+ <nav aria-label="Lesson sections" className="flex flex-wrap gap-2">{sections.map(([id,label])=><SectionLink key={id} sectionId={id} className="min-h-11 p-3 rounded-lg border border-surface-border text-cyber-sky text-sm">{label}</SectionLink>)}</nav>
  <Section id="purpose" title="1. Replace a plausible number with a defensible result">
  <p>A shop exports order rows and keeps a separate product-price catalog. A script that skips malformed rows may still print a convincing total. The number is wrong because the script silently changed which orders count. Our contract is stricter: every accepted order contributes exactly once, or the invocation reports an error without publishing a report.</p>
  <p>Prerequisites: <Link className="text-cyber-sky underline" to="/stage/1/lesson/python-structured-data">CSV and JSON validation</Link>, <Link className="text-cyber-sky underline" to="/stage/1/lesson/python-http-client">HTTP failure boundaries</Link>, functions/dictionaries, exceptions, modules, context managers and <Link className="text-cyber-sky underline" to="/stage/1/lesson/python-task-manager">CLI persistence and testing</Link>. Self-check: why is a missing quantity different from zero? Why does HTTP 200 not prove that a price is an integer?</p>

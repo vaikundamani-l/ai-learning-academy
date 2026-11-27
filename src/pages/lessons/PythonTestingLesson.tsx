@@ -1,3 +1,4 @@
+import {SectionLink} from '../../components/learning/SectionLink';
 import {useCallback,useState,type ReactNode} from 'react';
 import {Link} from 'react-router-dom';
 import type {Stage} from '../../types/curriculum';
@@ -19,7 +20,7 @@ export function PythonTestingLesson({currentPath}:{stage:Stage;currentPath:strin
  <LessonHeader stageNumber={1} lessonIndex={10} totalLessons={0} estimatedReadTime="60–80 minutes" title="Testing, Debugging & Diagnostic Logging" currentPath={currentPath} onOpenNotes={()=>setNotesOpen(true)}/>
  <LessonNotesDrawer isOpen={notesOpen} onClose={closeNotes} lessonPath={currentPath} lessonTitle="Testing, Debugging & Diagnostic Logging"/>
  <p className="text-lg">Turn a behavior claim into evidence, find the smallest input that contradicts it, and use diagnostics to explain the mismatch.</p>
- <nav aria-label="Lesson sections" className="flex flex-wrap gap-2">{sections.map(([id,title])=><a key={id} href={`#${id}`} className="min-h-11 p-3 border border-surface-border rounded-lg text-cyber-sky text-sm">{title}</a>)}</nav>
+ <nav aria-label="Lesson sections" className="flex flex-wrap gap-2">{sections.map(([id,title])=><SectionLink key={id} sectionId={id} className="min-h-11 p-3 border border-surface-border rounded-lg text-cyber-sky text-sm">{title}</SectionLink>)}</nav>
  <Section id="purpose" title="1. A test needs a contract and an independent expectation">
  <p>Prerequisite: <Link className="text-cyber-sky underline" to="/stage/1/lesson/python-classes">Classes, State &amp; Composition</Link>. You should be able to explain Budget’s range invariant, a rejected update and the planner’s recorder-failure boundary.</p>
  <ul className="list-disc pl-6 space-y-2"><li>Choose cases that distinguish correct behavior from a plausible mistake.</li><li>Write isolated checks with unittest, including expected exceptions and unchanged state.</li><li>Reproduce a boundary failure and inspect its state with the debugger.</li><li>Configure application logging without hiding or changing the error contract.</li></ul>

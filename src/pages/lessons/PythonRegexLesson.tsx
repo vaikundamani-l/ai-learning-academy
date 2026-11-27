@@ -1,3 +1,4 @@
+import {SectionLink} from '../../components/learning/SectionLink';
 import {useCallback,useState,type ReactNode} from 'react';
 import {Link} from 'react-router-dom';
 import type {Stage} from '../../types/curriculum';
@@ -17,7 +18,7 @@ export function PythonRegexLesson({currentPath}:{stage:Stage;currentPath:string}
  <LessonHeader stageNumber={1} lessonIndex={13} totalLessons={0} estimatedReadTime="75–95 minutes" title="Regular Expressions & Reliable Log Parsing" currentPath={currentPath} onOpenNotes={()=>setNotesOpen(true)}/>
  <LessonNotesDrawer isOpen={notesOpen} onClose={closeNotes} lessonPath={currentPath} lessonTitle="Regular Expressions & Reliable Log Parsing"/>
  <p className="text-lg">Turn an explicit text format into extracted values, reject near matches, and publish a summary only after the complete input passes.</p>
- <nav aria-label="Lesson sections" className="flex flex-wrap gap-2">{sections.map(([id,title])=><a key={id} href={`#${id}`} className="min-h-11 p-3 rounded-lg border border-surface-border text-cyber-sky text-sm">{title}</a>)}</nav>
+ <nav aria-label="Lesson sections" className="flex flex-wrap gap-2">{sections.map(([id,title])=><SectionLink key={id} sectionId={id} className="min-h-11 p-3 rounded-lg border border-surface-border text-cyber-sky text-sm">{title}</SectionLink>)}</nav>
  <Section id="purpose" title="1. Start with the record contract, not a clever pattern">
  <p>Prerequisites: dictionaries, exceptions, file encodings, CSV/JSON validation, and <Link className="text-cyber-sky underline" to="/stage/1/lesson/python-iteration-scope">deferred iteration and complete-report boundaries</Link>. Explain why consuming one valid item does not validate every later item.</p>
  <ul className="list-disc pl-6 space-y-2"><li>Choose search, match or fullmatch for the intended boundary.</li><li>Read character classes, repetition, alternatives, escapes and named captures.</li><li>Separate text shape from converted-value rules and implement a tested summary.</li><li>Reject malformed, oversized or undecodable inputs without a successful partial report.</li></ul>

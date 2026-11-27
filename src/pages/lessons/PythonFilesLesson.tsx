@@ -1,3 +1,4 @@
+import {SectionLink} from '../../components/learning/SectionLink';
 import {useCallback,useState,type ReactNode} from 'react';
 import {Link} from 'react-router-dom';
 import type {Stage} from '../../types/curriculum';
@@ -20,7 +21,7 @@ export function PythonFilesLesson({currentPath}:{stage:Stage;currentPath:string}
  <LessonHeader stageNumber={1} lessonIndex={7} totalLessons={0} estimatedReadTime="60–75 minutes" title="Files, Encodings & Reliable Record Processing" currentPath={currentPath} onOpenNotes={()=>setNotesOpen(true)}/>
  <LessonNotesDrawer isOpen={notesOpen} onClose={closeNotes} lessonPath={currentPath} lessonTitle="Files, Encodings & Reliable Record Processing"/>
  <p className="text-lg">Read data that outlives your program, preserve its meaning across text and bytes, and publish a result only when processing satisfies its contract.</p>
- <nav aria-label="Lesson sections" className="flex flex-wrap gap-2">{sections.map(([id,title])=><a key={id} href={`#${id}`} className="min-h-11 p-3 border border-surface-border rounded-lg text-cyber-sky text-sm">{title}</a>)}</nav>
+ <nav aria-label="Lesson sections" className="flex flex-wrap gap-2">{sections.map(([id,title])=><SectionLink key={id} sectionId={id} className="min-h-11 p-3 border border-surface-border rounded-lg text-cyber-sky text-sm">{title}</SectionLink>)}</nav>
  <Section id="purpose" title="1. Persisting data adds new failure boundaries">
  <p>Prerequisite: <Link className="text-cyber-sky underline" to="/stage/1/lesson/python-modules">Modules, Imports &amp; Project Environments</Link>. You should be able to run a script in a chosen folder, trace a function and loop, and handle an expected exception.</p>
  <ul className="list-disc pl-6 space-y-2"><li>Distinguish Unicode text from encoded bytes and select an explicit encoding.</li><li>Explain file modes, consumption and cleanup on success or failure.</li><li>Build a line-based parser with a stated blank-line and invalid-record policy.</li><li>Diagnose missing files, invalid encodings and malformed values without publishing a partial report as complete.</li></ul>

@@ -1,3 +1,4 @@
+import {SectionLink} from '../../components/learning/SectionLink';
 import {useCallback,useState,type ReactNode} from 'react';
 import {Link} from 'react-router-dom';
 import type {Stage} from '../../types/curriculum';
@@ -20,7 +21,7 @@ export function PythonIterationLesson({currentPath}:{stage:Stage;currentPath:str
  <LessonHeader stageNumber={1} lessonIndex={12} totalLessons={0} estimatedReadTime="75–95 minutes" title="Iterators, Generators & Scope" currentPath={currentPath} onOpenNotes={()=>setNotesOpen(true)}/>
  <LessonNotesDrawer isOpen={notesOpen} onClose={closeNotes} lessonPath={currentPath} lessonTitle="Iterators, Generators & Scope"/>
  <p className="text-lg">Follow who requests the next value, where execution pauses, and which bindings remain available when work resumes.</p>
- <nav aria-label="Lesson sections" className="flex flex-wrap gap-2">{sections.map(([id,title])=><a key={id} href={`#${id}`} className="min-h-11 p-3 rounded-lg border border-surface-border text-cyber-sky text-sm">{title}</a>)}</nav>
+ <nav aria-label="Lesson sections" className="flex flex-wrap gap-2">{sections.map(([id,title])=><SectionLink key={id} sectionId={id} className="min-h-11 p-3 rounded-lg border border-surface-border text-cyber-sky text-sm">{title}</SectionLink>)}</nav>
  <Section id="purpose" title="1. Process a stream without first collecting every result">
  <p>Prerequisites: functions and local names, collection references, exceptions, file context managers, classes, and <Link className="text-cyber-sky underline" to="/stage/1/lesson/python-typing-profiling">Lesson 11’s distinction between validation and evidence</Link>. Before starting, explain why an error after an earlier write cannot undo that write.</p>
  <ul className="list-disc pl-6 space-y-2"><li>Distinguish a reusable iterable from a stateful, consumable iterator.</li><li>Implement the iterator protocol and trace generator suspension, exhaustion and errors.</li><li>Place validation and resource ownership where deferred consumption actually happens.</li><li>Explain local, enclosing, module and built-in name lookup, including closure binding mistakes.</li></ul>

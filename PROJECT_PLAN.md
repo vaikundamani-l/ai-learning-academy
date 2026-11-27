@@ -179,3 +179,11 @@ Every stage and lesson must undergo three tiers of validation before sign-off:
 1. **Technical Accuracy Verification:** Primary documentation checks (e.g. Intel/ARM manuals, RFCs, NIST guidelines, PyTorch/Linux source documentation).
 2. **Interactive Component Testing:** Automated unit testing of simulator logic (state transitions, instruction decoding, register mutations) and UI render tests.
 3. **Pedagogical Evaluation:** Verification that the lesson answers all 18 core first-principles questions and includes beginner-to-advanced progression.
+
+## GitHub Pages hosting contract — 27 November 2026
+
+The public academy is a static React/Vite application hosted at https://vaikundamani-l.github.io/ai-learning-academy/. GitHub Pages serves the generated HTML, CSS, JavaScript and bundled assets. Python is used for executable lesson checks during development/CI; it is not a running website backend. Keep lesson examples and synthetic browser models honest about that distinction. Accounts, remote progress synchronization, private API keys or server-side Python/Node execution would require a separately designed service and are not provided by this hosting configuration.
+
+HashRouter owns the outer URL fragment. Use the shared SectionLink for in-page navigation; never replace the entire hash with a section id. Section deep links preserve the lesson path and query string, support refresh and wait for lazy content before scrolling. Existing progress remains local to the browser/origin; changing origin does not automatically transfer it.
+
+Inter Variable and Fira Code are bundled from Fontsource and served with the application instead of depending on Google Fonts requests. Font license notices are included under public/font-licenses. Deployments on main install pinned Python teaching tools, run the full npm regression suite (including DOM routing integration checks), build the static bundle and then publish through the GitHub Pages action. DOM integration checks are not a full real-browser or platform certification.

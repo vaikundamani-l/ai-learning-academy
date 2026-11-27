@@ -1,3 +1,4 @@
+import {SectionLink} from '../../components/learning/SectionLink';
 import {useCallback,useState,type ReactNode} from 'react';
 import {Link} from 'react-router-dom';
 import type {Stage} from '../../types/curriculum';
@@ -14,7 +15,7 @@ function Section({id,title,children}:{id:string;title:string;children:ReactNode}
 export function ComplexityLesson({currentPath}:{stage:Stage;currentPath:string}){const[notes,setNotes]=useState(false);const close=useCallback(()=>setNotes(false),[]);return <article className="max-w-4xl mx-auto p-4 sm:p-8 space-y-10 text-slate-300 leading-relaxed min-w-0">
  <LessonHeader stageNumber={2} lessonIndex={1} totalLessons={0} estimatedReadTime="90–120 minutes plus experiments" title="Time, Space & Big-O: Count Before You Measure" currentPath={currentPath} onOpenNotes={()=>setNotes(true)}/><LessonNotesDrawer isOpen={notes} onClose={close} lessonPath={currentPath} lessonTitle="Time, Space & Big-O: Count Before You Measure"/>
  <p className="text-lg">Explain how work grows with input size, which case you analyzed and what storage you counted—then use measurements to investigate the actual implementation.</p>
- <nav aria-label="Lesson sections" className="flex flex-wrap gap-2">{sections.map(([id,title])=><a key={id} href={`#${id}`} className="min-h-11 p-3 rounded-lg border border-surface-border text-cyber-sky text-sm">{title}</a>)}</nav>
+ <nav aria-label="Lesson sections" className="flex flex-wrap gap-2">{sections.map(([id,title])=><SectionLink key={id} sectionId={id} className="min-h-11 p-3 rounded-lg border border-surface-border text-cyber-sky text-sm">{title}</SectionLink>)}</nav>
  <Section id="purpose" title="1. Why a fast example is not a scaling argument">
  <p>A report tool that handles 100 records comfortably may struggle with a million. Before buying a faster machine or adding workers, ask what work grows: one scan, every pair of records, repeated sorting, or a retained copy of the input? Complexity analysis makes that question precise enough to guide algorithm and data-structure choices.</p>
  <p>Prerequisites: <Link className="text-cyber-sky underline" to="/stage/1/lesson/python-control-flow">loops and stopping conditions</Link>, functions, <Link className="text-cyber-sky underline" to="/stage/1/lesson/python-collections">list references</Link>, and the <Link className="text-cyber-sky underline" to="/stage/1/lesson/python-data-capstone">Stage 1 capstone</Link>. Self-check: can a loop return before its last element? Does a list copy allocate a new container? Stage 2 development starts here; this does not award mastery for unfinished Stage 1 practical work.</p>

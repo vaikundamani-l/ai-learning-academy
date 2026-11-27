@@ -1,3 +1,4 @@
+import {SectionLink} from '../../components/learning/SectionLink';
 import { useCallback, useState, type ReactNode } from 'react';
 import { Link } from 'react-router-dom';
 import type { Stage } from '../../types/curriculum';
@@ -20,7 +21,7 @@ export function PythonModulesLesson({currentPath}:{stage:Stage;currentPath:strin
  <LessonHeader stageNumber={1} lessonIndex={6} totalLessons={0} estimatedReadTime="60–75 minutes" title="Modules, Imports & Project Environments" currentPath={currentPath} onOpenNotes={()=>setNotesOpen(true)}/>
  <LessonNotesDrawer isOpen={notesOpen} onClose={closeNotes} lessonPath={currentPath} lessonTitle="Modules, Imports & Project Environments"/>
  <p className="text-lg">Keep a reusable rule in one place, connect its callers through imports, and prove which interpreter and dependencies run your program.</p>
- <nav aria-label="Lesson sections" className="flex flex-wrap gap-2">{sections.map(([id,title])=><a key={id} href={`#${id}`} className="min-h-11 p-3 border border-surface-border rounded-lg text-cyber-sky text-sm">{title}</a>)}</nav>
+ <nav aria-label="Lesson sections" className="flex flex-wrap gap-2">{sections.map(([id,title])=><SectionLink key={id} sectionId={id} className="min-h-11 p-3 border border-surface-border rounded-lg text-cyber-sky text-sm">{title}</SectionLink>)}</nav>
  <Section id="purpose" title="1. Separate responsibility without copying the rule">
  <p>Prerequisite: <Link className="text-cyber-sky underline" to="/stage/1/lesson/python-exceptions">Exceptions, Validation &amp; Useful Errors</Link>. You should be able to write a function, read a traceback, create text files and run Python from a terminal.</p>
  <ul className="list-disc pl-6 space-y-2"><li>Use one helper module from an application and a test without duplicating its implementation.</li><li>Trace import initialization, cached reuse and a guarded entry point.</li><li>Run a regular package in package context and diagnose common import failures.</li><li>Create a project environment, inspect its interpreter and explain dependency boundaries.</li></ul>

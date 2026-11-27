@@ -1,3 +1,4 @@
+import {SectionLink} from '../../components/learning/SectionLink';
 import {useCallback,useState,type ReactNode} from 'react';
 import {Link} from 'react-router-dom';
 import type {Stage} from '../../types/curriculum';
@@ -16,7 +17,7 @@ export function PythonPytestLesson({currentPath}:{stage:Stage;currentPath:string
  <LessonHeader stageNumber={1} lessonIndex={17} totalLessons={0} estimatedReadTime="80–100 minutes" title="Pytest Fixtures, Parameterization & Coverage Evidence" currentPath={currentPath} onOpenNotes={()=>setNotesOpen(true)}/>
  <LessonNotesDrawer isOpen={notesOpen} onClose={closeNotes} lessonPath={currentPath} lessonTitle="Pytest Fixtures, Parameterization & Coverage Evidence"/>
  <p className="text-lg">Build independent expectations, control test state, and use coverage to locate missing execution—not to certify correctness.</p>
- <nav aria-label="Lesson sections" className="flex flex-wrap gap-2">{sections.map(([id,title])=><a key={id} href={`#${id}`} className="min-h-11 p-3 rounded-lg border border-surface-border text-cyber-sky text-sm">{title}</a>)}</nav>
+ <nav aria-label="Lesson sections" className="flex flex-wrap gap-2">{sections.map(([id,title])=><SectionLink key={id} sectionId={id} className="min-h-11 p-3 rounded-lg border border-surface-border text-cyber-sky text-sm">{title}</SectionLink>)}</nav>
  <Section id="purpose" title="1. A test needs more than a successful run">
  <p>Prerequisites: Lesson 10’s unittest/regression concepts, quantity validation, modules/environments, and <Link className="text-cyber-sky underline" to="/stage/1/lesson/python-context-decorators">decorators and generator-based cleanup</Link>. Explain why a fixture releasing a file does not mean a failing assertion passed.</p>
  <ul className="list-disc pl-6 space-y-2"><li>Run pytest and inspect collected cases, assertions and exit status.</li><li>Use fixtures and explicit parameter rows without leaking state between tests.</li><li>Test file/configuration/output boundaries while keeping integration claims honest.</li><li>Read measured statement/branch evidence and expose a defect surviving full coverage.</li></ul>

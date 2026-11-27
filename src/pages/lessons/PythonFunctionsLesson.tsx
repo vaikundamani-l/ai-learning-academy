@@ -1,3 +1,4 @@
+import {SectionLink} from '../../components/learning/SectionLink';
 import { useCallback, useState, type ReactNode } from 'react';
 import { Link } from 'react-router-dom';
 import type { Stage } from '../../types/curriculum';
@@ -20,7 +21,7 @@ export function PythonFunctionsLesson({currentPath}:{stage:Stage;currentPath:str
  <LessonHeader stageNumber={1} lessonIndex={3} totalLessons={0} estimatedReadTime="45–60 minutes" title="Functions, Parameters & Return Values" currentPath={currentPath} onOpenNotes={()=>setNotesOpen(true)}/>
  <LessonNotesDrawer isOpen={notesOpen} onClose={closeNotes} lessonPath={currentPath} lessonTitle="Functions, Parameters & Return Values"/>
  <p className="text-lg">Give a calculation a clear name, pass in the values it needs, and use its result wherever you need it.</p>
- <nav aria-label="Lesson sections" className="flex flex-wrap gap-2">{sections.map(([id,title])=><a key={id} href={`#${id}`} className="p-3 border border-surface-border rounded-lg text-cyber-sky text-sm">{title}</a>)}</nav>
+ <nav aria-label="Lesson sections" className="flex flex-wrap gap-2">{sections.map(([id,title])=><SectionLink key={id} sectionId={id} className="p-3 border border-surface-border rounded-lg text-cyber-sky text-sm">{title}</SectionLink>)}</nav>
  <Section id="purpose" title="1. A named operation with a clear responsibility">
  <p>Prerequisite: <Link className="text-cyber-sky underline" to="/stage/1/lesson/python-control-flow">Decisions &amp; Loops</Link>. You should be able to trace assignment, multiplication, conditions and indentation.</p>
  <ul className="list-disc pl-6 space-y-2"><li>Explain the difference between defining a function and calling it.</li><li>Trace arguments into local parameters and a result back to the caller.</li><li>Distinguish printing, returning, rebinding and missing results.</li><li>Build a small calculation with an explicit contract and boundary checks.</li></ul>

@@ -1,3 +1,4 @@
+import {SectionLink} from '../../components/learning/SectionLink';
 import {useCallback,useState,type ReactNode} from 'react';
 import {Link} from 'react-router-dom';
 import type {Stage} from '../../types/curriculum';
@@ -17,7 +18,7 @@ function Section({id,title,children}:{id:string;title:string;children:ReactNode}
 export function PythonBasicsLesson({currentPath}:{stage:Stage;currentPath:string}){const[notes,setNotes]=useState(false);const close=useCallback(()=>setNotes(false),[]);return <article className="max-w-4xl mx-auto p-4 sm:p-8 space-y-10 text-slate-300 leading-relaxed min-w-0">
  <LessonHeader stageNumber={1} lessonIndex={20} totalLessons={0} estimatedReadTime={content.estimatedReadTime} title={content.title} currentPath={currentPath} onOpenNotes={()=>setNotes(true)}/><LessonNotesDrawer isOpen={notes} onClose={close} lessonPath={currentPath} lessonTitle={content.title}/>
  <p className="text-lg">Use observable evidence to explain references and execution without confusing a drawing, an implementation detail and a language guarantee.</p>
- <nav aria-label="Lesson sections" className="flex flex-wrap gap-2">{sections.map(([id,title])=><a key={id} href={`#${id}`} className="min-h-11 p-3 rounded-lg border border-surface-border text-cyber-sky text-sm">{title}</a>)}</nav>
+ <nav aria-label="Lesson sections" className="flex flex-wrap gap-2">{sections.map(([id,title])=><SectionLink key={id} sectionId={id} className="min-h-11 p-3 rounded-lg border border-surface-border text-cyber-sky text-sm">{title}</SectionLink>)}</nav>
  <Section id="purpose" title="1. Ask which layer an explanation belongs to">
  <p>Aliasing bugs, unexpected retained objects and misleading disassembly readings often begin with the same mistake: treating a simplified picture as a literal account of the interpreter. This lesson repairs that mistake by separating three layers: Python language behavior, a bounded teaching graph, and measured CPython 3.12 observations.</p>
  <ul className="list-disc pl-6 space-y-2">{content.objectives.map(text=><li key={text}>{text}</li>)}</ul><p>Prerequisites: <Link className="text-cyber-sky underline" to="/stage/1/lesson/python-collections">collection aliasing</Link>, functions/scope, classes, <Link className="text-cyber-sky underline" to="/stage/1/lesson/python-context-decorators">resource lifetime</Link> and the <Link className="text-cyber-sky underline" to="/stage/1/lesson/python-data-capstone">capstone evidence standard</Link>. Self-check: can two names reach one list? Can a container hold a reference after one name is deleted?</p>

@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import {SectionLink} from './SectionLink';
 import { BookOpen, CheckCircle2 } from 'lucide-react';
 
 export interface TOCSection {
@@ -37,21 +38,6 @@ export const ScrollAwareTOC: React.FC<ScrollAwareTOCProps> = ({
     return () => { window.removeEventListener('scroll', update); window.removeEventListener('resize', update); };
   }, [sections]);
 
-  const scrollToSection = (e: React.MouseEvent<HTMLAnchorElement>, id: string) => {
-    e.preventDefault();
-    const el = document.getElementById(id);
-    if (el) {
-      const offsetTop = el.getBoundingClientRect().top + window.scrollY - 80;
-      window.scrollTo({
-        top: offsetTop,
-        behavior: window.matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth',
-      });
-      setActiveId(id);
-      // Set hash without jump
-      window.history.replaceState(window.history.state, '', `#${id}`);
-    }
-  };
-
   return (
     <nav
       aria-label="Lesson Table of Contents"
@@ -80,11 +66,11 @@ export const ScrollAwareTOC: React.FC<ScrollAwareTOCProps> = ({
         {sections.map((sec) => {
           const isActive = activeId === sec.id;
           return (
-            <a
+            <SectionLink
               key={sec.id}
               aria-current={isActive ? 'location' : undefined}
-              href={`#${sec.id}`}
-              onClick={(e) => scrollToSection(e, sec.id)}
+              sectionId={sec.id}
+              onClick={() => setActiveId(sec.id)}
               className={`block px-2.5 py-1.5 rounded-lg transition truncate ${
                 isActive
                   ? 'bg-cyber-sky/15 text-cyber-sky font-bold border-l-2 border-cyber-sky pl-2'
@@ -92,7 +78,7 @@ export const ScrollAwareTOC: React.FC<ScrollAwareTOCProps> = ({
               }`}
             >
               {sec.title}
-            </a>
+            </SectionLink>
           );
         })}
       </div>

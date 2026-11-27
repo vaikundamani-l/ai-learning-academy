@@ -4,17 +4,20 @@ import { useFocusScope } from '../../hooks/useFocusScope';
 import { Navbar } from './Navbar';
 import { Sidebar } from './Sidebar';
 import { Footer } from './Footer';
+import {SectionLink} from '../learning/SectionLink';
+import {useSectionNavigation} from '../../hooks/useSectionNavigation';
 
 export const AppLayout: React.FC = () => {
   const [sidebarOpen, setSidebarOpen] = useState(false);
 
-  const { pathname } = useLocation();
+  const { pathname, hash } = useLocation();
   const closeSidebar = useCallback(() => setSidebarOpen(false), []);
   useFocusScope(sidebarOpen, '#academy-sidebar', closeSidebar);
   useEffect(() => {
     setSidebarOpen(false);
-    window.scrollTo(0, 0);
-  }, [pathname]);
+    if (!hash) window.scrollTo(0, 0);
+  }, [pathname, hash]);
+  useSectionNavigation();
   useEffect(() => {
     const media = window.matchMedia('(min-width: 1024px)');
     const closeOnDesktop = () => { if (media.matches) setSidebarOpen(false); };
@@ -23,7 +26,7 @@ export const AppLayout: React.FC = () => {
   }, []);
   return (
     <div className="min-h-screen bg-void flex flex-col">
-      <a href="#main-content" className="skip-link">Skip to content</a>
+      <SectionLink sectionId="main-content" className="skip-link">Skip to content</SectionLink>
       <Navbar sidebarOpen={sidebarOpen} onToggleSidebar={() => setSidebarOpen(!sidebarOpen)} />
       
       <div className="flex-1 flex">

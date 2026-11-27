@@ -1,3 +1,4 @@
+import {SectionLink} from '../../components/learning/SectionLink';
 import {useCallback,useState,type ReactNode} from 'react';
 import {Link} from 'react-router-dom';
 import type {Stage} from '../../types/curriculum';
@@ -17,7 +18,7 @@ export function PythonConcurrencyLesson({currentPath}:{stage:Stage;currentPath:s
  <LessonHeader stageNumber={1} lessonIndex={15} totalLessons={0} estimatedReadTime="90–110 minutes" title="Concurrency, Ownership & Cancellation" currentPath={currentPath} onOpenNotes={()=>setNotesOpen(true)}/>
  <LessonNotesDrawer isOpen={notesOpen} onClose={closeNotes} lessonPath={currentPath} lessonTitle="Concurrency, Ownership & Cancellation"/>
  <p className="text-lg">Choose what may overlap, decide who owns mutable state, and keep child work and failures inside a deliberate lifetime.</p>
- <nav aria-label="Lesson sections" className="flex flex-wrap gap-2">{sections.map(([id,title])=><a key={id} href={`#${id}`} className="min-h-11 p-3 rounded-lg border border-surface-border text-cyber-sky text-sm">{title}</a>)}</nav>
+ <nav aria-label="Lesson sections" className="flex flex-wrap gap-2">{sections.map(([id,title])=><SectionLink key={id} sectionId={id} className="min-h-11 p-3 rounded-lg border border-surface-border text-cyber-sky text-sm">{title}</SectionLink>)}</nav>
  <Section id="purpose" title="1. Waiting and computing create different opportunities">
  <p>Prerequisites: functions/closures, generators, exceptions, context managers, testing and <Link className="text-cyber-sky underline" to="/stage/1/lesson/python-http-client">HTTP framing/deadlines</Link>. Explain why a request timeout is not proof that remote work was undone.</p>
  <ul className="list-disc pl-6 space-y-2"><li>Distinguish interleaved progress from simultaneous CPU execution.</li><li>Schedule and await coroutine tasks without blocking their event loop.</li><li>Repair a shared-state interleaving and bound both inputs and active work.</li><li>Preserve failure, await cleanup and choose threads/processes by actual workload.</li></ul>

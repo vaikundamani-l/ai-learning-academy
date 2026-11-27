@@ -1,3 +1,4 @@
+import {SectionLink} from '../../components/learning/SectionLink';
 import { ReasoningChallenge } from '../../components/learning/ReasoningChallenge';
 import { controlFlowReasoning } from '../../data/pythonReasoningChallenges';
 import { useCallback, useState, type ReactNode } from 'react';
@@ -61,7 +62,7 @@ export function PythonControlFlowLesson({ currentPath }: { stage: Stage; current
     <LessonHeader stageNumber={1} lessonIndex={2} totalLessons={0} estimatedReadTime="45–60 minutes" title="Decisions & Loops" currentPath={currentPath} onOpenNotes={() => setNotesOpen(true)} />
     <LessonNotesDrawer isOpen={notesOpen} onClose={closeNotes} lessonPath={currentPath} lessonTitle="Decisions & Loops" />
     <p className="text-lg">A useful program responds to its data. Teach your study planner to choose an action, repeat a calculation and explain when it stops.</p>
-    <nav aria-label="Lesson sections" className="flex flex-wrap gap-2 text-sm">{sections.map(([id, title]) => <a key={id} className="px-3 py-2 rounded-lg border border-surface-border text-cyber-sky hover:bg-surface-card" href={`#${id}`}>{title}</a>)}</nav>
+    <nav aria-label="Lesson sections" className="flex flex-wrap gap-2 text-sm">{sections.map(([id, title]) => <SectionLink key={id} className="px-3 py-2 rounded-lg border border-surface-border text-cyber-sky hover:bg-surface-card" sectionId={id}>{title}</SectionLink>)}</nav>
 
     <Section id="goals" title="1. What you will be able to do">
       <ul className="list-disc pl-6 space-y-2"><li>Compare values and explain which branch a program selects.</li><li>Trace the values supplied by range and build a running total.</li><li>Explain why a while loop stops, skips its body or runs indefinitely.</li><li>Build and test a study planner at valid and invalid boundaries.</li></ul>

@@ -1,3 +1,4 @@
+import {SectionLink} from '../../components/learning/SectionLink';
 import {useCallback,useState,type ReactNode} from 'react';
 import {Link} from 'react-router-dom';
 import type {Stage} from '../../types/curriculum';
@@ -21,7 +22,7 @@ export function PythonClassesLesson({currentPath}:{stage:Stage;currentPath:strin
  <LessonHeader stageNumber={1} lessonIndex={9} totalLessons={0} estimatedReadTime="60–80 minutes" title="Classes, State & Composition" currentPath={currentPath} onOpenNotes={()=>setNotesOpen(true)}/>
  <LessonNotesDrawer isOpen={notesOpen} onClose={closeNotes} lessonPath={currentPath} lessonTitle="Classes, State & Composition"/>
  <p className="text-lg">Give a piece of changing state a clear owner, keep its permitted operations nearby, and connect collaborators without hiding how their failures affect the result.</p>
- <nav aria-label="Lesson sections" className="flex flex-wrap gap-2">{sections.map(([id,title])=><a key={id} href={`#${id}`} className="min-h-11 p-3 border border-surface-border rounded-lg text-cyber-sky text-sm">{title}</a>)}</nav>
+ <nav aria-label="Lesson sections" className="flex flex-wrap gap-2">{sections.map(([id,title])=><SectionLink key={id} sectionId={id} className="min-h-11 p-3 border border-surface-border rounded-lg text-cyber-sky text-sm">{title}</SectionLink>)}</nav>
  <Section id="purpose" title="1. Use an object when it clarifies responsibility">
  <p>Prerequisite: <Link className="text-cyber-sky underline" to="/stage/1/lesson/python-structured-data">CSV, JSON &amp; Structured-Data Validation</Link>. You should be able to validate data, trace a method call on a list, explain aliasing and raise an error before publishing an invalid result.</p>
  <ul className="list-disc pl-6 space-y-2"><li>Distinguish class, instance, attribute, initialization and bound method.</li><li>Trace which instance receives a state change through self.</li><li>Maintain a documented invariant through validated operations.</li><li>Compose a budget and recorder while explaining ownership and partial failure.</li></ul>
