@@ -50,6 +50,7 @@ const routes = [
   '/stage/1/lesson/python-data-capstone',
   '/stage/1/lesson/python-cpython-evidence',
   '/stage/2/lesson/complexity-foundations',
+  '/stage/2/lesson/arrays-dynamic-storage',
   '/simulators',
   '/playground',
   '/settings',

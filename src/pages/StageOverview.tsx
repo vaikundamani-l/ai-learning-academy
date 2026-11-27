@@ -233,6 +233,7 @@ export const StageOverview: React.FC = () => {
           <h2 className="font-semibold text-slate-100">Stage 2 starts with a cost model</h2>
           <p className="text-sm text-slate-300">Derive operation counts, separate input cases and account for storage before comparing algorithm choices. Begin after Stage 1 programming practice.</p>
           <Link to="/stage/2/lesson/complexity-foundations" className="inline-flex min-h-11 items-center text-cyber-sky underline">Lesson 1: Time, Space &amp; Big-O →</Link>
+          <Link to="/stage/2/lesson/arrays-dynamic-storage" className="inline-flex min-h-11 items-center text-cyber-sky underline">Lesson 2: Arrays &amp; Dynamic Storage →</Link>
         </div>
       )}
 

@@ -39,6 +39,7 @@ const PythonClassesLesson = React.lazy(() => import('./lessons/PythonClassesLess
 
 const PythonTestingLesson = React.lazy(() => import('./lessons/PythonTestingLesson').then(m => ({ default: m.PythonTestingLesson })));
 
+const ArraysLesson = React.lazy(() => import('./lessons/ArraysLesson').then(m => ({ default: m.ArraysLesson })));
 const ComplexityLesson = React.lazy(() => import('./lessons/ComplexityLesson').then(m => ({ default: m.ComplexityLesson })));
 const PythonInternalsLesson = React.lazy(() => import('./lessons/PythonBasicsLesson').then(m => ({ default: m.PythonBasicsLesson })));
 const PythonCapstoneLesson = React.lazy(() => import('./lessons/PythonCapstoneLesson').then(m => ({ default: m.PythonCapstoneLesson })));
@@ -88,6 +89,7 @@ export const LessonViewer: React.FC = () => {
         return <DeveloperToolingLesson stage={stage} currentPath={currentPath} />;
       }
     }
+    if (id === 2 && lessonId === 'arrays-dynamic-storage') return <ArraysLesson stage={stage} currentPath={currentPath} />;
     if (id === 2 && lessonId === 'complexity-foundations') return <ComplexityLesson stage={stage} currentPath={currentPath} />;
     if (id === 1) {
       if (lessonId === 'python-cpython-evidence') return <PythonInternalsLesson stage={stage} currentPath={currentPath} />;
